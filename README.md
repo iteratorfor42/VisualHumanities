@@ -2,8 +2,10 @@
 
 [dh.aks.ac.kr의 "대문" 페이지](https://dh.aks.ac.kr/Edu/wiki/index.php/%EB%8C%80%EB%AC%B8)를 참고해
 같은 구조(연도별 수업·세미나·답사 링크 목록)를 정적 웹페이지로 재구성했습니다.
-MediaWiki 설치 없이 **순수 HTML/CSS/JS**로만 만들어서 설치 마법사, DB, `.env`, `LocalSettings.php` 같은
-번거로운 과정이 전혀 없습니다. VSCode에서 코드를 열어 바로 수정하고, Docker로 실행만 하면 됩니다.
+MediaWiki 설치 없이 **순수 HTML/CSS/JS**로만 만들어서 
+설치 마법사, DB, `.env`, `LocalSettings.php` 같은  과정이 전혀 없습니다. 
+
+IDE 환경에서 코드를 열어 바로 수정하고, Docker로 실행만 하면 됩니다.
 
 ## 폴더 구조
 
@@ -19,15 +21,16 @@ dh-wiki-page/
 └── README.md
 ```
 
-## VSCode에서 편집하기
+## IDE에서 편집하기 (필자는 VSCODE 사용)
 
 ```bash
 code dh-wiki-page
 ```
 
 - **내용을 바꾸고 싶다면** → `site/data.js`의 `WIKI_DATA`, `EXTRA_SECTIONS` 배열에서
-  `title` / `note` / `url`만 수정하면 됩니다. 새 연도 블록을 통째로 복사해서 추가해도 됩니다.
-- **디자인을 바꾸고 싶다면** → `site/style.css` 상단의 `:root` 안 색상 변수(`--paper`, `--ink`, `--teal` 등)를 조정하세요.
+  `title` / `note` / `url`만 수정하면 됩니다.
+   새 연도 블록을 통째로 복사해서 추가해도 됩니다.
+- **디자인을 바꾸고 싶다면** → `site/style.css` 상단의 `:root` 안 색상 변수(`--paper`, `--ink`, `--teal` 등)를 조정하면 됩니다.
 
 ## Render로 배포하기 (추천 — 완전 무료, 카드 등록/과금 걱정 없음)
 
