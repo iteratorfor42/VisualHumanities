@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>내가 쓴 글 — DH 학습 후기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+
+  <header class="masthead">
+    <div class="masthead-inner">
+      <p class="eyebrow">디지털인문학 학습 기록</p>
+      <h1>내가 쓴 글</h1>
+      <p class="lede">한국학대학원 디지털인문학 관련 워크숍의 공개 세션 소개를 참고해,
+        실제로 참석하지는 않았지만 같은 주제를 제 힘으로 직접 구현해본 기록 모음입니다.
+        아카이브 목록과는 별개로, 여기 글과 코드는 모두 제가 직접 작성했습니다.</p>
+    </div>
+  </header>
+
+  <div class="post-page" style="max-width:880px;">
+    <a class="post-back" href="../index.html">&larr; 대문(아카이브)으로 돌아가기</a>
+    <p style="margin: 4px 0 24px;">
+      <a href="../ontology/index.html" style="font-weight:600;">🕸️ 온톨로지 프로젝트(버전별 기록) 보러가기 &rarr;</a>
+    </p>
+    <div id="post-groups"></div>
+  </div>
+
+  <footer class="colophon">
+    <p>이 페이지의 글은 원본 워크숍 자료를 참고해 작성자 본인이 재구성한 개인 기록입니다.</p>
+  </footer>
+
+<script src="posts-data.js"></script>
+<script>
+  const wrap = document.getElementById("post-groups");
+
+  MY_POSTS.forEach((group) => {
+    const section = document.createElement("section");
+    section.className = "year-section";
+
+    const heading = document.createElement("div");
+    heading.className = "year-heading";
+    heading.innerHTML = `<span class="num" style="font-size:1.4rem;">${group.event}</span>`;
+    section.appendChild(heading);
+
+    const meta = document.createElement("p");
+    meta.className = "post-meta";
+    meta.style.marginBottom = "20px";
+    meta.innerHTML = `<span>${group.date}</span><span>${group.place}</span>`;
+    section.appendChild(meta);
+
+    const list = document.createElement("ul");
+    list.className = "item-list";
+
+    group.posts.forEach((post) => {
+      const li = document.createElement("li");
+      li.className = "item";
+      li.style.flexDirection = "column";
+      li.style.alignItems = "flex-start";
+      li.style.padding = "16px 18px";
+
+      const a = document.createElement("a");
+      a.href = post.url;
+      a.style.fontSize = "1.05rem";
+      a.textContent = post.title;
+      li.appendChild(a);
+
+      const summary = document.createElement("p");
+      summary.style.margin = "6px 0 8px";
+      summary.style.color = "var(--ink-soft)";
+      summary.style.fontSize = "0.92rem";
+      summary.textContent = post.summary;
+      li.appendChild(summary);
+
+      const tagWrap = document.createElement("div");
+      tagWrap.className = "post-tags";
+      tagWrap.style.marginTop = "0";
+      post.tags.forEach((t) => {
+        const span = document.createElement("span");
+        span.textContent = "#" + t;
+        tagWrap.appendChild(span);
+      });
+      const lecturerNote = document.createElement("span");
+      lecturerNote.textContent = "참고 세션 진행자: " + post.lecturer;
+      tagWrap.appendChild(lecturerNote);
+      li.appendChild(tagWrap);
+
+      list.appendChild(li);
+    });
+
+    section.appendChild(list);
+    wrap.appendChild(section);
+  });
+</script>
+</body>
+</html>
