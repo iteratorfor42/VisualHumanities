@@ -7,6 +7,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css" />
+
+<style>
+  /* .post-page가 style.css에서 중앙 정렬(margin: 0 auto)이 안 되고 있어
+     versions.html에 적용했던 것과 동일한 방식으로 여기도 보정 */
+  .post-page {
+    max-width: 880px;
+    margin: 0 auto 60px;
+    padding: 0 20px;
+  }
+  .post-back {
+    display: inline-block;
+    margin-bottom: 24px;
+  }
+</style>
 </head>
 <body>
 
@@ -21,7 +35,7 @@
     </div>
   </header>
 
-  <div class="post-page" style="max-width:880px;">
+  <div class="post-page">
     <a class="post-back" href="index.html">&larr; 대문(아카이브)으로 돌아가기</a>
     <p style="margin: 4px 0 24px;">
       <a href="ontology/versions.html" style="font-weight:600; color: var(--ink, #2b2620); text-decoration: none;">🕸️ 온톨로지 프로젝트(버전별 기록) 보러가기 &rarr;</a>
