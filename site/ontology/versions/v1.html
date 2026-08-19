@@ -180,23 +180,6 @@
   }
   .legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
   #legend { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--hairline); }
-  .version-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 8px 32px;
-    background: var(--paper-2);
-    border-bottom: 1px solid var(--hairline);
-    font-size: 11px;
-  }
-  .version-nav a { color: var(--ink-soft); text-decoration: none; }
-  .version-nav a:hover { color: var(--red); }
-  .version-nav .tag {
-    font-family: 'Noto Serif KR', serif;
-    font-weight: 700;
-    color: var(--red);
-  }
   @media (max-width: 760px) {
     .layout { grid-template-columns: 1fr; }
     #panel { max-height: 300px; }
@@ -205,10 +188,6 @@
 </head>
 <body>
 
-<div class="version-nav">
-  <a href="../versions.html">&larr; 버전 목록으로 (다른 버전 보기)</a>
-  <span class="tag">v1 · 프로토타입</span>
-</div>
 <header>
   <div><span class="stamp">FACT-CHECKED</span></div>
   <h1>일제강점기 독립운동 &amp; 근대학교 온톨로지</h1>
@@ -439,5 +418,7 @@ window.addEventListener('resize', () => {
   sim.alpha(0.3).restart();
 });
 </script>
+<script src="../versions-data.js"></script>
+<script src="../version-nav.js"></script>
 </body>
 </html>
