@@ -9,18 +9,6 @@
 
 const ONTOLOGY_VERSIONS = [
   {
-    version: "v6",
-    date: "2026-08-19",
-    label: "GIS·네트워크 시각화 (현재 최신)",
-    changelog:
-      "[표 2] 2주차 교육과정 9일차 '시각적 인문학의 모색: GIS 및 NETWORK 시각화 기술 응용'을 참고해 " +
-      "직접 구현. v5.ttl을 브라우저에서 실시간 파싱해 (1) Leaflet 기반 GIS 지도 — 조직 소재지 POI " +
-      "(오산학교의 hasSpaceValue 명시값 1건 + 필자가 조사해 부여한 나머지 조직 소재지), " +
-      "(2) vis-network 기반 관계망 — Event의 hasObject/hasPreObject/hasPostObject를 간선으로 접어 " +
-      "Person·Group 간 관계로 표시. 하드코딩 데이터 없이 실제 .ttl 파일에서 전부 추출.",
-    file: "versions/v6.html",
-  },
-  {
     version: "v5",
     date: "2026-08-19",
     label: "placeholder 정리 (현재 최신)",

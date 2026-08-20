@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>독립운동-근대학교 온톨로지 v6 — GIS·네트워크 시각화</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  :root {
+    --paper: #F3EDE0; --paper-2: #EAE2D0; --ink: #2B2620; --ink-soft: #5A5348;
+    --hairline: #C9BFA8; --red: #A8342A; --teal: #2C5C56; --navy: #2C3E66;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--paper); color:var(--ink); font-family:'IBM Plex Mono', monospace; }
+
+  header { padding: 20px 28px 14px; border-bottom: 1px solid var(--hairline); }
+  h1 { font-family:'Noto Serif KR', serif; font-weight:700; font-size:21px; margin:0 0 6px; }
+  .subtitle { font-size:12px; color:var(--ink-soft); line-height:1.6; max-width:900px; }
+  .subtitle b { color:var(--ink); }
+
+  .tabs { display:flex; gap:6px; padding: 12px 28px 0; }
+  .tab-btn {
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; padding:7px 16px;
+    background: var(--paper-2); border:1px solid var(--hairline); border-bottom:none;
+    border-radius: 4px 4px 0 0; cursor:pointer; color: var(--ink-soft);
+  }
+  .tab-btn.active { background: #fff; color: var(--ink); font-weight:700; }
+
+  .tab-body {
+    border-top: 1px solid var(--hairline);
+    height: calc(100vh - 168px);
+    display: none;
+  }
+  .tab-body.active { display: grid; grid-template-columns: 1fr 320px; }
+
+  #map { width:100%; height:100%; }
+  #network { width:100%; height:100%; }
+
+  #side {
+    border-left: 1px solid var(--hairline);
+    background: #fff;
+    padding: 18px 16px;
+    overflow-y: auto;
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+  #side h2 { font-family:'Noto Serif KR', serif; font-size:15px; margin:0 0 8px; }
+  #side .badge {
+    display:inline-block; font-size:10px; padding:2px 7px; border-radius:3px;
+    color:#fff; margin-bottom:10px;
+  }
+  #side .kv { margin: 3px 0; }
+  #side .kv b { color: var(--ink-soft); font-weight:500; }
+  #side .rel-item {
+    padding:5px 0; border-bottom:1px solid var(--paper-2); cursor:default;
+  }
+  #side .empty { color: var(--ink-soft); }
+  #side .src { font-size:11px; color: var(--ink-soft); margin-top:14px; padding-top:10px; border-top:1px dashed var(--hairline); }
+
+  .legend {
+    position:absolute; z-index:500; background:#fff; border:1px solid var(--hairline);
+    border-radius:4px; padding:8px 12px; font-size:11px; line-height:1.9; margin:12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .legend .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; }
+  .legend .sq { display:inline-block; width:9px; height:9px; margin-right:6px; }
+
+  .status { padding: 6px 28px; font-size:11.5px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>독립운동-근대학교 온톨로지 v6 — GIS·네트워크 시각화</h1>
+  <div class="subtitle">
+    <b>[표 2] 2주차 교육과정 · 제9일 "시각적 인문학의 모색: GIS 및 NETWORK 시각화 기술 응용"</b>을 참고해
+    직접 구현한 실습입니다. 아래 두 뷰 모두 <b>v5.ttl 원본 파일을 브라우저에서 직접 파싱</b>해 그린 것으로,
+    하드코딩된 그래프가 아닙니다.
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab-btn active" data-tab="map">🗺 GIS 지도</div>
+  <div class="tab-btn" data-tab="network">🕸 관계망 (Network)</div>
+</div>
+
+<div class="status" id="status">v5.ttl 불러오는 중...</div>
+
+<div class="tab-body active" id="tab-map">
+  <div style="position:relative;">
+    <div id="map"></div>
+  </div>
+  <div id="side">
+    <div class="empty">지도의 마커를 클릭하면 해당 장소와 관련된 조직·사건이 여기에 표시됩니다.</div>
+  </div>
+</div>
+
+<div class="tab-body" id="tab-network">
+  <div id="network"></div>
+  <div id="side-net">
+    <div id="side" style="border:none;"></div>
+  </div>
+</div>
+
+<script src="../ttl-parser.js"></script>
+<script>
+// ============================================================
+// 1. POI 게이저티어 (좌표 사전)
+//    v5.ttl에는 :hasSpaceValue "정주"@ko (오산학교) 단 1건만 실제로
+//    기입되어 있다. 나머지는 9일차 커리큘럼이 요구하는 "지리적 POI
+//    발굴·경위도 좌표 획득" 단계를 그대로 수행해, 각 조직의 알려진
+//    소재지를 직접 조사해 좌표를 붙인 것이다 (온톨로지 원본 데이터가
+//    아니라 시각화를 위해 별도로 조사·부여한 참조 테이블).
+// ============================================================
+var PLACE_COORDS = {
+  "정주": [39.6094, 125.1944],
+  "평양": [39.0392, 125.7625],
+  "서울": [37.5665, 126.9780],
+  "서간도": [41.7198, 125.9364],   // 통화(通化) 일대 (신흥무관학교 소재지로 알려진 지역)
+  "북간도": [42.7669, 129.4179],   // 용정(龍井) 일대 (북로군정서 근거지로 알려진 지역)
+  "상해": [31.2304, 121.4737],
+};
+
+var GROUP_PLACE = {
+  "오산학교": "정주",           // ← 온톨로지에 :hasSpaceValue로 실제 명시된 값
+  "신민회": "평양",
+  "대성학교": "평양",
+  "숭실학교": "평양",
+  "조선물산장려회": "평양",
+  "보성학교": "서울",
+  "천도교": "서울",
+  "신간회": "서울",
+  "신흥무관학교": "서간도",
+  "북로군정서": "북간도",
+  "대한독립군": "북간도",
+  "대한민국임시정부": "상해",
+};
+
+var TYPE_LABEL = { Person: "인물", Group: "조직", Event: "사건", Term: "용어", System: "제도" };
+var TYPE_COLOR = { Person: "#A8342A", Group: "#2C3E66", Event: "#B8863B", Term: "#8B857A", System: "#3D6B5C" };
+
+// ============================================================
+// 2. v5.ttl 로드 & 파싱
+// ============================================================
+var triples = [];
+var byType = {};      // localName -> "Person" | "Group" | ...
+var labelOf = {};      // localName -> rdfs:label 있으면 그 값, 없으면 localName
+var eventsOf = {};     // eventLocalName -> {object, pre, post, type, time, bibo, comment}
+
+fetch("data/v5.ttl")
+  .then(function (res) {
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return res.text();
+  })
+  .then(function (text) {
+    triples = parseTurtle(text);
+    index();
+    document.getElementById("status").textContent =
+      "v5.ttl 파싱 완료 — 트리플 " + triples.length + "개 · 개체 " + Object.keys(byType).length +
+      "개 · 사건(Event) " + Object.keys(eventsOf).length + "개";
+    buildMap();
+    buildNetwork();
+  })
+  .catch(function (err) {
+    document.getElementById("status").textContent =
+      "⚠ v5.ttl을 불러오지 못했습니다 (" + err.message + "). Docker 또는 Render처럼 " +
+      "정적 서버로 열었는지 확인하세요 — file://로 직접 열면 fetch가 차단됩니다.";
+  });
+
+function index() {
+  triples.forEach(function (t) {
+    if (t.p === "type") byType[t.s] = t.o.value;
+    if (t.p === "label") labelOf[t.s] = t.o.value;
+    if (t.s.match(/^\d{8}/) || byType[t.s] === "Event") {
+      eventsOf[t.s] = eventsOf[t.s] || {};
+    }
+  });
+  triples.forEach(function (t) {
+    if (!eventsOf[t.s]) return;
+    var e = eventsOf[t.s];
+    if (t.p === "hasObject") e.object = t.o.value;
+    if (t.p === "hasPreObject") e.pre = t.o.value;
+    if (t.p === "hasPostObject") e.post = t.o.value;
+    if (t.p === "hasEventType") e.type = t.o.value;
+    if (t.p === "hasTimeValue") e.time = t.o.value;
+    if (t.p === "hasBibo") e.bibo = t.o.value;
+    if (t.p === "comment") e.comment = t.o.value;
+  });
+}
+
+function label(name) { return labelOf[name] || name; }
+
+// ============================================================
+// 3. GIS 지도 (Leaflet)
+// ============================================================
+var map;
+function buildMap() {
+  map = L.map("map", { scrollWheelZoom: true }).setView([37.0, 126.0], 5);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors",
+    maxZoom: 18,
+  }).addTo(map);
+
+  var byPlace = {};
+  Object.keys(GROUP_PLACE).forEach(function (g) {
+    var place = GROUP_PLACE[g];
+    byPlace[place] = byPlace[place] || [];
+    byPlace[place].push(g);
+  });
+
+  Object.keys(byPlace).forEach(function (place) {
+    var coord = PLACE_COORDS[place];
+    if (!coord) return;
+    var groups = byPlace[place];
+    var isExplicit = groups.some(function (g) {
+      return triples.some(function (t) { return t.s === g && t.p === "hasSpaceValue" && t.o.value === place; });
+    });
+    var marker = L.circleMarker(coord, {
+      radius: 9,
+      color: isExplicit ? "#A8342A" : "#2C3E66",
+      fillColor: isExplicit ? "#A8342A" : "#2C3E66",
+      fillOpacity: 0.75,
+      weight: 2,
+    }).addTo(map);
+    marker.bindTooltip(place + " (" + groups.length + ")");
+    marker.on("click", function () { showPlaceDetail(place, groups, isExplicit); });
+  });
+
+  var legend = L.control({ position: "topright" });
+  legend.onAdd = function () {
+    var div = L.DomUtil.create("div", "legend");
+    div.innerHTML =
+      '<span class="dot" style="background:#A8342A"></span>온톨로지 hasSpaceValue 명시값<br>' +
+      '<span class="dot" style="background:#2C3E66"></span>필자 조사 POI (역사적 소재지)';
+    return div;
+  };
+  legend.addTo(map);
+}
+
+function showPlaceDetail(place, groups, isExplicit) {
+  var html = "<h2>" + place + "</h2>";
+  html += '<span class="badge" style="background:' + (isExplicit ? "#A8342A" : "#2C3E66") + '">' +
+    (isExplicit ? "온톨로지 명시값" : "필자 조사 POI") + "</span>";
+  html += '<div class="kv"><b>소재 조직 (' + groups.length + ')</b></div>';
+  groups.forEach(function (g) {
+    html += '<div class="rel-item">' + label(g) + "</div>";
+  });
+  // 이 장소의 조직과 관련된 사건들
+  var related = Object.keys(eventsOf).filter(function (eid) {
+    var e = eventsOf[eid];
+    return groups.indexOf(e.object) >= 0 || groups.indexOf(e.pre) >= 0 || groups.indexOf(e.post) >= 0;
+  });
+  if (related.length) {
+    html += '<div class="kv" style="margin-top:12px;"><b>관련 사건 (' + related.length + ')</b></div>';
+    related.forEach(function (eid) {
+      var e = eventsOf[eid];
+      html += '<div class="rel-item">' + (e.time ? e.time.slice(0, 10) + " · " : "") +
+        (e.type ? label(e.type) : "") + " — " +
+        [e.pre, e.object, e.post].filter(Boolean).map(label).join(" → ") + "</div>";
+    });
+  }
+  html += '<div class="src">좌표는 온톨로지 원본이 아니라, 9일차 커리큘럼(POI 발굴·좌표 획득)을 따라 ' +
+    "필자가 별도로 조사해 부여한 참조값입니다.</div>";
+  document.querySelector("#tab-map #side").innerHTML = html;
+}
+
+// ============================================================
+// 4. 관계망 (vis-network) — Event를 간선으로 접어서 표시
+//    (Person)/(Group) --[사건유형]--> (Person)/(Group)
+// ============================================================
+var network, netNodes, netEdges;
+function buildNetwork() {
+  var nodeIds = {};
+  var nodes = [];
+  var edges = [];
+
+  function ensureNode(name) {
+    if (nodeIds[name]) return;
+    var type = byType[name] || "Term";
+    nodeIds[name] = true;
+    nodes.push({
+      id: name,
+      label: label(name),
+      color: TYPE_COLOR[type] || "#8B857A",
+      shape: type === "Group" ? "box" : (type === "Person" ? "dot" : "diamond"),
+      font: { color: "#2B2620", size: 12 },
+    });
+  }
+
+  Object.keys(eventsOf).forEach(function (eid) {
+    var e = eventsOf[eid];
+    if (e.pre && e.object) {
+      ensureNode(e.pre); ensureNode(e.object);
+      edges.push({ from: e.pre, to: e.object, arrows: "to", label: e.type ? label(e.type) : "", font: { size: 9, align: "middle" }, color: { color: "#B8AD93" } });
+    }
+    if (e.object && e.post) {
+      ensureNode(e.object); ensureNode(e.post);
+      edges.push({ from: e.object, to: e.post, arrows: "to", label: e.type ? label(e.type) : "", font: { size: 9, align: "middle" }, color: { color: "#8C6A3F" } });
+    }
+    if (!e.pre && !e.post && e.object) {
+      ensureNode(e.object); // 관계가 없는 단독 사건은 노드만 표시 (측면 패널에서 상세 확인)
+    }
+  });
+
+  netNodes = new vis.DataSet(nodes);
+  netEdges = new vis.DataSet(edges);
+  network = new vis.Network(
+    document.getElementById("network"),
+    { nodes: netNodes, edges: netEdges },
+    {
+      nodes: { font: { size: 12 } },
+      edges: { smooth: { type: "dynamic" } },
+      physics: { barnesHut: { gravitationalConstant: -6000, springLength: 130 }, stabilization: true },
+      interaction: { hover: true, tooltipDelay: 120 },
+    }
+  );
+
+  network.on("click", function (params) {
+    if (params.nodes.length !== 1) return;
+    showNodeDetail(params.nodes[0]);
+  });
+}
+
+function showNodeDetail(name) {
+  var type = byType[name] || "?";
+  var html = "<h2>" + label(name) + "</h2>";
+  html += '<span class="badge" style="background:' + (TYPE_COLOR[type] || "#8B857A") + '">' +
+    (TYPE_LABEL[type] || type) + "</span>";
+
+  var related = Object.keys(eventsOf).filter(function (eid) {
+    var e = eventsOf[eid];
+    return e.object === name || e.pre === name || e.post === name;
+  });
+  html += '<div class="kv"><b>관련 사건 (' + related.length + ')</b></div>';
+  related.forEach(function (eid) {
+    var e = eventsOf[eid];
+    html += '<div class="rel-item">' + (e.time ? e.time.slice(0, 10) + " · " : "") +
+      (e.type ? label(e.type) : "") + " — " +
+      [e.pre, e.object, e.post].filter(Boolean).map(label).join(" → ") +
+      (e.bibo ? "<br><span style=\"color:var(--ink-soft);font-size:10.5px;\">출처: " + e.bibo + "</span>" : "") +
+      "</div>";
+  });
+  document.querySelectorAll("#side").forEach(function (el) { el.innerHTML = html; });
+}
+
+// ============================================================
+// 5. 탭 전환
+// ============================================================
+document.querySelectorAll(".tab-btn").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    document.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
+    document.querySelectorAll(".tab-body").forEach(function (b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+    if (btn.dataset.tab === "map" && map) setTimeout(function () { map.invalidateSize(); }, 50);
+    if (btn.dataset.tab === "network" && network) setTimeout(function () { network.redraw(); }, 50);
+  });
+});
+</script>
+<script src="../versions-data.js"></script>
+<script src="../version-nav.js"></script>
+</body>
+</html>
