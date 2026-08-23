@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>독립운동-근대학교 온톨로지 v6 — GIS·네트워크·공훈전자사료관 연동</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  :root {
+    --paper: #F3EDE0; --paper-2: #EAE2D0; --ink: #2B2620; --ink-soft: #5A5348;
+    --hairline: #C9BFA8; --red: #A8342A; --teal: #2C5C56; --navy: #2C3E66;
+    --green: #4A6B3D; --amber: #B8863B;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--paper); color:var(--ink); font-family:'IBM Plex Mono', monospace; }
+
+  header { padding: 20px 28px 14px; border-bottom: 1px solid var(--hairline); }
+  h1 { font-family:'Noto Serif KR', serif; font-weight:700; font-size:21px; margin:0 0 6px; }
+  .subtitle { font-size:12px; color:var(--ink-soft); line-height:1.6; max-width:900px; }
+  .subtitle b { color:var(--ink); }
+
+  .tabs { display:flex; gap:6px; padding: 12px 28px 0; }
+  .tab-btn {
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; padding:7px 16px;
+    background: var(--paper-2); border:1px solid var(--hairline); border-bottom:none;
+    border-radius: 4px 4px 0 0; cursor:pointer; color: var(--ink-soft);
+  }
+  .tab-btn.active { background: #fff; color: var(--ink); font-weight:700; }
+
+  .tab-body {
+    border-top: 1px solid var(--hairline);
+    height: calc(100vh - 168px);
+    display: none;
+  }
+  .tab-body.active { display: grid; grid-template-columns: 1fr 320px; }
+  .tab-body.full.active { display: block; overflow-y: auto; }
+
+  #map { width:100%; height:100%; }
+  #network { width:100%; height:100%; }
+
+  #side {
+    border-left: 1px solid var(--hairline);
+    background: #fff;
+    padding: 18px 16px;
+    overflow-y: auto;
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+  #side h2 { font-family:'Noto Serif KR', serif; font-size:15px; margin:0 0 8px; }
+  #side .badge {
+    display:inline-block; font-size:10px; padding:2px 7px; border-radius:3px;
+    color:#fff; margin-bottom:10px;
+  }
+  #side .kv { margin: 3px 0; }
+  #side .kv b { color: var(--ink-soft); font-weight:500; }
+  #side .rel-item { padding:5px 0; border-bottom:1px solid var(--paper-2); cursor:default; }
+  #side .empty { color: var(--ink-soft); }
+  #side .src { font-size:11px; color: var(--ink-soft); margin-top:14px; padding-top:10px; border-top:1px dashed var(--hairline); }
+
+  .legend {
+    position:absolute; z-index:500; background:#fff; border:1px solid var(--hairline);
+    border-radius:4px; padding:8px 12px; font-size:11px; line-height:1.9; margin:12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .legend .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; }
+
+  .status { padding: 6px 28px; font-size:11.5px; color: var(--ink-soft); }
+
+  /* --- 공훈전자사료관 탭 전용 --- */
+  .gonghun-wrap { padding: 22px 32px 60px; max-width: 980px; }
+  .gonghun-notice {
+    background: #fff; border: 1px solid var(--hairline); border-left: 4px solid var(--amber);
+    border-radius: 4px; padding: 14px 18px; font-size: 12.5px; line-height: 1.8; margin-bottom: 20px;
+  }
+  .gonghun-notice b { color: var(--red); }
+  .gonghun-controls { display:flex; align-items:center; gap:10px; margin-bottom: 16px; }
+  .gonghun-btn {
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; padding:8px 18px;
+    background: var(--navy); color:#fff; border:none; border-radius:4px; cursor:pointer;
+  }
+  .gonghun-btn:disabled { background: var(--hairline); cursor:not-allowed; }
+  .gonghun-progress { font-size:11.5px; color: var(--ink-soft); }
+  table.gonghun-table { width:100%; border-collapse: collapse; font-size:12px; background:#fff; }
+  table.gonghun-table th, table.gonghun-table td {
+    border: 1px solid var(--hairline); padding: 7px 10px; text-align:left; vertical-align: top;
+  }
+  table.gonghun-table th { background: var(--paper-2); font-weight:700; }
+  .stat-matched { color: var(--green); font-weight:700; }
+  .stat-unmatched { color: var(--ink-soft); }
+  .stat-error { color: var(--red); font-weight:700; }
+  .gonghun-summary { font-size:13px; margin: 14px 0; padding: 10px 14px; background:#fff; border:1px solid var(--hairline); border-radius:4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>독립운동-근대학교 온톨로지 v6 — GIS·네트워크·공훈전자사료관 연동</h1>
+  <div class="subtitle">
+    <b>[표 2] 2주차 교육과정 · 제9일 "시각적 인문학의 모색: GIS 및 NETWORK 시각화 기술 응용"</b>을 참고해
+    직접 구현한 실습입니다. GIS·네트워크 탭은 <b>v5.ttl 원본을 브라우저에서 직접 파싱</b>해 그린 것이며,
+    세 번째 탭은 국가보훈부 공훈전자사료관 공식 오픈API를 <b>사용자의 브라우저에서 직접 호출</b>해
+    v5의 인물 30명과 대조합니다.
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab-btn active" data-tab="map">🗺 GIS 지도</div>
+  <div class="tab-btn" data-tab="network">🕸 관계망 (Network)</div>
+  <div class="tab-btn" data-tab="gonghun">🏛 공훈전자사료관 연동</div>
+</div>
+
+<div class="status" id="status">v5.ttl 불러오는 중...</div>
+
+<div class="tab-body active" id="tab-map">
+  <div style="position:relative;"><div id="map"></div></div>
+  <div id="side"><div class="empty">지도의 마커를 클릭하면 해당 장소와 관련된 조직·사건이 여기에 표시됩니다.</div></div>
+</div>
+
+<div class="tab-body" id="tab-network">
+  <div id="network"></div>
+  <div id="side-net"><div id="side2" style="border:none;"></div></div>
+</div>
+
+<div class="tab-body full" id="tab-gonghun">
+  <div class="gonghun-wrap">
+    <div class="gonghun-notice">
+      <b>정직하게 밝힙니다:</b> 이 기능은 사용자의 브라우저에서 국가보훈부 공식 오픈API
+      (<code>e-gonghun.mpva.go.kr/opnAPI/contribuMeritList.do</code>)를 직접 호출합니다.
+      저(Claude)는 코드 실행 환경의 네트워크 제약과 해당 사이트의 robots.txt 정책 때문에
+      이 호출이 실제로 브라우저에서 성공하는지 <b>사전에 검증하지 못했습니다.</b>
+      대부분의 정부 사이트는 브라우저 간 교차출처요청(CORS)을 차단하므로, 아래 버튼을 눌러도
+      실패할 가능성이 있습니다. 실패 시 오류 내용을 그대로 보여드리고, 대안(로컬 Python 스크립트)을
+      안내합니다. 이름 필터 파라미터가 공식 문서로 확인되지 않아, 전체 목록을 페이지 단위로
+      가져와 로컬에서 성명 대조하는 방식(<code>gonghun_match.py</code>와 동일한 전략)을 씁니다.
+    </div>
+
+    <div class="gonghun-controls">
+      <button class="gonghun-btn" id="gonghun-run">공훈전자사료관 API 호출 시작 (최대 30페이지)</button>
+      <span class="gonghun-progress" id="gonghun-progress"></span>
+    </div>
+
+    <div id="gonghun-summary"></div>
+    <div id="gonghun-result"></div>
+  </div>
+</div>
+
+<script src="../ttl-parser.js"></script>
+<script>
+// ============================================================
+// 1. POI 좌표 사전 (v5.ttl 원본 데이터 아님 - 별도 조사, v5와 동일)
+// ============================================================
+var PLACE_COORDS = {
+  "정주": [39.6094, 125.1944], "평양": [39.0392, 125.7625], "서울": [37.5665, 126.9780],
+  "서간도": [41.7198, 125.9364], "북간도": [42.7669, 129.4179], "상해": [31.2304, 121.4737],
+};
+var GROUP_PLACE = {
+  "오산학교": "정주", "신민회": "평양", "대성학교": "평양", "숭실학교": "평양",
+  "조선물산장려회": "평양", "보성학교": "서울", "천도교": "서울", "신간회": "서울",
+  "신흥무관학교": "서간도", "북로군정서": "북간도", "대한독립군": "북간도",
+  "대한민국임시정부": "상해",
+};
+var TYPE_LABEL = { Person: "인물", Group: "조직", Event: "사건", Term: "용어", System: "제도" };
+var TYPE_COLOR = { Person: "#A8342A", Group: "#2C3E66", Event: "#B8863B", Term: "#8B857A", System: "#3D6B5C" };
+
+// ============================================================
+// 2. v5.ttl 로드 & 파싱
+// ============================================================
+var triples = [], byType = {}, labelOf = {}, eventsOf = {};
+
+fetch("data/v5.ttl")
+  .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.text(); })
+  .then(function (text) {
+    triples = parseTurtle(text);
+    index();
+    document.getElementById("status").textContent =
+      "v5.ttl 파싱 완료 — 트리플 " + triples.length + "개 · 개체 " + Object.keys(byType).length +
+      "개 · 사건(Event) " + Object.keys(eventsOf).length + "개";
+    buildMap();
+    buildNetwork();
+  })
+  .catch(function (err) {
+    document.getElementById("status").textContent =
+      "⚠ v5.ttl을 불러오지 못했습니다 (" + err.message + "). 정적 서버로 열었는지 확인하세요.";
+  });
+
+function index() {
+  triples.forEach(function (t) {
+    if (t.p === "type") byType[t.s] = t.o.value;
+    if (t.p === "label") labelOf[t.s] = t.o.value;
+    if (t.s.match(/^\d{8}/) || byType[t.s] === "Event") eventsOf[t.s] = eventsOf[t.s] || {};
+  });
+  triples.forEach(function (t) {
+    if (!eventsOf[t.s]) return;
+    var e = eventsOf[t.s];
+    if (t.p === "hasObject") e.object = t.o.value;
+    if (t.p === "hasPreObject") e.pre = t.o.value;
+    if (t.p === "hasPostObject") e.post = t.o.value;
+    if (t.p === "hasEventType") e.type = t.o.value;
+    if (t.p === "hasTimeValue") e.time = t.o.value;
+    if (t.p === "hasBibo") e.bibo = t.o.value;
+    if (t.p === "comment") e.comment = t.o.value;
+  });
+}
+function label(name) { return labelOf[name] || name; }
+
+// ============================================================
+// 3. GIS 지도
+// ============================================================
+var map;
+function buildMap() {
+  map = L.map("map", { scrollWheelZoom: true }).setView([37.0, 126.0], 5);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors", maxZoom: 18,
+  }).addTo(map);
+
+  var byPlace = {};
+  Object.keys(GROUP_PLACE).forEach(function (g) {
+    var place = GROUP_PLACE[g];
+    byPlace[place] = byPlace[place] || [];
+    byPlace[place].push(g);
+  });
+  Object.keys(byPlace).forEach(function (place) {
+    var coord = PLACE_COORDS[place];
+    if (!coord) return;
+    var groups = byPlace[place];
+    var isExplicit = groups.some(function (g) {
+      return triples.some(function (t) { return t.s === g && t.p === "hasSpaceValue" && t.o.value === place; });
+    });
+    var marker = L.circleMarker(coord, {
+      radius: 9, color: isExplicit ? "#A8342A" : "#2C3E66",
+      fillColor: isExplicit ? "#A8342A" : "#2C3E66", fillOpacity: 0.75, weight: 2,
+    }).addTo(map);
+    marker.bindTooltip(place + " (" + groups.length + ")");
+    marker.on("click", function () { showPlaceDetail(place, groups, isExplicit); });
+  });
+
+  var legend = L.control({ position: "topright" });
+  legend.onAdd = function () {
+    var div = L.DomUtil.create("div", "legend");
+    div.innerHTML = '<span class="dot" style="background:#A8342A"></span>온톨로지 hasSpaceValue 명시값<br>' +
+      '<span class="dot" style="background:#2C3E66"></span>필자 조사 POI (역사적 소재지)';
+    return div;
+  };
+  legend.addTo(map);
+}
+function showPlaceDetail(place, groups, isExplicit) {
+  var html = "<h2>" + place + "</h2>";
+  html += '<span class="badge" style="background:' + (isExplicit ? "#A8342A" : "#2C3E66") + '">' +
+    (isExplicit ? "온톨로지 명시값" : "필자 조사 POI") + "</span>";
+  html += '<div class="kv"><b>소재 조직 (' + groups.length + ')</b></div>';
+  groups.forEach(function (g) { html += '<div class="rel-item">' + label(g) + "</div>"; });
+  var related = Object.keys(eventsOf).filter(function (eid) {
+    var e = eventsOf[eid];
+    return groups.indexOf(e.object) >= 0 || groups.indexOf(e.pre) >= 0 || groups.indexOf(e.post) >= 0;
+  });
+  if (related.length) {
+    html += '<div class="kv" style="margin-top:12px;"><b>관련 사건 (' + related.length + ')</b></div>';
+    related.forEach(function (eid) {
+      var e = eventsOf[eid];
+      html += '<div class="rel-item">' + (e.time ? e.time.slice(0, 10) + " · " : "") +
+        (e.type ? label(e.type) : "") + " — " + [e.pre, e.object, e.post].filter(Boolean).map(label).join(" → ") + "</div>";
+    });
+  }
+  html += '<div class="src">좌표는 온톨로지 원본이 아니라 필자가 별도로 조사해 부여한 참조값입니다.</div>';
+  document.querySelector("#tab-map #side").innerHTML = html;
+}
+
+// ============================================================
+// 4. 관계망
+// ============================================================
+var network, netNodes, netEdges;
+function buildNetwork() {
+  var nodeIds = {}, nodes = [], edges = [];
+  function ensureNode(name) {
+    if (nodeIds[name]) return;
+    var type = byType[name] || "Term";
+    nodeIds[name] = true;
+    nodes.push({ id: name, label: label(name), color: TYPE_COLOR[type] || "#8B857A",
+      shape: type === "Group" ? "box" : (type === "Person" ? "dot" : "diamond"),
+      font: { color: "#2B2620", size: 12 } });
+  }
+  Object.keys(eventsOf).forEach(function (eid) {
+    var e = eventsOf[eid];
+    if (e.pre && e.object) {
+      ensureNode(e.pre); ensureNode(e.object);
+      edges.push({ from: e.pre, to: e.object, arrows: "to", label: e.type ? label(e.type) : "",
+        font: { size: 9, align: "middle" }, color: { color: "#B8AD93" } });
+    }
+    if (e.object && e.post) {
+      ensureNode(e.object); ensureNode(e.post);
+      edges.push({ from: e.object, to: e.post, arrows: "to", label: e.type ? label(e.type) : "",
+        font: { size: 9, align: "middle" }, color: { color: "#8C6A3F" } });
+    }
+    if (!e.pre && !e.post && e.object) ensureNode(e.object);
+  });
+  netNodes = new vis.DataSet(nodes); netEdges = new vis.DataSet(edges);
+  network = new vis.Network(document.getElementById("network"), { nodes: netNodes, edges: netEdges }, {
+    nodes: { font: { size: 12 } }, edges: { smooth: { type: "dynamic" } },
+    physics: { barnesHut: { gravitationalConstant: -6000, springLength: 130 }, stabilization: true },
+    interaction: { hover: true, tooltipDelay: 120 },
+  });
+  network.on("click", function (params) { if (params.nodes.length === 1) showNodeDetail(params.nodes[0]); });
+}
+function showNodeDetail(name) {
+  var type = byType[name] || "?";
+  var html = "<h2>" + label(name) + "</h2>";
+  html += '<span class="badge" style="background:' + (TYPE_COLOR[type] || "#8B857A") + '">' + (TYPE_LABEL[type] || type) + "</span>";
+  var related = Object.keys(eventsOf).filter(function (eid) {
+    var e = eventsOf[eid]; return e.object === name || e.pre === name || e.post === name;
+  });
+  html += '<div class="kv"><b>관련 사건 (' + related.length + ')</b></div>';
+  related.forEach(function (eid) {
+    var e = eventsOf[eid];
+    html += '<div class="rel-item">' + (e.time ? e.time.slice(0, 10) + " · " : "") + (e.type ? label(e.type) : "") +
+      " — " + [e.pre, e.object, e.post].filter(Boolean).map(label).join(" → ") +
+      (e.bibo ? "<br><span style=\"color:var(--ink-soft);font-size:10.5px;\">출처: " + e.bibo + "</span>" : "") + "</div>";
+  });
+  document.querySelectorAll("#side, #side2").forEach(function (el) { el.innerHTML = html; });
+}
+
+// ============================================================
+// 5. 공훈전자사료관 API 연동 (신규 - v6에서 추가)
+// ============================================================
+var ONTOLOGY_PERSONS = [
+  "이승훈","안창호","조만식","유영모","함석헌","양기탁","안명근","홍범도",
+  "배위량","최광옥","차이석","이용익","이종호","손병희","이회영","이시영","이동녕",
+  "이상룡","지청천","이종일","한용운","오세창","김좌진","서일","이범석","이승만",
+  "이동휘","최린","정춘수","박희도"
+];
+
+var GONGHUN_BASE = "https://e-gonghun.mpva.go.kr/opnAPI/contribuMeritList.do";
+
+document.getElementById("gonghun-run").addEventListener("click", runGonghunFetch);
+
+function runGonghunFetch() {
+  var btn = document.getElementById("gonghun-run");
+  var progress = document.getElementById("gonghun-progress");
+  var summaryEl = document.getElementById("gonghun-summary");
+  var resultEl = document.getElementById("gonghun-result");
+  btn.disabled = true;
+  summaryEl.innerHTML = "";
+  resultEl.innerHTML = "";
+
+  var remaining = new Set(ONTOLOGY_PERSONS);
+  var matched = {};
+  var page = 1;
+  var maxPages = 30; // 페이지당 100건 * 30 = 최대 3000건까지만 시도 (전체 순회는 브라우저 부담이 커 상한을 둠)
+  var perPage = 100;
+
+  function step() {
+    if (remaining.size === 0 || page > maxPages) return finish(null);
+    progress.textContent = "페이지 " + page + "/" + maxPages + " 조회 중... (남은 대상 " + remaining.size + "명)";
+
+    var url = GONGHUN_BASE + "?nPageIndex=" + page + "&nCountPerPage=" + perPage;
+    fetch(url)
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.text();
+      })
+      .then(function (text) {
+        var items = parseGonghunXML(text);
+        if (items.length === 0) { finish(null); return; }
+        items.forEach(function (rec) {
+          var name = (rec["성명"] || rec["name"] || "").trim();
+          if (remaining.has(name)) { matched[name] = rec; remaining.delete(name); }
+        });
+        page++;
+        step();
+      })
+      .catch(function (err) { finish(err); });
+  }
+
+  function parseGonghunXML(xmlText) {
+    var out = [];
+    try {
+      var doc = new DOMParser().parseFromString(xmlText, "application/xml");
+      var errNode = doc.querySelector("parsererror");
+      if (errNode) return out;
+      var items = doc.querySelectorAll("item, row");
+      items.forEach(function (item) {
+        var rec = {};
+        Array.from(item.children).forEach(function (child) { rec[child.tagName] = child.textContent; });
+        out.push(rec);
+      });
+    } catch (e) { /* 파싱 실패 시 빈 배열 반환 */ }
+    return out;
+  }
+
+  function finish(err) {
+    btn.disabled = false;
+    progress.textContent = "";
+    var matchedCount = Object.keys(matched).length;
+
+    if (err) {
+      summaryEl.innerHTML =
+        '<div class="gonghun-summary"><span class="stat-error">API 호출 실패</span>: ' + err.message + '<br>' +
+        '예상 원인: 대부분의 정부 사이트는 브라우저의 교차출처요청(CORS)을 차단합니다. ' +
+        'F12 개발자도구 콘솔에서 정확한 오류(CORS/네트워크/방화벽 등)를 확인해보세요.<br><br>' +
+        '<b>대안</b>: 브라우저 대신 로컬 Python 스크립트(<code>gonghun_match.py</code>)로 서버 측에서 ' +
+        '직접 호출하면 CORS 제약을 받지 않습니다. 지난 대화에서 만든 스크립트를 그대로 쓰시면 됩니다.</div>';
+      return;
+    }
+
+    summaryEl.innerHTML = '<div class="gonghun-summary">' +
+      'v5 인물 <b>' + ONTOLOGY_PERSONS.length + '명</b> 중 ' +
+      '<span class="stat-matched">' + matchedCount + '명 매칭</span>, ' +
+      '<span class="stat-unmatched">' + (ONTOLOGY_PERSONS.length - matchedCount) + '명 미매칭</span> ' +
+      '(공훈전자사료관 상위 ' + ((page - 1) * perPage) + '건 범위 내 조회 기준)</div>';
+
+    var rows = ["<table class=\"gonghun-table\"><tr><th>v5 인물명</th><th>매칭</th><th>훈격</th><th>운동계열</th><th>공적개요</th></tr>"];
+    ONTOLOGY_PERSONS.forEach(function (name) {
+      if (matched[name]) {
+        var r = matched[name];
+        rows.push("<tr><td>" + name + "</td><td class=\"stat-matched\">매칭됨</td><td>" +
+          (r["훈격"] || "") + "</td><td>" + (r["운동계열"] || "") + "</td><td>" + (r["공적개요"] || r["공훈록"] || "") + "</td></tr>");
+      } else {
+        rows.push("<tr><td>" + name + "</td><td class=\"stat-unmatched\">미매칭</td><td colspan=\"3\">" +
+          "포상 미대상이거나 조회 범위(" + ((page - 1) * perPage) + "건) 밖일 수 있음</td></tr>");
+      }
+    });
+    rows.push("</table>");
+    resultEl.innerHTML = rows.join("");
+  }
+
+  step();
+}
+
+// ============================================================
+// 6. 탭 전환
+// ============================================================
+document.querySelectorAll(".tab-btn").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    document.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
+    document.querySelectorAll(".tab-body").forEach(function (b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+    if (btn.dataset.tab === "map" && map) setTimeout(function () { map.invalidateSize(); }, 50);
+    if (btn.dataset.tab === "network" && network) setTimeout(function () { network.redraw(); }, 50);
+  });
+});
+</script>
+<script src="../versions-data.js"></script>
+<script src="../version-nav.js"></script>
+</body>
+</html>
