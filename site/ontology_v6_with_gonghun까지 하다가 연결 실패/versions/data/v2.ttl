@@ -5,7 +5,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://example.org/independence-school-v2> rdf:type owl:Ontology ;
-    rdfs:label "독립운동-근대학교 온톨로지 v2 (김바로/김현 방식 - 사건 중심 설계)"@ko ;
+    rdfs:label "독립운동-근대학교 온톨로지 v2 (김바로 교수님과 김현 교수님 방식 - 사건 중심 설계)"@ko ;
     rdfs:comment "AKS 인문정보학 방법론(김현 교수 정립, 김바로 교수 계승)을 따름: 원문에서 시간/장소/관직 등 요소를 추출하고, '사건'을 독립된 노드로 승격해 그 사건이 여러 속성을 갖도록 설계. v1(이항관계 중심)과 대비됨."@ko .
 
 

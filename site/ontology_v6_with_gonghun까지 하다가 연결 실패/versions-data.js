@@ -9,17 +9,30 @@
 
 const ONTOLOGY_VERSIONS = [
   {
-    version: "v6_with_gonghun",
+
+    id: "v6_with_gonghun",
+    label: "v6_with_gonghun",
+    title: "GIS·네트워크·공훈전자사료관 연동 시각화 (현재 최신)",
+    file: "v6/index.html",
+    ttl: "v5/data/v5.ttl",
     date: "2026-08-19",
-    label: "GIS·네트워크·공훈전자사료관 연동 (현재 최신)",
-    changelog:
-      "v6에 세 번째 탭 추가: 국가보훈부 공훈전자사료관 공식 오픈API를 사용자 브라우저에서 직접 호출해 " +
-      "v5 인물 30명과 대조. 정직 고지: 이 API 호출은 실행 환경의 네트워크 제약상 Claude가 사전에 " +
-      "성공 여부를 검증하지 못했으며, 정부 사이트 특성상 CORS로 막힐 가능성이 있음 — 실패 시 원인과 " +
-      "로컬 Python 스크립트 대안을 화면에 그대로 안내함. GIS·네트워크 탭 로직은 v6과 동일.",
-    file: "versions/v6_with_gonghun.html",
+    status: "완료 (현재 시각화 정본)",
+    summary: "v5.ttl을 브라우저에서 직접 파싱해 GIS 지도(Leaflet)와 관계망" +
+      "(vis-network) 두 가지로 시각화. 세 번째 탭에서 국가보훈부 공훈전자사료관 " +
+      "오픈API를 사용자 브라우저에서 직접 호출해 v5 인물 30명과 대조.",
+    majorChanges: [
+      "GIS 지도: hasSpaceValue 명시값(오산학교=정주)과 필자가 별도 조사한 POI 좌표를 색상으로 구분",
+      "관계망: hasPreObject/hasObject/hasPostObject 체인을 화살표 간선으로 시각화",
+      "공훈전자사료관 탭: 브라우저 fetch로 실시간 조회 시도, 실패 시 원인과 로컬 스크립트 대안을 화면에 안내",
+    ],
+    knownIssues: [
+      "공훈전자사료관 연동은 CORS 등으로 실패할 수 있음 - Claude가 사전에 실행 검증하지 못한 기능",
+      "GIS 좌표 대부분이 온톨로지 원본 데이터가 아니라 별도 조사값 (v6 화면에 범례로 명시되어 있음)",
+    ],
   },
-  {
+];
+
+
     version: "v6",
     date: "2026-08-19",
     label: "GIS·네트워크 시각화",
@@ -64,7 +77,7 @@ const ONTOLOGY_VERSIONS = [
   {
     version: "v2",
     date: "2026-08-14",
-    label: "사건 중심 설계 (김바로/김현 방식)",
+    label: "사건 중심 설계 (김바로 교수님 & 김현 교수님 방식)",
     changelog:
       "AKS 인문정보학 방법론(김현 교수 정립, 김바로 교수 계승)을 따라 원문에서 시간·장소·관직 등 요소를 " +
       "추출하고 '사건'을 독립된 노드로 승격, 여러 속성을 갖도록 재설계. v1의 이항관계 중심 구조와 대비됨.",
