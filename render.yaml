@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: dh-wiki-page
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: ./site
+    pullRequestPreviewsEnabled: false
