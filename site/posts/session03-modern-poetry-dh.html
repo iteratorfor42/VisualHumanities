@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>[Day 2] 현대시 디지털인문학적 분석 — 자체 구현</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+<div class="post-page">
+
+  <a class="post-back" href="my-posts.html">&larr; 내가 쓴 글 목록으로</a>
+
+  <header class="post-header">
+    <p class="post-kicker">Day 2 · Session 03 주제 · 자체 구현</p>
+    <h1>현대시, 알고리즘으로 다시 읽기</h1>
+    <div class="post-meta">
+      <span>참고한 세션 진행자: 박선영</span>
+      <span>세션 일시: 2026-08-20 (목)</span>
+    </div>
+    <div class="post-tags">
+      <span>#현대시</span>
+      <span>#알고리즘</span>
+      <span>#텍스트분석</span>
+    </div>
+  </header>
+
+  <article class="prose">
+    <div class="note-callout">
+      ℹ️ 이 글은 실제 세션에 참석한 기록이 아닙니다. 한국학중앙연구원 디지털인문학연구소가
+      공개한 "텍스트와 사료의 데이터화" 워크숍 세션 소개 내용을 바탕으로,
+      같은 주제를 제 힘으로 직접 구현해본 기록입니다.
+    </div>
+
+    <p>
+      "[Day 2] 텍스트와 사료의 데이터화" 워크숍 Session 03은 현대시 텍스트를
+      알고리즘적으로 분석하는 주제를 다룬다고 소개되어 있었다. 이 글은 그 소개 내용을
+      실마리 삼아, 같은 문제를 스스로 어떻게 풀어볼 수 있을지 직접 구현해본 기록이다.
+    </p>
+
+    <h2>왜 시를 "계산"하는가</h2>
+    <p>
+      문학 텍스트, 특히 시는 오랫동안 정성적 해석의 영역으로 여겨져 왔다. 하지만 시어의
+      반복, 리듬, 어휘 선택의 패턴은 통계적으로도 유의미하게 관찰될 수 있다. 세션에서
+      제시된 문제의식은 결국 "정량적 분석이 정성적 해석을 대체하는가"가 아니라,
+      "정량적 분석이 어떤 질문을 새로 던지게 하는가"에 가까웠다.
+    </p>
+
+    <h3>세션 소개에서 유추한 접근 축</h3>
+    <ul>
+      <li>어휘·형태소 빈도 기반의 시대·시인별 문체 비교</li>
+      <li>행간 유사도 측정을 통한 이미지 계열(자연, 도시, 신체 등) 군집화</li>
+      <li>텍스트를 벡터 공간에 투영해 시인 간 거리·근접성을 시각화하는 방식</li>
+    </ul>
+
+    <blockquote>
+      숫자로 표현된 시는 "시가 아닌 것"이 되는 게 아니라, 시를 읽는 또 하나의 렌즈가 된다 —
+      이 주제를 직접 구현해보며 스스로 정리해본 관점이다.
+    </blockquote>
+
+    <h2>내가 직접 구현한 것</h2>
+    <div class="note-callout editme">
+      ✏️ 이 부분은 본인이 직접 실습·재현한 내용으로 채우는 자리입니다.
+      예: 특정 시인의 시집을 형태소 분석기(예: KoNLPy, Kiwi)로 토큰화하고,
+      TF-IDF 또는 문장 임베딩(예: KoSimCSE, ko-sbert)으로 벡터화한 뒤
+      UMAP/t-SNE로 시각화한 과정과 결과를 적어보세요.
+    </div>
+
+    <h2>구현하며 남은 질문</h2>
+    <ul>
+      <li>양적 분석의 단위(행 vs 연 vs 시 전체)를 어떻게 잡느냐에 따라 해석이 달라질 수 있는데,
+        이 경계를 어떻게 정당화할 것인가?</li>
+      <li>번역시·구술시처럼 원문의 형태가 유동적인 자료는 같은 파이프라인을 그대로 적용할 수 있는가?</li>
+    </ul>
+
+    <p>
+      다음 글에서는 Session 04 소개 내용을, 그동안 다뤄본 딥러닝 기반 OCR 경험과 엮어
+      직접 구현해본 기록을 정리한다.
+    </p>
+  </article>
+
+</div>
+</body>
+</html>
