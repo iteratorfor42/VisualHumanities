@@ -23,7 +23,7 @@ const ONTOLOGY_VERSIONS = [
   {
     version: "v5",
     date: "2026-08-19",
-    label: "placeholder 정리 (현재 최신)",
+    label: "placeholder 정리",
     changelog:
       "hasCompiler placeholder(:김바로_예시편찬자)를 실제 편찬자 개체(:iteratorfor42)로 전체 68회 " +
       "일괄 치환. Person 선언의 rdfs:comment도 placeholder 안내문에서 실제 편찬자 설명으로 정정. " +
@@ -53,7 +53,7 @@ const ONTOLOGY_VERSIONS = [
   {
     version: "v2",
     date: "2026-08-14",
-    label: "사건 중심 설계 (김바로/김현 방식)",
+    label: "사건 중심 설계 (김바로 교수님 & 김현 교수님 방식)",
     changelog:
       "AKS 인문정보학 방법론(김현 교수 정립, 김바로 교수 계승)을 따라 원문에서 시간·장소·관직 등 요소를 " +
       "추출하고 '사건'을 독립된 노드로 승격, 여러 속성을 갖도록 재설계. v1의 이항관계 중심 구조와 대비됨.",
