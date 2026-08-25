@@ -9,9 +9,33 @@
 
 const ONTOLOGY_VERSIONS = [
   {
+
+    id: "v6_with_gonghun",
+    label: "v6_with_gonghun",
+    title: "GIS·네트워크·공훈전자사료관 연동 시각화 (현재 최신)",
+    file: "v6/index.html",
+    ttl: "v5/data/v5.ttl",
+    date: "2026-08-19",
+    status: "완료 (현재 시각화 정본)",
+    summary: "v5.ttl을 브라우저에서 직접 파싱해 GIS 지도(Leaflet)와 관계망" +
+      "(vis-network) 두 가지로 시각화. 세 번째 탭에서 국가보훈부 공훈전자사료관 " +
+      "오픈API를 사용자 브라우저에서 직접 호출해 v5 인물 30명과 대조.",
+    majorChanges: [
+      "GIS 지도: hasSpaceValue 명시값(오산학교=정주)과 필자가 별도 조사한 POI 좌표를 색상으로 구분",
+      "관계망: hasPreObject/hasObject/hasPostObject 체인을 화살표 간선으로 시각화",
+      "공훈전자사료관 탭: 브라우저 fetch로 실시간 조회 시도, 실패 시 원인과 로컬 스크립트 대안을 화면에 안내",
+    ],
+    knownIssues: [
+      "공훈전자사료관 연동은 CORS 등으로 실패할 수 있음 - Claude가 사전에 실행 검증하지 못한 기능",
+      "GIS 좌표 대부분이 온톨로지 원본 데이터가 아니라 별도 조사값 (v6 화면에 범례로 명시되어 있음)",
+    ],
+  },
+];
+
+
     version: "v6",
     date: "2026-08-19",
-    label: "GIS·네트워크 시각화 (현재 최신)",
+    label: "GIS·네트워크 시각화",
     changelog:
       "[표 2] 2주차 교육과정 9일차 '시각적 인문학의 모색: GIS 및 NETWORK 시각화 기술 응용'을 참고해 " +
       "직접 구현. v5.ttl을 브라우저에서 실시간 파싱해 (1) Leaflet 기반 GIS 지도 — 조직 소재지 POI " +
