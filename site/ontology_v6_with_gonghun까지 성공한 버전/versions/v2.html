@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>독립운동-근대학교 온톨로지 v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F3EDE0; --paper-2: #EAE2D0; --ink: #2B2620; --ink-soft: #5A5348;
+    --hairline: #C9BFA8; --red: #A8342A;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Mono', monospace; }
+  header { padding: 24px 32px 16px; border-bottom: 1px solid var(--hairline); }
+  h1 { font-family:'Noto Serif KR', serif; font-weight:700; font-size:22px; margin:0 0 8px; }
+  .meta { font-size:12.5px; color:var(--ink-soft); line-height:1.7; max-width:820px; }
+  .meta b { color: var(--ink); }
+  main { padding: 20px 32px 60px; }
+  pre#ttl-output {
+    background: #fff;
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    padding: 20px 22px;
+    font-size: 12.5px;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+    max-width: 980px;
+  }
+  .tk-comment { color: #9C9384; font-style: italic; }
+  .tk-kw { color: var(--red); font-weight: 700; }
+  .tk-str { color: #6B7A3D; }
+  .tk-iri { color: #2C5C8A; }
+  .tk-pname { color: #7A4A9E; }
+  .tk-punct { color: #B8AD93; }
+  .tk-error { color: var(--red); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>독립운동-근대학교 온톨로지 v2</h1>
+  <div class="meta">
+    <b>부제</b>: 김바로/김현 방식 — 사건 중심 설계<br>
+    <b>핵심 변화</b>: AKS 인문정보학 방법론(김현 교수 정립, 김바로 교수 계승)을 따라
+    원문에서 시간·장소·관직 등 요소를 추출하고, "사건"을 독립된 노드로 승격해
+    여러 속성을 갖도록 재설계했습니다. v1의 이항관계 중심 구조와 대비됩니다.
+  </div>
+</header>
+
+<main>
+  <pre id="ttl-output">불러오는 중...</pre>
+</main>
+
+<script src="../versions-data.js"></script>
+<script src="../version-nav.js"></script>
+<script src="../ttl-highlight.js"></script>
+<script>loadTurtle('data/v2.ttl', 'ttl-output');</script>
+</body>
+</html>
