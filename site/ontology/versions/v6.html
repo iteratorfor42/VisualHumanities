@@ -80,7 +80,10 @@
     <b>[표 2] 2주차 교육과정 · 제9일 "시각적 인문학의 모색: GIS 및 NETWORK 시각화 기술 응용"</b>을 참고해
     직접 구현한 실습입니다. 아래 두 뷰 모두 <b>v5.ttl 원본 파일을 브라우저에서 직접 파싱</b>해 그린 것으로,
     하드코딩된 그래프가 아닙니다.
-    v5와 내용 차이는 없습니다. v6에서는 NETWORK 시각화를 했고, V6_with_gonghun에서는 같은 페이지에 API만 연결했습니다.
+    *주의* v6 경우 시각화가 안 될 수 있습니다.
+    이후 버전부터는 아래 두 버그를 보완했으나, 이 버전까지는 버그가 그대로 보존되어 컴퓨터 환경에 따라 시각화 가능 여부가 다릅니다.
+    -파싱 직후 buildNetwork()를 무조건 호출하던 걸 (v6_with_gonghun처럼) 관계망 탭을 처음 열 때만 만들도록 지연 초기화 적용
+    -지도 패널과 관계망 패널이 id="side"로 중복돼 있던 것을 관계망 쪽만 id="side2"로 분리
   </div>
 </header>
 
@@ -103,7 +106,7 @@
 <div class="tab-body" id="tab-network">
   <div id="network"></div>
   <div id="side-net">
-    <div id="side" style="border:none;"></div>
+    <div id="side2" style="border:none;"></div>
   </div>
 </div>
 
@@ -149,6 +152,7 @@ var TYPE_COLOR = { Person: "#A8342A", Group: "#2C3E66", Event: "#B8863B", Term: 
 // ============================================================
 var triples = [];
 var byType = {};      // localName -> "Person" | "Group" | ...
+var dataReady = false;
 var labelOf = {};      // localName -> rdfs:label 있으면 그 값, 없으면 localName
 var eventsOf = {};     // eventLocalName -> {object, pre, post, type, time, bibo, comment}
 
@@ -164,7 +168,14 @@ fetch("data/v5.ttl")
       "v5.ttl 파싱 완료 — 트리플 " + triples.length + "개 · 개체 " + Object.keys(byType).length +
       "개 · 사건(Event) " + Object.keys(eventsOf).length + "개";
     buildMap();
-    buildNetwork();
+    // 관계망은 여기서 만들지 않는다 — "관계망" 탭이 아직 display:none 상태라
+    // vis-network가 0×0 크기로 초기화되어 버리기 때문. 탭을 처음 열 때 만든다(아래 탭 전환 로직).
+    dataReady = true;
+    var networkTabActive = document.getElementById("tab-network").classList.contains("active");
+    if (networkTabActive && !network) {
+      buildNetwork();
+      network.once("stabilizationIterationsDone", function () { network.fit(); });
+    }
   })
   .catch(function (err) {
     document.getElementById("status").textContent =
@@ -309,8 +320,12 @@ function buildNetwork() {
 
   netNodes = new vis.DataSet(nodes);
   netEdges = new vis.DataSet(edges);
+  // CSS grid의 auto 행 높이 계산에 기대지 않고, 실제 픽셀 높이를 강제로 지정한다.
+  // (탭이 막 보이기 시작한 시점이라 부모 컨테이너 높이는 이미 확정돼 있음)
+  var netContainer = document.getElementById("network");
+  netContainer.style.height = document.getElementById("tab-network").clientHeight + "px";
   network = new vis.Network(
-    document.getElementById("network"),
+    netContainer,
     { nodes: netNodes, edges: netEdges },
     {
       nodes: { font: { size: 12 } },
@@ -319,6 +334,7 @@ function buildNetwork() {
       interaction: { hover: true, tooltipDelay: 120 },
     }
   );
+  network.once("stabilizationIterationsDone", function () { network.fit(); });
 
   network.on("click", function (params) {
     if (params.nodes.length !== 1) return;
@@ -345,7 +361,7 @@ function showNodeDetail(name) {
       (e.bibo ? "<br><span style=\"color:var(--ink-soft);font-size:10.5px;\">출처: " + e.bibo + "</span>" : "") +
       "</div>";
   });
-  document.querySelectorAll("#side").forEach(function (el) { el.innerHTML = html; });
+  document.getElementById("side2").innerHTML = html;
 }
 
 // ============================================================
@@ -358,7 +374,21 @@ document.querySelectorAll(".tab-btn").forEach(function (btn) {
     btn.classList.add("active");
     document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
     if (btn.dataset.tab === "map" && map) setTimeout(function () { map.invalidateSize(); }, 50);
-    if (btn.dataset.tab === "network" && network) setTimeout(function () { network.redraw(); }, 50);
+    if (btn.dataset.tab === "network") {
+      if (!dataReady) return; // 아직 v5.ttl 파싱이 끝나지 않았으면 아무것도 하지 않음
+      if (!network) {
+        setTimeout(function () {
+          buildNetwork();
+          network.once("stabilizationIterationsDone", function () { network.fit(); });
+        }, 50);
+      } else {
+        setTimeout(function () {
+          network.setSize("100%", "100%");
+          network.redraw();
+          network.fit();
+        }, 50);
+      }
+    }
   });
 });
 </script>
