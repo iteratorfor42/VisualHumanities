@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>온톨로지 프로젝트 — 관련 링크와 시행착오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css" />
+
+<style>
+  /* versions.html과 동일한 이유로 중앙 정렬 보정 */
+  .masthead {
+    text-align: center;
+    padding: 60px 20px 40px;
+  }
+  .masthead-inner {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  .post-page {
+    max-width: 820px;
+    margin: 0 auto 60px;
+    padding: 0 20px;
+  }
+  .colophon {
+    text-align: center;
+    padding: 30px 20px;
+  }
+  .post-back {
+    display: inline-block;
+    margin-bottom: 24px;
+  }
+  .note-links {
+    margin: 4px 0 24px;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .note-links a {
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+  <header class="masthead">
+    <div class="masthead-inner">
+      <p class="eyebrow">온톨로지 프로젝트</p>
+      <h2>관련 링크와 시행착오</h2>
+      <p class="lede">
+        버전별 변경 이력(versions.html)에는 다 담기 어려운, 구조적인 고민이나
+        시행착오, 참고한 방법론·논문 등을 별도로 정리해두는 페이지입니다.
+      </p>
+    </div>
+  </header>
+
+  <div class="post-page">
+    <a class="post-back" href="versions.html">&larr; 버전별 기록으로 돌아가기</a>
+    <p class="note-links">
+      <a href="../index.html">🏠 대문(아카이브)으로</a>
+    </p>
+
+    <div id="note-list"></div>
+  </div>
+
+  <footer class="colophon">
+    <p>이 페이지의 글은 온톨로지 프로젝트를 진행하며 직접 정리한 개인 기록입니다.</p>
+  </footer>
+
+<script src="notes-data.js"></script>
+<script>
+  const wrap = document.getElementById("note-list");
+
+  ONTOLOGY_NOTES.forEach((note) => {
+    const card = document.createElement("div");
+    card.className = "item";
+    card.style.flexDirection = "column";
+    card.style.alignItems = "flex-start";
+    card.style.padding = "18px 20px";
+    card.style.marginBottom = "14px";
+
+    const topRow = document.createElement("div");
+    topRow.style.display = "flex";
+    topRow.style.alignItems = "center";
+    topRow.style.gap = "10px";
+    topRow.style.flexWrap = "wrap";
+
+    const a = document.createElement("a");
+    a.href = note.url;
+    a.style.fontSize = "1.1rem";
+    a.style.fontFamily = "var(--font-display)";
+    a.style.fontWeight = "700";
+    a.textContent = note.title;
+    topRow.appendChild(a);
+
+    const date = document.createElement("span");
+    date.className = "note";
+    date.textContent = note.date;
+    topRow.appendChild(date);
+
+    card.appendChild(topRow);
+
+    const summary = document.createElement("p");
+    summary.style.margin = "10px 0 0";
+    summary.style.fontSize = "0.92rem";
+    summary.style.color = "var(--ink-soft)";
+    summary.style.lineHeight = "1.6";
+    summary.textContent = note.summary;
+    card.appendChild(summary);
+
+    const tagWrap = document.createElement("div");
+    tagWrap.className = "post-tags";
+    tagWrap.style.marginTop = "10px";
+    note.tags.forEach((t) => {
+      const span = document.createElement("span");
+      span.textContent = "#" + t;
+      tagWrap.appendChild(span);
+    });
+    card.appendChild(tagWrap);
+
+    wrap.appendChild(card);
+  });
+</script>
+</body>
+</html>
