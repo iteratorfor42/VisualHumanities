@@ -14,7 +14,7 @@ v6_gonghun부터는 시각화 방식을 수정하였다.
 | :--- | :--- | :--- |
 | **데이터 출처** | JS 파일 안에 `nodesData`/`linksData`로 직접 하드코딩 | `.ttl` 파일을 브라우저에서 `fetch`로 읽어와 실시간 파싱 |
 | **시각화 라이브러리** | D3.js (Force-directed graph 직접 구현) | vis-network (관계망) + Leaflet (GIS 지도) |
-| **온톨로지 구조** | `School`/`Organization`/`Event`/`Person`/`Place` 5개 타입이 직접 관계로 연결<br>*(예: 이승훈 —설립→ 오산학교)* | **김바로 박사논문 방식의 "단일 사건 스키마"**<br>모든 관계가 `Event` 노드를 매개로 `hasObject`/`hasPreObject`/`hasPostObject`로 표현됨 |
+| **온톨로지 구조** | `School`/`Organization`/`Event`/`Person`/`Place` 5개 타입이 직접 관계로 연결<br>*(예: 이승훈 —설립→ 오산학교)* | **김바로 교수님 박사논문 방식의 "단일 사건 스키마"**<br>모든 관계가 `Event` 노드를 매개로 `hasObject`/`hasPreObject`/`hasPostObject`로 표현됨 |
 | **화면 구성** | 그래프 1개 + 필터 버튼 + 검색창 + 상세 패널 | 탭 3개 구조 (GIS 지도 / 관계망 / 공훈전자사료관 연동) |
 | **좌표(장소) 정보** | 없음 (`Place`는 그래프 노드로만 존재) | Leaflet 지도에 실제 좌표로 표시 (온톨로지 명시값 1건 + 별도 조사값) |
 | **외부 연동** | 없음 | 국가보훈부 공훈전자사료관 오픈API 대조 |
@@ -33,11 +33,11 @@ v6/v8의 event-centric 데이터를 v1 스타일로 그리는 것도 기술적�
     두 개체 간의 **이항관계(binary relation)**를 전제로 만들어졌다.
 
 * **v6~v8의 방식 (사건 중심 스키마):** `.ttl` 파일의 관계는 전부 `Event`를 매개로 한다.
-* :* `"최린 임명"` 이벤트가 `hasPreObject=천도교`, `hasObject=최린`, `hasPostObject=독립선언서초안작성자`를 가진다.
+  :* `"최린 임명"` 이벤트가 `hasPreObject=천도교`, `hasObject=최린`, `hasPostObject=독립선언서초안작성자`를 가진다.
  (3개 이상의 개체가 하나의 사건으로 묶이며, 이렇게 사건이 복잡해지니 시각화도 복잡해지는 것)
 
 ### 해결 방안 (현재 구현 상태)
 v6에서는 이러한 차이를 극복하기 위해 **"Event를 두 개의 간선으로 접어서(pre → object, object → post) v1과 비슷한 이항관계 그래프처럼 보이게"** 변환하는 로직(`ttl-parser.js` + `buildNetwork()`)을 구축.
 
-**현재 v6/v8의 관계망 탭은 사실상 "v1 스타일로 재현한 v8 데이터"**이며,
+현재 v6/v8의 관계망 탭은 사실상 "v1 스타일로 재현한 v8 데이터"이며,
  단지 그래픽 라이브러리만 D3에서 `vis-network`로 변경된 형태이다.
