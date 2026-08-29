@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>디지털인문학 학습 내역 — DH 학습 기록</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+
+<style>
+  /* my-posts.html과 동일한 이유로 .post-page 폭/중앙정렬을 여기서도 보정 */
+  .post-page {
+    max-width: 880px;
+    margin: 0 auto 60px;
+    padding: 0 20px;
+  }
+  .post-back {
+    display: inline-block;
+    margin-bottom: 24px;
+  }
+
+  /* ---- 학습 기록 카드 하나(entry) ---- */
+  .study-entry {
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 22px 24px 26px;
+    margin-bottom: 28px;
+  }
+
+  .study-entry-date {
+    margin: 0 0 6px;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+
+  .study-entry h2 {
+    margin: 0 0 16px;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    line-height: 1.4;
+  }
+
+  /* 이미지는 여러 장 넣을 수 있도록 grid로 구성 (1장만 넣어도 자연스럽게 보임) */
+  .study-entry-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin: 0 0 16px;
+  }
+
+  .study-entry-images figure {
+    margin: 0;
+  }
+
+  .study-entry-images img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid var(--rule);
+  }
+
+  .study-entry-images figcaption {
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  .study-entry-thought {
+    font-size: 0.98rem;
+    line-height: 1.8;
+  }
+
+  .study-entry-thought p {
+    margin: 0 0 12px;
+  }
+  .study-entry-thought p:last-child {
+    margin-bottom: 0;
+  }
+
+  .study-entry-tags {
+    margin-top: 16px;
+  }
+
+  /* 새 항목을 추가할 위치를 표시하는 안내 카드 */
+  .study-entry-placeholder {
+    border: 1.5px dashed var(--rule);
+    border-radius: 6px;
+    padding: 22px 24px;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    line-height: 1.7;
+    background: transparent;
+  }
+  .study-entry-placeholder code {
+    background: var(--paper);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+
+  <header class="masthead">
+    <div class="masthead-inner">
+      <p class="eyebrow">디지털인문학 학습 기록</p>
+      <h1>디지털인문학 학습 내역</h1>
+      <p class="lede">
+        독학 과정에서 접한 내용 중 기록해두고 싶은 장면을
+        이미지와 함께, 그때그때 든 생각을 짧게 붙여 남겨두는 페이지입니다.
+        구현 기록은 아래 '여름학교 실습 글'과는 별개로, 여기는 스냅샷 + 메모에 가깝습니다.
+      </p>
+    </div>
+  </header>
+
+  <div class="post-page">
+    <a class="post-back" href="index.html">&larr; 대문(아카이브)으로 돌아가기</a>
+    <p style="margin: 4px 0 24px; display:flex; gap:18px; flex-wrap:wrap;">
+      <a href="my-posts.html" style="font-weight:600; color: var(--ink, #2b2620); text-decoration: none;">✍️ 여름학교 실습 글 보러가기 &rarr;</a>
+      <a href="ontology/versions.html" style="font-weight:600; color: var(--ink, #2b2620); text-decoration: none;">🕸️ 온톨로지 프로젝트 보러가기 &rarr;</a>
+    </p>
+
+    <div id="study-entries">
+
+      <!--
+        ============================================================
+        새 학습 기록을 추가하는 방법
+        ============================================================
+        1) 아래 <div class="study-entry">...</div> 블록 하나를 통째로 복사한다.
+        2) 맨 위(가장 최근 기록이 위로 오도록)에 붙여넣는다.
+        3) 다음 부분만 내용에 맞게 고친다.
+           - study-entry-date : 날짜/한 줄 태그
+           - <h2> : 제목
+           - <img src="..."> : 이미지 경로 (예: images/2026-08-20-note1.jpg)
+             * 이미지 파일은 이 폴더 기준 images/ 폴더에 넣고 경로를 맞추면 됩니다.
+             * 이미지가 여러 장이면 <figure> 블록을 그만큼 복사해서 나열하면 됩니다.
+             * 이미지가 없는 기록이면 .study-entry-images 블록 전체를 지워도 됩니다.
+           - figcaption : 이미지 설명 (없으면 지워도 됨)
+           - .study-entry-thought 안의 <p> : 그때 든 생각, 메모
+        ============================================================
+      -->
+
+      <!-- 예시 항목 1: 이미지 + 생각 -->
+      <article class="study-entry">
+        <p class="study-entry-date">2026-08- · 예시 태그</p>
+        <h2>제목</h2>
+
+        <div class="study-entry-images">
+          <figure>
+            <img src="images/example-1.jpg" alt="이미지 설명 (예: 강의 슬라이드 캡처)" />
+            <figcaption>이미지에 대한 짧은 설명 (선택)</figcaption>
+          </figure>
+        </div>
+
+        <div class="study-entry-thought">
+          <p>
+            이 부분에 그때 느낀 점, 궁금했던 점, 나중에 더 찾아볼 것 등을
+            자유롭게 적습니다. 문단은 필요한 만큼 &lt;p&gt;를 추가해서 나누기.
+          </p>
+          <p>
+            생각이 이어지면 문단을 하나 더 추가하기.
+          </p>
+        </div>
+      </article>
+
+      <!-- 예시 항목 2: 이미지 여러 장 -->
+      <article class="study-entry">
+        <p class="study-entry-date">2026-08-~ · 예시 태그</p>
+        <h2>이미지가 여러 장일 때 예시</h2>
+
+        <div class="study-entry-images">
+          <figure>
+            <img src="images/example-2a.jpg" alt="이미지 설명 1" />
+            <figcaption>설명 1</figcaption>
+          </figure>
+          <figure>
+            <img src="images/example-2b.jpg" alt="이미지 설명 2" />
+            <figcaption>설명 2</figcaption>
+          </figure>
+        </div>
+
+        <div class="study-entry-thought">
+          <p>이미지가 여러 장이면 위처럼 figure 블록을 나란히 추가하면 자동으로 격자로 배치됨.</p>
+        </div>
+      </article>
+
+      <!-- 예시 항목 3: 이미지 없이 생각만 -->
+      <article class="study-entry">
+        <p class="study-entry-date">2026-08-18 · 예시 태그</p>
+        <h2>이미지 없이 메모만 남길 때 예시</h2>
+
+        <div class="study-entry-thought">
+          <p>
+            사진을 붙이기 애매한 날은 이렇게 .study-entry-images 블록을 통째로
+            빼고 생각만 적어도 됨.
+          </p>
+        </div>
+      </article>
+
+      <!--  새 항목을 채워나가면 됩니다. -->
+      <div class="study-entry-placeholder">
+        👆 위 세 항목은 형식을 보여주기 위한 예시이며, 실제 기록을 채우기 시작하면
+        이 안내 블록과 예시 항목(<code>study-entry</code> 3개)은 지우기. 
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="colophon">
+    <p>이 페이지는 학습 과정에서 남긴 이미지와 개인적인 메모를 정리한 기록입니다.</p>
+  </footer>
+
+</body>
+</html>
