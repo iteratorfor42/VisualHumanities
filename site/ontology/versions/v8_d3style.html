@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>일제강점기 독립운동-근대학교 온톨로지 (v1 스타일 · v8 데이터)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  :root {
+    --paper: #F3EDE0;
+    --paper-2: #EAE2D0;
+    --ink: #2B2620;
+    --ink-soft: #5A5348;
+    --hairline: #C9BFA8;
+    --red: #A8342A;
+    --school: #2C3E66;
+    --org: #7A6A35;
+    --event: #3D6B5C;
+    --place: #8B857A;
+    --collab: #8C2F26;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  header {
+    padding: 28px 32px 18px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 700;
+    font-size: 26px;
+    margin: 0 0 6px;
+    letter-spacing: -0.3px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .stamp {
+    display: inline-block;
+    border: 1.5px solid var(--red);
+    color: var(--red);
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 2px 8px;
+    margin-right: 8px;
+    letter-spacing: 1px;
+    transform: rotate(-2deg);
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 0;
+  }
+  #graph-wrap {
+    position: relative;
+    border-right: 1px solid var(--hairline);
+  }
+  #graph { display: block; width: 100%; }
+  .controls {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: calc(100% - 28px);
+  }
+  .filter-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 5px 10px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    color: var(--ink-soft);
+    cursor: pointer;
+    border-radius: 3px;
+    user-select: none;
+  }
+  .filter-btn.active { color: #fff; border-color: transparent; }
+  .filter-btn[data-type="School"].active { background: var(--school); }
+  .filter-btn[data-type="Organization"].active { background: var(--org); }
+  .filter-btn[data-type="Event"].active { background: var(--event); }
+  .filter-btn[data-type="Person"].active { background: var(--red); }
+  .filter-btn[data-type="Place"].active { background: var(--place); }
+  #search {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 6px 10px;
+    border: 1px solid var(--hairline);
+    background: #fff;
+    color: var(--ink);
+    width: 160px;
+    border-radius: 3px;
+  }
+  #search::placeholder { color: #A39B8B; }
+  .node circle { cursor: pointer; stroke-width: 1px; }
+  .node text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 11px;
+    fill: var(--ink);
+    pointer-events: none;
+  }
+  .node.dim { opacity: 0.12; }
+  .link { stroke: #B8AD93; stroke-width: 1px; opacity: 0.55; }
+  .link.dim { opacity: 0.05; }
+  .link-label {
+    font-size: 9px;
+    fill: var(--ink-soft);
+    pointer-events: none;
+  }
+  #panel {
+    padding: 20px 18px;
+    overflow-y: auto;
+    max-height: calc(100vh - 90px);
+  }
+  #panel h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 17px;
+    margin: 0 0 4px;
+  }
+  #panel .type-tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  #panel .desc {
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    border-top: 1px dashed var(--hairline);
+    padding-top: 10px;
+    margin-top: 8px;
+  }
+  #panel .rel-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 16px 0 6px;
+    color: var(--red);
+  }
+  #panel .rel-item {
+    font-size: 12px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--paper-2);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  #panel .rel-item:hover { color: var(--red); }
+  #panel .rel-verb { color: #A39B8B; font-size: 10px; white-space: nowrap; }
+  #panel .empty {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.8;
+  }
+  .legend-key {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+  }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  #legend { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--hairline); }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    #panel { max-height: 300px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div><span class="stamp">FACT-CHECKED</span></div>
+  <h1>일제강점기 독립운동 &amp; 근대학교 온톨로지 <span style="font-size:15px;color:var(--ink-soft);">— v1 스타일 재현 · v8.ttl 데이터</span></h1>
+  <div class="subtitle">v1의 D3.js 그래프·필터·검색·상세패널 UI를 그대로 두고, 데이터만 <b>v8.ttl 원본을 브라우저에서 실시간 파싱</b>한 값으로 교체했습니다 (하드코딩 없음). 온톨로지가 Event 중심 스키마라 각 사건을 이항관계 2개(이전상태→대상, 대상→이후상태)로 접어 표시합니다.<br>노드를 드래그·클릭해 탐색하세요. 상단 버튼으로 유형 필터, 우측 상단 검색창으로 이름 검색이 가능합니다.</div>
+</header>
+
+<div class="layout">
+  <div id="graph-wrap">
+    <div class="controls" id="filters"></div>
+    <input id="search" type="text" placeholder="이름 검색...">
+    <svg id="graph"></svg>
+  </div>
+  <div id="panel">
+    <div class="empty">노드를 클릭하면 상세 정보와 연결 관계가 여기에 표시됩니다.</div>
+    <div id="legend">
+      <div class="legend-key"><span class="legend-dot" style="background:#2C3E66"></span>조직 (Group)</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#A8342A"></span>인물 (Person)</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#8C2F26;border:2px solid #fff;box-shadow:0 0 0 1px #8C2F26"></span>인물 (온톨로지에 :전향 이벤트가 명시된 경우)</div>
+    </div>
+  </div>
+</div>
+
+<script src="../ttl-parser.js"></script>
+<script>
+var nodesData = [];
+var linksData = [];
+
+var status = document.createElement("div");
+status.style.cssText = "position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--ink-soft);z-index:5;";
+status.textContent = "v8.ttl 불러오는 중...";
+document.getElementById("graph-wrap").appendChild(status);
+
+fetch("data/v8.ttl")
+  .then(function (res) {
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return res.text();
+  })
+  .then(function (text) {
+    var triples = parseTurtle(text);
+    buildV1StyleData(triples);
+    status.textContent = "v8.ttl 파싱 완료 — 노드 " + nodesData.length + "개 · 간선 " + linksData.length + "개";
+    initGraph();
+  })
+  .catch(function (err) {
+    status.textContent = "⚠ v8.ttl을 불러오지 못했습니다 (" + err.message + "). 정적 서버로 열었는지 확인하세요.";
+  });
+
+// ============================================================
+// v8.ttl(Event 중심 스키마)을 v1.html의 nodesData/linksData 형태
+// (id/type/desc/collab, [source,target,label])로 접어서 변환한다.
+// ============================================================
+function buildV1StyleData(triples) {
+  var byType = {}, labelOf = {}, eventsOf = {};
+  triples.forEach(function (t) {
+    if (t.p === "type") byType[t.s] = t.o.value;
+    if (t.p === "label") labelOf[t.s] = t.o.value;
+    if (t.s.match(/^\d{8}/) || byType[t.s] === "Event") eventsOf[t.s] = eventsOf[t.s] || {};
+  });
+  triples.forEach(function (t) {
+    if (!eventsOf[t.s]) return;
+    var e = eventsOf[t.s];
+    if (t.p === "hasObject") e.object = t.o.value;
+    if (t.p === "hasPreObject") e.pre = t.o.value;
+    if (t.p === "hasPostObject") e.post = t.o.value;
+    if (t.p === "hasEventType") e.type = t.o.value;
+    if (t.p === "hasTimeValue") e.time = t.o.value;
+  });
+  function label(name) { return labelOf[name] || name; }
+
+  // :전향 이벤트가 있는 인물만 v1의 collab(친일 전향) 표시를 부여한다.
+  // (v1은 최린·정춘수·박희도 3인을 손으로 표시했지만, v8 온톨로지에는
+  //  현재 최린만 :전향 이벤트가 명시돼 있어 이 그래프는 그 실제 데이터를 그대로 반영한다.)
+  var collabPersons = {};
+  Object.keys(eventsOf).forEach(function (eid) {
+    var e = eventsOf[eid];
+    if (e.type === "전향" && e.object) collabPersons[e.object] = true;
+  });
+
+  // 인물/조직별 관련 이벤트 시간 범위를 모아 v1처럼 한 줄 설명(desc)을 자동 생성
+  var eventsByEntity = {};
+  Object.keys(eventsOf).forEach(function (eid) {
+    var e = eventsOf[eid];
+    [e.pre, e.object, e.post].forEach(function (n) {
+      if (!n) return;
+      eventsByEntity[n] = eventsByEntity[n] || [];
+      eventsByEntity[n].push(e);
+    });
+  });
+  function autoDesc(name) {
+    var evs = (eventsByEntity[name] || []).filter(function (e) { return e.time; });
+    if (!evs.length) return "온톨로지에 시간정보가 확인된 관련 사건이 아직 없음.";
+    var times = evs.map(function (e) { return e.time.slice(0, 4); }).sort();
+    var span = times[0] === times[times.length - 1] ? times[0] + "년" : times[0] + "~" + times[times.length - 1] + "년";
+    return "관련 사건 " + (eventsByEntity[name] || []).length + "건 (" + span + ").";
+  }
+
+  var nodeIds = {};
+  nodesData = [];
+  Object.keys(byType).forEach(function (name) {
+    var type = byType[name];
+    if (type !== "Person" && type !== "Group") return; // Class/ObjectProperty 등 스키마 개체 제외
+    if (name === "iteratorfor42") return; // 편찬자 placeholder 제외 (실존 역사 인물 아님)
+    nodeIds[name] = true;
+    nodesData.push({
+      id: label(name),
+      _key: name,
+      type: type === "Group" ? "Organization" : "Person", // v1 색상 팔레트 재사용 (Organization=조직 색상)
+      collab: !!collabPersons[name],
+      desc: autoDesc(name),
+    });
+  });
+
+  var nodeByKey = {};
+  nodesData.forEach(function (n) { nodeByKey[n._key] = n; });
+
+  linksData = [];
+  Object.keys(eventsOf).forEach(function (eid) {
+    var e = eventsOf[eid];
+    var t = e.type ? label(e.type) : "";
+    if (e.pre && e.object && nodeByKey[e.pre] && nodeByKey[e.object]) {
+      linksData.push([label(e.pre), label(e.object), t]);
+    }
+    if (e.object && e.post && nodeByKey[e.object] && nodeByKey[e.post]) {
+      linksData.push([label(e.object), label(e.post), t]);
+    }
+  });
+}
+
+// ============================================================
+// 아래는 v1.html의 D3 force-graph 로직을 그대로 사용 (데이터만 위에서 동적으로 채움)
+// ============================================================
+const colorMap = { School:"#2C3E66", Organization:"#2C3E66", Event:"#3D6B5C", Place:"#8B857A", Person:"#A8342A" };
+function nodeColor(d){ return d.collab ? "#8C2F26" : colorMap[d.type]; }
+function nodeRadius(d){ return d.type==="Person" ? 8 : (d.type==="Place" ? 5 : 10); }
+
+const wrap = document.getElementById('graph-wrap');
+let W = wrap.clientWidth, H = window.innerHeight - 92;
+const svg = d3.select("#graph").attr("width", W).attr("height", H);
+const g = svg.append("g");
+
+svg.call(d3.zoom().scaleExtent([0.3,3]).on("zoom", (ev) => g.attr("transform", ev.transform)));
+
+let nodeById, links, sim, link, node;
+const typeLabels = {Organization:"조직", Person:"인물"};
+
+function initGraph() {
+  nodeById = new Map(nodesData.map(d => [d.id, d]));
+  links = linksData.map(([s,t,l]) => ({source:s, target:t, label:l}));
+
+  sim = d3.forceSimulation(nodesData)
+    .force("link", d3.forceLink(links).id(d => d.id).distance(75).strength(0.5))
+    .force("charge", d3.forceManyBody().strength(-190))
+    .force("center", d3.forceCenter(W/2, H/2))
+    .force("collide", d3.forceCollide().radius(28));
+
+  link = g.append("g").selectAll("line").data(links).join("line").attr("class","link");
+
+  node = g.append("g").selectAll("g").data(nodesData).join("g")
+    .attr("class","node")
+    .call(d3.drag()
+      .on("start", (ev,d)=>{ if(!ev.active) sim.alphaTarget(0.25).restart(); d.fx=d.x; d.fy=d.y; })
+      .on("drag", (ev,d)=>{ d.fx=ev.x; d.fy=ev.y; })
+      .on("end", (ev,d)=>{ if(!ev.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }));
+
+  node.append("circle")
+    .attr("r", nodeRadius)
+    .attr("fill", nodeColor)
+    .attr("stroke", d => d.collab ? "#fff" : "none")
+    .attr("stroke-width", d => d.collab ? 2 : 0);
+
+  node.append("text")
+    .text(d => d.id)
+    .attr("x", d => nodeRadius(d) + 4)
+    .attr("y", 4);
+
+  node.on("click", (ev,d) => showPanel(d));
+
+  sim.on("tick", () => {
+    link.attr("x1", d=>d.source.x).attr("y1", d=>d.source.y)
+        .attr("x2", d=>d.target.x).attr("y2", d=>d.target.y);
+    node.attr("transform", d => `translate(${d.x},${d.y})`);
+  });
+
+  const filterState = new Set(Object.keys(typeLabels));
+  const filterBar = document.getElementById('filters');
+  filterBar.innerHTML = "";
+  Object.entries(typeLabels).forEach(([type,label]) => {
+    const btn = document.createElement('div');
+    btn.className = 'filter-btn active';
+    btn.dataset.type = type;
+    btn.textContent = label;
+    btn.onclick = () => {
+      if (filterState.has(type)) { filterState.delete(type); btn.classList.remove('active'); }
+      else { filterState.add(type); btn.classList.add('active'); }
+      applyFilter(document.getElementById('search').value);
+    };
+    filterBar.appendChild(btn);
+  });
+
+  function applyFilter(query) {
+    const q = (query||"").trim();
+    node.classed("dim", d => !filterState.has(d.type) || (q && !d.id.includes(q)));
+    link.classed("dim", l => {
+      const s = nodeById.get(l.source.id||l.source), t = nodeById.get(l.target.id||l.target);
+      const okType = filterState.has(s.type) && filterState.has(t.type);
+      const okQuery = !q || s.id.includes(q) || t.id.includes(q);
+      return !(okType && okQuery);
+    });
+  }
+  document.getElementById('search').addEventListener('input', (e) => applyFilter(e.target.value));
+
+  window.addEventListener('resize', () => {
+    W = wrap.clientWidth; H = window.innerHeight - 92;
+    svg.attr("width", W).attr("height", H);
+    sim.force("center", d3.forceCenter(W/2, H/2));
+    sim.alpha(0.3).restart();
+  });
+}
+
+function showPanel(d) {
+  const panel = document.getElementById('panel');
+  const related = links.filter(l => (l.source.id||l.source)===d.id || (l.target.id||l.target)===d.id)
+    .map(l => {
+      const sId = l.source.id||l.source, tId = l.target.id||l.target;
+      const other = sId===d.id ? tId : sId;
+      const dir = sId===d.id ? "→" : "←";
+      return {other, label:l.label, dir};
+    });
+  panel.innerHTML = `
+    <h2>${d.id}</h2>
+    <span class="type-tag" style="background:${nodeColor(d)}">${typeLabels[d.type]}${d.collab?' · :전향 이벤트 있음':''}</span>
+    <div class="desc">${d.desc}</div>
+    <div class="rel-title">연결 관계 (${related.length})</div>
+    ${related.map(r => `<div class="rel-item" data-id="${r.other}"><span>${r.dir} ${r.other}</span><span class="rel-verb">${r.label}</span></div>`).join('')}
+    <div id="legend">
+      <div class="legend-key"><span class="legend-dot" style="background:#2C3E66"></span>조직 (Group)</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#A8342A"></span>인물 (Person)</div>
+      <div class="legend-key"><span class="legend-dot" style="background:#8C2F26;border:2px solid #fff;box-shadow:0 0 0 1px #8C2F26"></span>인물 (:전향 이벤트 명시됨)</div>
+    </div>
+  `;
+  panel.querySelectorAll('.rel-item').forEach(el => {
+    el.onclick = () => { const nd = nodeById.get(el.dataset.id); if (nd) showPanel(nd); };
+  });
+}
+</script>
+<script src="../versions-data.js"></script>
+<script src="../version-nav.js"></script>
+</body>
+</html>

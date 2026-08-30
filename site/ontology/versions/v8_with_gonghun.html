@@ -68,6 +68,25 @@
   }
   .legend .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; }
 
+  /* v1.html에서 이식한 관계망 필터/검색 UI */
+  .net-controls {
+    position:absolute; top:14px; left:14px; z-index:500;
+    display:flex; flex-wrap:wrap; gap:6px; max-width:calc(100% - 220px);
+  }
+  .net-filter-btn {
+    font-family:'IBM Plex Mono', monospace; font-size:11px; padding:5px 10px;
+    background:#fff; border:1px solid var(--hairline); color:var(--ink-soft);
+    cursor:pointer; border-radius:3px; user-select:none;
+  }
+  .net-filter-btn.active { color:#fff; border-color:transparent; }
+  .net-filter-btn[data-type="Group"].active { background:#2C3E66; }
+  .net-filter-btn[data-type="Person"].active { background:#A8342A; }
+  #net-search {
+    position:absolute; top:14px; right:14px; z-index:500;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; padding:6px 10px;
+    border:1px solid var(--hairline); background:#fff; color:var(--ink); width:160px; border-radius:3px;
+  }
+
   .status { padding: 6px 28px; font-size:11.5px; color: var(--ink-soft); }
 
   /* --- 공훈전자사료관 탭 전용 --- */
@@ -121,7 +140,15 @@
 </div>
 
 <div class="tab-body" id="tab-network">
-  <div id="network"></div>
+  <div style="position:relative;">
+    <div id="network"></div>
+    <div class="net-controls" id="net-filters"></div>
+    <input id="net-search" type="text" placeholder="이름 검색...">
+    <div class="legend" id="net-legend" style="top:0; right:0;">
+      <span class="dot" style="background:#2C3E66"></span>조직 (Group)<br>
+      <span class="dot" style="background:#A8342A"></span>인물 (Person)
+    </div>
+  </div>
   <div id="side-net"><div id="side2" style="border:none;"></div></div>
 </div>
 
@@ -288,18 +315,18 @@ function buildNetwork() {
     nodeIds[name] = true;
     nodes.push({ id: name, label: label(name), color: TYPE_COLOR[type] || "#8B857A",
       shape: type === "Group" ? "box" : (type === "Person" ? "dot" : "diamond"),
-      font: { color: "#2B2620", size: 12 } });
+      font: { color: "#2B2620", size: 12 }, entityType: type });
   }
   Object.keys(eventsOf).forEach(function (eid) {
     var e = eventsOf[eid];
     if (e.pre && e.object) {
       ensureNode(e.pre); ensureNode(e.object);
-      edges.push({ from: e.pre, to: e.object, arrows: "to", label: e.type ? label(e.type) : "",
+      edges.push({ id: "e" + edges.length, from: e.pre, to: e.object, arrows: "to", label: e.type ? label(e.type) : "",
         font: { size: 9, align: "middle" }, color: { color: "#B8AD93" } });
     }
     if (e.object && e.post) {
       ensureNode(e.object); ensureNode(e.post);
-      edges.push({ from: e.object, to: e.post, arrows: "to", label: e.type ? label(e.type) : "",
+      edges.push({ id: "e" + edges.length, from: e.object, to: e.post, arrows: "to", label: e.type ? label(e.type) : "",
         font: { size: 9, align: "middle" }, color: { color: "#8C6A3F" } });
     }
     if (!e.pre && !e.post && e.object) ensureNode(e.object);
@@ -315,6 +342,45 @@ function buildNetwork() {
   });
   network.once("stabilizationIterationsDone", function () { network.fit(); });
   network.on("click", function (params) { if (params.nodes.length === 1) showNodeDetail(params.nodes[0]); });
+  setupNetworkFilter(nodes, edges);
+}
+
+// v1.html에서 이식한 유형 필터 버튼 + 이름 검색.
+// vis-network는 D3처럼 opacity로 "흐리게" 처리하는 대신, hidden 속성으로
+// 아예 표시/비표시를 전환한다 (DataSet.update로 일괄 반영).
+function setupNetworkFilter(nodes, edges) {
+  var netTypeLabels = { Group: "조직", Person: "인물" };
+  var filterState = new Set(Object.keys(netTypeLabels));
+  var filterBar = document.getElementById("net-filters");
+  filterBar.innerHTML = "";
+  Object.keys(netTypeLabels).forEach(function (type) {
+    var btn = document.createElement("div");
+    btn.className = "net-filter-btn active";
+    btn.dataset.type = type;
+    btn.textContent = netTypeLabels[type];
+    btn.onclick = function () {
+      if (filterState.has(type)) { filterState.delete(type); btn.classList.remove("active"); }
+      else { filterState.add(type); btn.classList.add("active"); }
+      applyNetFilter(document.getElementById("net-search").value);
+    };
+    filterBar.appendChild(btn);
+  });
+
+  function applyNetFilter(query) {
+    var q = (query || "").trim();
+    var visibleIds = {};
+    nodes.forEach(function (n) {
+      var okType = filterState.has(n.entityType);
+      var okQuery = !q || n.label.indexOf(q) >= 0;
+      var visible = okType && okQuery;
+      if (visible) visibleIds[n.id] = true;
+      netNodes.update({ id: n.id, hidden: !visible });
+    });
+    edges.forEach(function (e) {
+      netEdges.update({ id: e.id, hidden: !(visibleIds[e.from] && visibleIds[e.to]) });
+    });
+  }
+  document.getElementById("net-search").addEventListener("input", function (e) { applyNetFilter(e.target.value); });
 }
 function showNodeDetail(name) {
   var type = byType[name] || "?";
