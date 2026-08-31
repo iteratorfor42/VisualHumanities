@@ -191,7 +191,9 @@
 <header>
   <div><span class="stamp">FACT-CHECKED</span></div>
   <h1>일제강점기 독립운동 &amp; 근대학교 온톨로지 <span style="font-size:15px;color:var(--ink-soft);">— v1 스타일 재현 · v8.ttl 데이터</span></h1>
-  <div class="subtitle">v1의 D3.js 그래프·필터·검색·상세패널 UI를 그대로 두고, 데이터만 <b>v8.ttl 원본을 브라우저에서 실시간 파싱</b>한 값으로 교체했습니다 (하드코딩 없음). 온톨로지가 Event 중심 스키마라 각 사건을 이항관계 2개(이전상태→대상, 대상→이후상태)로 접어 표시합니다.<br>노드를 드래그·클릭해 탐색하세요. 상단 버튼으로 유형 필터, 우측 상단 검색창으로 이름 검색이 가능합니다.</div>
+  <div class="subtitle">v1의 D3.js 그래프·필터·검색·상세패널 UI를 그대로 두고, 데이터만 <b>v8.ttl 원본을 브라우저에서 실시간 파싱</b>한 값으로 교체 (하드코딩 없음). 
+            온톨로지가 Event 중심 스키마라 각 사건을 이항관계 2개(이전상태→대상, 대상→이후상태)로 접어 표시.<br>
+            노드를 드래그·클릭해 탐색 가능. 상단 버튼으로 유형 필터, 우측 상단 검색창으로 이름 검색이 가능.</div>
 </header>
 
 <div class="layout">
@@ -220,19 +222,41 @@ status.style.cssText = "position:absolute;top:14px;left:50%;transform:translateX
 status.textContent = "v8.ttl 불러오는 중...";
 document.getElementById("graph-wrap").appendChild(status);
 
+function showFatalError(msg) {
+  status.style.cssText = "position:absolute;top:0;left:0;right:0;z-index:20;background:#A8342A;color:#fff;font-size:13px;padding:14px 20px;line-height:1.6;";
+  status.textContent = "⚠ 그래프를 그리지 못했습니다: " + msg;
+  console.error("[v8_d3style] 그래프 생성 실패:", msg);
+}
+
 fetch("data/v8.ttl")
   .then(function (res) {
-    if (!res.ok) throw new Error("HTTP " + res.status);
+    if (!res.ok) throw new Error("data/v8.ttl 요청 실패: HTTP " + res.status);
     return res.text();
   })
   .then(function (text) {
-    var triples = parseTurtle(text);
-    buildV1StyleData(triples);
+    var triples;
+    try {
+      triples = parseTurtle(text);
+    } catch (e) {
+      throw new Error("ttl 파싱 단계에서 오류: " + e.message);
+    }
+    try {
+      buildV1StyleData(triples);
+    } catch (e) {
+      throw new Error("데이터 변환(buildV1StyleData) 단계에서 오류: " + e.message);
+    }
+    if (!nodesData.length) {
+      throw new Error("파싱은 됐지만 노드가 0개입니다 (트리플 " + triples.length + "개). v8.ttl 내용을 확인하세요.");
+    }
     status.textContent = "v8.ttl 파싱 완료 — 노드 " + nodesData.length + "개 · 간선 " + linksData.length + "개";
-    initGraph();
+    try {
+      initGraph();
+    } catch (e) {
+      throw new Error("그래프 렌더링(initGraph) 단계에서 오류: " + e.message);
+    }
   })
   .catch(function (err) {
-    status.textContent = "⚠ v8.ttl을 불러오지 못했습니다 (" + err.message + "). 정적 서버로 열었는지 확인하세요.";
+    showFatalError(err.message);
   });
 
 // ============================================================
