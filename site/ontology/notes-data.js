@@ -8,10 +8,12 @@ const ONTOLOGY_NOTES = [
   {
     url: "notes/ontology-v1-vs-v6-trial-and-error.html",
     title: "온톨로지 시각화 버전 비교: v1 vs v6 (및 v8)",
-    date: "2026-08-27",
+    date: "2026-08-27 작성 · 2026-08-28 갱신· 2026-08-31 v8_d3style.html 재생성 ",
     summary:
-      "v1의 D3 이항관계 그래프와 v6~v8의 '사건(Event) 중심' TTL 스키마 사이의 구조적 차이를 정리하고, " +
-      "v6에서 Event를 두 개의 간선으로 접어 v1과 비슷한 이항관계 그래프처럼 보이게 만든 해결 과정을 기록.",
+      "v1의 D3 이항관계 그래프와 v6~v8의 '사건(Event) 중심' TTL 스키마 사이의 구조적 차이, " +
+      "v6의 Event-접기 해결 과정, v8_d3style(v1 UI를 v8 데이터로 재현하며 발견한 정춘수·박희도 " +
+      "전향 미기록 사례)과 v8_with_gonghun 관계망 탭에 필터·검색을 이식한 과정, 그리고 실제로 " +
+      "겪은 버그 3건(숨은 탭 초기화, CSS grid 높이, versions-data.js 스키마 사고)까지 기록.",
     tags: ["온톨로지", "시각화", "D3", "vis-network", "TTL"],
   },
 ];
