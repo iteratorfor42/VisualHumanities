@@ -191,9 +191,7 @@
 <header>
   <div><span class="stamp">FACT-CHECKED</span></div>
   <h1>일제강점기 독립운동 &amp; 근대학교 온톨로지 <span style="font-size:15px;color:var(--ink-soft);">— v1 스타일 재현 · v8.ttl 데이터</span></h1>
-  <div class="subtitle">v1의 D3.js 그래프·필터·검색·상세패널 UI를 그대로 두고, 데이터만 <b>v8.ttl 원본을 브라우저에서 실시간 파싱</b>한 값으로 교체 (하드코딩 없음). 
-            온톨로지가 Event 중심 스키마라 각 사건을 이항관계 2개(이전상태→대상, 대상→이후상태)로 접어 표시.<br>
-            노드를 드래그·클릭해 탐색 가능. 상단 버튼으로 유형 필터, 우측 상단 검색창으로 이름 검색이 가능.</div>
+  <div class="subtitle">v1의 D3.js 그래프·필터·검색·상세패널 UI를 그대로 두고, 데이터만 <b>v8.ttl 원본을 브라우저에서 실시간 파싱</b>한 값으로 교체했습니다 (하드코딩 없음). 온톨로지가 Event 중심 스키마라 각 사건을 이항관계 2개(이전상태→대상, 대상→이후상태)로 접어 표시합니다.<br>노드를 드래그·클릭해 탐색하세요. 상단 버튼으로 유형 필터, 우측 상단 검색창으로 이름 검색이 가능합니다.</div>
 </header>
 
 <div class="layout">
@@ -217,20 +215,20 @@
 var nodesData = [];
 var linksData = [];
 
-var status = document.createElement("div");
-status.style.cssText = "position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--ink-soft);z-index:5;";
-status.textContent = "v8.ttl 불러오는 중...";
-document.getElementById("graph-wrap").appendChild(status);
+var loadingBanner = document.createElement("div");
+loadingBanner.style.cssText = "position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--ink-soft);z-index:5;";
+loadingBanner.textContent = "v8.ttl 불러오는 중...";
+document.getElementById("graph-wrap").appendChild(loadingBanner);
 
 function showFatalError(msg) {
-  status.style.cssText = "position:absolute;top:0;left:0;right:0;z-index:20;background:#A8342A;color:#fff;font-size:13px;padding:14px 20px;line-height:1.6;";
-  status.textContent = "⚠ 그래프를 그리지 못했습니다: " + msg;
+  loadingBanner.style.cssText = "position:absolute;top:0;left:0;right:0;z-index:20;background:#A8342A;color:#fff;font-size:13px;padding:14px 20px;line-height:1.6;";
+  loadingBanner.textContent = "⚠ 그래프를 그리지 못했습니다: " + msg;
   console.error("[v8_d3style] 그래프 생성 실패:", msg);
 }
 
 fetch("data/v8.ttl")
   .then(function (res) {
-    if (!res.ok) throw new Error("data/v8.ttl 요청 실패: HTTP " + res.status);
+    if (!res.ok) throw new Error("data/v8.ttl 요청 실패: HTTP " + res.loadingBanner);
     return res.text();
   })
   .then(function (text) {
@@ -248,7 +246,7 @@ fetch("data/v8.ttl")
     if (!nodesData.length) {
       throw new Error("파싱은 됐지만 노드가 0개입니다 (트리플 " + triples.length + "개). v8.ttl 내용을 확인하세요.");
     }
-    status.textContent = "v8.ttl 파싱 완료 — 노드 " + nodesData.length + "개 · 간선 " + linksData.length + "개";
+    loadingBanner.textContent = "v8.ttl 파싱 완료 — 노드 " + nodesData.length + "개 · 간선 " + linksData.length + "개";
     try {
       initGraph();
     } catch (e) {
@@ -262,6 +260,14 @@ fetch("data/v8.ttl")
 // ============================================================
 // v8.ttl(Event 중심 스키마)을 v1.html의 nodesData/linksData 형태
 // (id/type/desc/collab, [source,target,label])로 접어서 변환한다.
+// d3style.html 세 번 시도함. 이번에도 안 되면 안 할 거임.
+// 첫 번째 시도에서는 불러올 때 문제 생겼고, 두 번째 시도에서는 var status = document.createElement("div");에서 문제 생김
+// status는 브라우저에서 window.status라는 예약된 전역 속성과 이름이 겹쳤는데,
+// div 엘리먼트를 여기 대입하면 조용히 문자열로 강제 변환되고, (하.)  
+// 바로 다음 줄 status.style.cssText = ...에서 
+// .style이 undefined라 예외가 터지면서 스크립트 전체가 fetch를 시작하기도 전에 죽어버림. 또 죽었어.........
+// 수정: status → loadingBanner로 전부 이름 변경.
+// 이렇게 수정한 뒤 노드 44개·간선 48개·필터 버튼 2개 전부 정상 생성됨. ㅇㅋㅇㅋ
 // ============================================================
 function buildV1StyleData(triples) {
   var byType = {}, labelOf = {}, eventsOf = {};
