@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>온톨로지 v9 계열 전체 정리: ver2 → v9.3 — Claim 기반 Provenance Layer의 등장 (2차 정정판)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../style.css" />
+</head>
+<body>
+<div class="post-page">
+
+  <a class="post-back" href="../notes.html">&larr; 관련 링크와 시행착오 목록으로</a>
+
+  <header class="post-header">
+    <p class="post-kicker">온톨로지 프로젝트 · 구조 노트</p>
+    <h1>온톨로지 v9 계열 전체 정리: ver2 → v9.3 (2차 정정판)</h1>
+    <div class="post-meta">
+      <span>2026-08-30 작성 · v8 TTL을 검증하는 별도 트랙에서 출발해 Claim 기반 Provenance Layer로 발전한 과정 — 숫자·용어 정합성 재검토</span>
+    </div>
+    <div class="post-tags">
+      <span>#온톨로지</span>
+      <span>#provenance</span>
+      <span>#TTL</span>
+      <span>#버전이력</span>
+      <span>#v9</span>
+    </div>
+  </header>
+
+  <article class="prose">
+
+    <div class="note-callout">
+      <b>정정 사항(2차[1차는 따로 올리지 않는다.])</b>: (1) v9.2의 "39 High-confidence Claim"이라는 표현을
+      "39개 포함(included) Claim"으로 고치고, v9.3에서 그 39개가 34 Core + 5 Hold로
+      재분류된다는 것을 숫자로 명시했다. (2) 3분할(Core/Hold/Exclusion)과 4단계
+      판정(유지/수정/보류/제외)의 매핑을 표로 명확히 했다. (3) <code>claim_core</code>의
+      정의를 "고신뢰"에서 "직접 근거가 있어 본류에 포함 가능"으로 바꿨다(수정 대상
+      Claim도 Core에 속하므로). (4) CLM-010은 Claim 자체가 아니라 날짜 assertion만
+      제거된 것임을 명확히 했다. (5) CLM-023이 v9.1→v9.2→v9.3 내내 반복해서
+      망가진 것을 "데이터 파이프라인의 재현성 문제"로 격상해 서술했다. (6) 김좌진
+      판정 차이를, 순수한 "레이어 차이"보다 "v8이 확인하지 않은 근거를 v9가 추가로
+      찾아낸 것"이라는 더 정직한 설명을 우선하도록 고쳤다. (7) 현재 v9.3 산출물은
+      "완성본"이 아니라 "초안/검증 중간본"이라는 점과 완료 조건을 명시했다.
+    </div>
+
+    <h2>1. v9은 어디서 시작됐는가</h2>
+    <p>
+      v9 계열은 v1~v8 TTL 온톨로지 본체와는 별개의 트랙에서 출발했다. v8까지의 인스턴스
+      데이터(Event/hasObject/hasEestimation 스키마)가 실제로 근거를 갖추고 있는지를
+      49개 항목 단위로 재검증하는 <b>"v8 추가검증보고서"</b>가 먼저 ver2~ver5 네 번의
+      개정을 거쳤고, 그 설계가 확정된 뒤에야 실제 데이터로 구현한 것이 v9이다.
+    </p>
+    <div class="note-callout">
+      <b>v9는 v8의 "다음 버전"이 아니다.</b> v8 TTL을 직접 개정한 버전 번호가 아니라,
+      v8 인스턴스 데이터의 근거를 검증하기 위해 병렬로 구축된 Provenance 데이터셋의
+      별도 버전 계열이다. v1~v8이 온톨로지 본체(스키마+인스턴스)의 진화라면, ver2~v9.3은
+      "그 본체가 정말 근거가 있는가"를 Claim 단위로 캐묻는 감사(audit) 트랙이다.
+    </div>
+    <pre><code>[v8 추가검증보고서 — 방법론 설계]
+ver2 (49개 항목 URL 팩트체크 초안)
+ → ver3 (Claim/Evidence/Source 분리, provenance layer 도입)
+ → ver4 (김좌진 정정, Claim 추가분해, status vocabulary 재정의)
+ → ver5 (설계 승인본 — 5개 필수수정 + v9 데이터생성규칙 8개.
+          "49개 항목 매핑"과 "Claim 단위 신뢰도 확정"을 별개 축으로
+          분리하는 원칙이 이미 이 단계에서 확정됨)
+        ↓
+[v9 데이터 구현 — 위 원칙을 실제로 적용]
+v9 초안 CSV (49개 항목 → 43개 행, 6개 UNMAPPED 오판)
+ → v9 완성본 CSV (원본 49개 마스터리스트 대조, 55 Claim — "항목 매핑"의 완성)
+ → v9.1 (Pre-TTL Clean + TTL 1차 생성, 55 Claim 전체를 일단 구조적으로 검증)
+ → v9.2 (39개 포함 Claim + 16 exclusion manifest — 최초의 포함/제외 분리)
+ → v9.3 (39개 포함 Claim을 34 Core + 5 Hold로 재분류, 유지/수정/보류/제외 4단계 판정)</code></pre>
+    <p>
+      즉 "49개 항목을 전부 매핑한다"(v9 완성본)와 "그중 무엇을 본류에 포함할 것인가"
+      (v9.1 이후)는 <b>애초부터 서로 다른 두 개의 목표</b>였다. 전자는 "빠짐없이 대조했다"는
+      것을 보장하기 위한 커버리지 작업이었고, 후자가 ver5부터 계획되어 있던 본래의
+      핵심 목표였다.
+    </p>
+
+    <h2>2. ver2 — 49개 항목 URL 팩트체크 초안</h2>
+    <p>
+      학교·단체 13개, 사건 6개, 인물 30개 총 49개 항목의 기존 CSV 확정값을 실제 URL과
+      대조했다. 판정을 확인/부분확인/재확인/보류 네 단계로 나눴고, 가장 중요한 발견은
+      <b>이승훈-오산학교 설립일</b>이었다.
+    </p>
+    <p>
+      기존 CSV는 "1907-12-24, 확정"이었지만 실제로 대조해보니 「오산고등학교」 항목과
+      우리역사넷은 "1907년 12월"까지만, 「이승훈」 항목은 오히려 "1907년 11월 24일"을
+      명시하고 있었다.
+    </p>
+    <div class="note-callout">
+      <b>v6과의 정면 충돌</b>: v1~v8 문서의 v6 절에서 같은 날짜(1907-12-24)를
+      "독립운동인명사전·위키백과·나무위키 등 복수 출처 일치"로 이미 확정 처리했었다.
+      그런데 ver2가 「이승훈」 항목 원문을 직접 다시 열어보니 그 항목은 "12월 24일"이
+      아니라 <b>"11월 24일"</b>이라고 되어 있었다. 즉 v6의 "복수 출처 일치"는 실제로는
+      학교 연혁 쪽 출처들의 "12월"과, 인물 항목 하나의 "24일"이라는 <b>서로 다른
+      서술을 조합해서 만든 값</b>이었을 가능성이 크다 — 인물 항목 자체는 애초에
+      "11월 24일"을 말하고 있었기 때문이다. <b>CSV의 확정값이 실제 출처보다 더 강하게
+      되어 있었던 것</b>이며, 이것이 "출처 개수가 많다고 확정으로 봐도 되는가"라는
+      질문에 대한 v9 전체 설계의 출발점이 됐다. 같은 유형의 문제가 조선물산장려회
+      (1920-08-23 확정 → 실제로는 "1920년 8월"까지만 확인)에서도 발견됐다.
+    </div>
+
+    <h2>3. ver3 — Claim/Evidence/Source 분리와 Provenance Layer 도입</h2>
+    <p>
+      ver2의 진짜 성과는 49개 URL을 모은 것이 아니라 <b>"출처가 있다"와 "주장이
+      검증됐다"를 분리</b>했다는 점이었다. ver3는 이 통찰을 구조로 만들었다.
+    </p>
+    <pre><code>Entity → Claim → Relation → Date → Source → Evidence</code></pre>
+    <p>
+      핵심 원칙 7가지(Rule P-01~P-07)를 확정했다: 출처 URL의 존재가 곧 값의 검증을
+      뜻하지 않는다, Claim과 Date는 별도로 검증한다, 사건 날짜와 개인 참여 날짜를
+      별도로 검증한다(Rule P-03 — 이 원칙은 v1~v8 문서의 v7이 이미 시간상 먼저
+      데이터에 대규모 적용했던 것과 동일한 원칙을, 이 병렬 트랙에서 독립적으로
+      재발견해 명문화한 것이다), 출처 간 충돌은 삭제하지 않고 provenance에 보존한다,
+      공식 출처가 Month까지만 지지하면 Day를 확정하지 않는다, 관계가 확인됐다고
+      관계 시작일을 자동 부여하지 않는다, negative evidence("자료에 없었다")도
+      provenance로 기록하되 "그런 일이 없었다"로 확대 해석하지 않는다.
+    </p>
+    <p>
+      <code>claim_status</code>와 <code>date_status</code>를 처음으로 분리했고
+      (confirmed/confirmed_indirect/estimated/conflicting_sources/not_directly_verified/
+      validation_hold/contradicted), 오산학교·조선물산장려회의 확정값을 Month 단위로
+      낮추되 변경이력을 함께 남기는 방식을 제안했다.
+    </p>
+
+    <h2>4. ver4 — 김좌진 정정과 Claim 단위 분해</h2>
+    <p>
+      ver3에 대한 외부 피드백에서 가장 결정적인 지적이 나왔다: <b>김좌진-신민회</b>가
+      "관계보류(negative evidence)"로 분류돼 있었는데, 실제로 「김좌진」 항목 본문에
+      "신민회에 가입하였고 청년학우회에서도 활동하였다"는 직접 서술이 있다는 것이었다.
+      ver4에서 이를 confirmed로 정정했다.
+    </p>
+    <div class="note-callout">
+      <b>v8 hasValidationStatus와의 관계</b>: v1~v8 문서 §8-3에서 v8은 같은 관계를
+      "검증보류"로 판정했는데, 그 근거는 "신민회 공식 명단에 김좌진이 없다"는 것
+      <b>하나뿐</b>이었다 — 김좌진 본인의 항목까지는 그때 확인하지 않았다. ver4는 바로
+      그 빠진 근거(인물 본인 항목의 직접 서술)를 찾아낸 것이다. 즉 이건 "v8과 v9가
+      서로 다른 질문을 던져서 다른 답이 나온 것"이라기보다, <b>v8의 증거 탐색이
+      완결되지 않은 상태에서 내린 판정을, v9가 추가 근거로 메운 사례</b>로 보는 게
+      더 정확하다. (다만 v9의 <code>claim_status</code>/<code>verification_status</code>가
+      "무엇을 확인했는가"와 "그 결과가 무엇인가"를 분리해서 기록하는 구조라는 점에서,
+      "조직 명단 기준으로는 검증이 미비했다"와 "인물 항목 기준으로는 확인됐다"를 같은
+      틀 안에서 층위를 나눠 설명하는 것도 보조적으로는 유효하다.) 이 정정 자체가
+      <b>"조직의 명단만 보지 말고 인물 항목의 직접 서술도 Evidence로 교차검색해야
+      한다"</b>는 방법론적 교훈으로 남았다.
+    </div>
+    <p>
+      같은 방식으로 6개 항목을 항목 단위가 아니라 Claim 단위로 분해했다: 오산학교
+      (설립 CLM-OSAN-01 / 개교 CLM-OSAN-02), 조선물산장려회(월단위 confirmed / 일단위
+      validation_hold), 이동휘(취임 CLM-LEE-A / 합동취임식 CLM-LEE-B, 신규출처
+      db.history.go.kr), 홍범도(참여/사건/참여일 3단), 이종일-보성사(사장이었다/인쇄
+      주도했다), 김좌진(신민회가입/청년학우회활동, 1 Evidence→2 Claim).
+    </p>
+    <p>
+      상태값 체계를 <code>claim_status</code>/<code>date_status</code>/
+      <code>verification_status</code>(진행상태: directly_verified/partially_verified/
+      url_recheck_required)/<code>review_flag</code>(문제유형: none/relationship_issue/
+      source_conflict/provenance_gap) 4개 독립 필드로 재정의했고,
+      <code>hasEestimation</code> 오타를 <code>hasEstimation</code>(RDF)/
+      <code>has_estimation</code>(CSV)으로 통일했다.
+    </p>
+
+    <h2>5. ver5 — 설계 승인본, "포함/보류/제외 분리"가 확정된 지점</h2>
+    <p>외부 피드백의 결론에서 제시한 5개 필수 수정을 전부 반영해 "설계 승인" 판정을 받았다.</p>
+    <ol>
+      <li>오산학교 <code>review_flag</code>에서 <code>source_conflict</code> 제거,
+        설립/개교가 동일 사건인지 확인되지 않은 동안은 <code>relationship_issue</code>만
+        유지</li>
+      <li><code>date_value_status</code>를 provisional/final에서
+        <code>source_stated</code>/<code>provisional</code>/<code>unresolved</code>로
+        재정의</li>
+      <li><code>review_flag</code>가 <b>다중값</b>임을 명시</li>
+      <li>Evidence↔Claim을 1:1이 아니라 <b>1 Source→N Evidence→N Claim, 1 Evidence→N
+        Claim</b>의 다대다로 재정의</li>
+      <li>49개 항목 상태표 제목을 "작업 현황(보조 지표)"으로 바꾸고, Claim 단위가
+        권위값(authoritative)이라는 원칙을 명시</li>
+    </ol>
+    <p>
+      여기에 <b>v9 데이터 생성 규칙 8개(Rule G-01~G-08)</b>를 새로 통합했다: event type을
+      슬래시로 묶지 않는다, Event의 날짜는 해당 Event에만 귀속되고 참여자 개인에게
+      자동 상속하지 않는다(Rule G-02), 정밀도 축소와 값 추정은 다르다(Rule G-03),
+      claim_status는 문장 자체의 근거 강도로 정하며 date_status가 inferred라고
+      자동으로 낮아지지 않는다(Rule G-04), verification_status와 claim_status는
+      독립적으로 조합될 수 있다(Rule G-05), review_flag는 다중값이다,
+      Source-Evidence-Claim은 다대다다, source_conflict는 동일 사건임이 확인된
+      경우에만 부여한다.
+    </p>
+    <p>
+      <b>바로 이 8개 규칙과 "49개 항목 상태표는 보조 지표일 뿐 Claim 단위가 권위값"이라는
+      선언이 v9의 기본 설계 원칙이다.</b> "검증 가능한 것 위주로 두고 확장한다"는 이후
+      버전들의 방향은 여기서 이미 정해져 있었다.
+    </p>
+
+    <h2>6. v9 초안 CSV — 43개 행과 "6개 UNMAPPED"라는 오판</h2>
+    <p>
+      ver5의 설계를 실제 CSV로 옮기는 첫 시도였다. 49개 항목을 43개 행으로 정리하고
+      나머지 6개는 <code>UNMAPPED_ITEM_44~49</code>로 남겼는데, 이는 <b>43개 행 = 43개
+      항목</b>이라는 잘못된 전제에서 나온 결과였다.
+    </p>
+
+    <h2>7. v9 완성본 CSV — "항목 매핑"을 완결한 단계</h2>
+    <p>
+      원본 v8 추가검증보고서의 49개 항목 마스터리스트와 직접 대조한 결과, 43개 행 중
+      3개 행이 실제로는 2개 항목을 결합한 행이었다는 것이 드러났다 — 즉 43개 행이 이미
+      46개 항목을 커버하고 있었다. 진짜 누락은 <b>신흥무관학교(원본 #5), 대한독립군
+      (원본 #8), 양기탁(원본 #25)</b> 3개뿐이었고, 이를 복원해 49개 항목이 전부
+      매핑됐다.
+    </p>
+    <p>
+      ver5 §4에서 이미 설계해 둔 6개 표준 Claim 패턴을 그대로 적용해 <b>55개
+      Claim</b>으로 완성했다. <b>중요한 점: 이 55개 Claim이 전부 "본류로 확정됐다"는
+      뜻은 아니다.</b> 49개 항목 전체가 최소 하나의 Claim ID를 갖도록 커버리지를 맞춘
+      것이며, 그 안에는 이미 <code>validation_hold</code>, 근거 없는 Claim들이 처음부터
+      섞여 있었다. 이를 신뢰도별로 거르는 작업은 다음 단계(v9.1~v9.3)의 몫으로 애초부터
+      예정되어 있었다.
+    </p>
+
+    <h2>8. v9.1 — Pre-TTL Clean CSV와 최초의 TTL</h2>
+    <p>
+      TTL로 변환하기 전 외부 피드백이 두 가지 데이터 버그를 짚었다: 이승만 Claim
+      (<code>CLM-023</code>)이 대한민국임시정부(SRC-004)의 <code>source_id</code>를
+      재사용하면서도 <code>source_title/url</code>은 대한민국임시정부헌법(다른 문서)을
+      가리키고 있던 불일치, 물산장려운동의 <code>date_precision="Decade"</code>가
+      비표준 xsd 타입이던 문제. 이 두 건을 고치고, 6개 자동검증을 스크립트로 구현해
+      통과를 확인한 뒤 TTL을 생성했다. 이 시점의 TTL은 55개 Claim <b>전체</b>를
+      담았다 — 신뢰도로 거르기 전, 구조적으로 유효한지만 확인한 단계였다.
+    </p>
+    <p>
+      TTL 설계에서 중요한 판단 두 가지: <code>source_url</code>을 <code>&lt;IRI&gt;</code>가
+      아니라 <code>xsd:anyURI</code> <b>리터럴</b>로 저장했고, <code>item_no</code>
+      중복을 삭제하지 않고 별도의 <code>prov:Item</code> grouping 개체로 묶어 "원본
+      항목"과 "실제 Claim"을 서로 다른 층위로 유지했다. rdflib 파싱으로 1155 트리플을
+      확인했다.
+    </p>
+
+    <h2>9. v9.2 — "39개 포함 Claim" + 16개 exclusion — 최초의 포함/제외 분리</h2>
+    <p>
+      ver5부터 계획되어 있던 "Claim 단위 신뢰도 분리"를 처음으로 실제 산출물 단위로
+      구현한 단계다. <code>provenance_gap</code>이거나 근거 없는 날짜 추정, 사건
+      날짜를 개인 참여일로 그대로 끌어쓴 Claim 등을 제외 대상으로 식별했고,
+      exclusion manifest(제외/보류 목록, 삭제 아님)로 분리했다.
+    </p>
+    <p>
+      결과물은 <b>39개 포함(included) Claim</b>과 16개 exclusion Claim이었다(이전
+      판에서 이를 "39 High-confidence"라고 불렀으나, 그 39개 안에도 <code>review_flag
+      =relationship_issue</code>가 붙은 Claim이 여럿 섞여 있었으므로 "고신뢰"라는
+      표현은 정확하지 않다 — "제외되지 않고 본류에 남은 Claim"이 더 정확한 설명이며,
+      이 39개를 다시 세분화하는 것이 §10 v9.3의 작업이다).
+    </p>
+    <p>
+      업로드된 cleaned/exclusion 파일을 검증 없이 그대로 쓰지 않고 재검증한 결과, 이미
+      지적됐던 문제가 재발한 것과 완전히 새로운 문제를 함께 발견했다.
+    </p>
+    <ul>
+      <li><b>CLM-006(3·1운동) 컬럼 밀림</b> — <code>date_value_status</code>부터
+        오른쪽 전체 컬럼이 한 칸씩 밀려 <code>verification_date</code>가 통째로
+        소실되어 있었다.</li>
+      <li><b>CLM-023(이승만) source 충돌 재발</b> — v9.1에서 고쳤던
+        <code>SRC-004</code> 재사용 문제가 이번 cleaned본에서 다시 나타나 있어
+        <code>SRC-113</code>으로 재차 분리했다. (이 Claim은 §10에서 다시 문제를
+        일으킨다.)</li>
+      <li><b>CLM-010(물산장려운동) 비표준 precision 재발</b> — <code>Decade</code>가
+        다시 등장해 재제거했다.</li>
+      <li><b>item_no 15(안악사건) 완전 누락</b> — cleaned 39건에도 exclusion
+        manifest 16건에도 어디에도 없었다. 원래 근거(한국민족문화대백과사전
+        「안악사건」, 1910-11 확인)로 복원했다.</li>
+    </ul>
+    <p>
+      수정 후 <b>포함 39건 + exclusion 16건 = 55건이 원본 49개 item_no를 빠짐없이
+      커버</b>하는지 재확인하고, TTL을 재생성했다(928 트리플, Source 30 / Evidence 31 /
+      Item 35 / Claim 39).
+    </p>
+
+    <h2>10. v9.3 — 3분할 구조와 4단계 판정, 그리고 숫자로 확정한 관계</h2>
+    <p>
+      v9.2를 그대로 TTL 최종본으로 고정하지 말고 한 번 더 정제하자는 외부 피드백을
+      반영한 단계다. 이 단계에서 v9.2의 용어·숫자를 정확히 다듬는 작업이 함께
+      이뤄졌다.
+    </p>
+    <h3>10-1. "삭제"와 "TTL 제외"를 구분하는 3분할 구조</h3>
+    <pre><code>v9.3
+├── claim_core.csv           직접 근거가 있어 본류에 포함 가능한 Claim → TTL 반영
+├── claim_hold.csv           validation_hold / relationship_issue인 채로 보류
+│                             → TTL에는 넣되 상태를 명시하거나 별도 graph로 분리
+├── exclusion_manifest.csv   evidence가 부족한 원본 항목 → CSV에만 보관
+└── gwanhak_claims_v9.3.ttl  Core + Hold(상태 명시) 반영, Exclusion은 미반영</code></pre>
+    <h3>10-2. 3분할과 4단계 판정의 매핑</h3>
+    <p>
+      "분할(저장 구조)"과 "판정(작업 결정)"은 서로 다른 축이며, 아래처럼 명확히
+      대응한다.
+    </p>
+    <table class="version-table">
+      <thead><tr><th>판정</th><th>의미</th><th>귀속 파일</th></tr></thead>
+      <tbody>
+        <tr><td>유지</td><td>근거·표현 모두 문제 없음</td><td>claim_core.csv</td></tr>
+        <tr><td>수정</td><td>근거는 있으나 provenance/relation/날짜 표현을 정규화</td><td>claim_core.csv</td></tr>
+        <tr><td>보류</td><td>근거는 있으나 관계·해석에 추가 검증 필요</td><td>claim_hold.csv</td></tr>
+        <tr><td>제외</td><td>현재 증거 수준으로는 Claim으로 확정 불가(원본 항목 삭제 아님)</td><td>exclusion_manifest.csv</td></tr>
+      </tbody>
+    </table>
+    <p>
+      즉 <code>claim_core</code>는 "고신뢰"가 아니라 <b>"직접적인 근거가 확보되어
+      본류 데이터에 포함할 수 있는 Claim"</b>으로 정의해야 정확하다 — 수정이
+      필요한 Claim(사실관계 근거는 충분하지만 URI·relation 어휘·precision 표현이
+      부정확한 경우)도 정규화를 거쳐 Core에 남기 때문이다.
+    </p>
+    <h3>10-3. 숫자로 확정한 관계: 39 = 34 Core + 5 Hold</h3>
+    <p>
+      v9.2의 39개 포함 Claim 중 5건 — <code>CLM-047</code>(신흥강습소→신흥무관학교
+      개칭, 시점 불확실), <code>CLM-JOSEON-03</code>(서울 조선물산장려회, 평양과
+      동일 조직 여부 미확인), <code>CLM-OSAN-02</code>(이승훈 개교, 설립 Claim과
+      동일 사건 여부 미확인), <code>CLM-LEE-A</code>·<code>CLM-LEE-B</code>(이동휘
+      취임/합동 취임식, 두 사건의 관계 미확인) — 가 Hold로 재분류됐다. 나머지
+      <b>34건이 Core(유지 29 + 수정 5, 세부 계산은 §10-4 CLM-023 복원 여부에 따라
+      ±1)</b>로 남는다.
+    </p>
+    <p>
+      흥미로운 점은 5건 모두 <code>review_flag=relationship_issue</code>를 갖고
+      있지만, <b>같은 flag를 가진 <code>CLM-OSAN-01</code>(오산학교 설립)은
+      Hold가 아니라 Core(유지)로 분류</b>됐다는 것이다. 이는 ver5 Rule G-05(
+      verification_status와 claim_status는 독립적으로 조합될 수 있다)의 실제
+      적용 사례다. 한 문장으로 정리하면:
+    </p>
+    <div class="note-callout">
+      <b>review_flag는 "무엇을 주의해서 봐야 하는가"(문제의 종류)이고, 판정(decision)은
+      "현재 데이터셋에서 그것을 어떻게 처리할 것인가"(처리 결과)다.</b> 하나가 다른
+      하나를 자동으로 결정하지 않는다.
+    </div>
+    <h3>10-4. 수정(4건)의 성격 — Claim 자체와 날짜 assertion을 구분</h3>
+    <p>
+      "수정" 판정을 받은 4건 중 특히 <code>CLM-010</code>(물산장려운동)은 오해하기
+      쉽다. 정확히는 <b>"조선물산장려운동이 존재했다"는 Claim 자체는 그대로 Core에
+      남아 있고, 비표준 <code>date_precision="Decade"</code>로 잘못 표현되어 있던
+      날짜 assertion만 제거</b>된 것이다 — Claim을 제외한 것이 아니라 그 Claim에
+      딸려 있던 부정확한 날짜 주장 하나를 뗀 것이다. 이는 Rule G-03(정밀도 축소와
+      값 추정은 다르다)의 연장선이기도 하다. 나머지 3건: <code>CLM-006</code>은
+      <code>relation="해당"</code>이 RDF 관계로는 의미가 너무 약해 향후 event
+      classification 개선 대상으로 남겨졌고(Claim 자체는 유지), <code>CLM-012</code>
+      (조만식)는 object URI를 "평양" 지역 엔티티로 정규화, <code>CLM-035</code>
+      (최광옥)는 "관련되었다"는 표현을 membership 기반 소속 관계로 정규화했다.
+    </p>
+    <h3>10-5. 검증에서 발견된 문제: CLM-023(이승만) 재누락 — 파이프라인 재현성 문제</h3>
+    <p>
+      실제로 전달된 v9.3 초안 CSV를 검증해보니 <b>38행뿐</b>이었다("39 Claim"이라는
+      서술과 불일치). v9.2의 39개 claim_id와 대조한 결과, <code>CLM-023</code>이
+      유지/수정/보류/제외 어느 판정도 없이 통째로 누락되어 있었다.
+    </p>
+    <p>
+      이 Claim의 이력을 추적하면 <b>단순한 우연이 아니다</b>: v9.1에서
+      <code>SRC-004</code> 재사용 문제를 발견해 수정 → v9.2 cleaned본에서 같은 문제가
+      다시 나타나 재수정 → v9.3 초안에서는 아예 행 자체가 사라짐. 같은 Claim의 수정
+      이력이 버전마다 CSV를 사람이 손으로 옮겨 적는 과정에서 안정적으로 계승되지
+      못했다는 뜻이다.
+    </p>
+    <div class="note-callout">
+      이건 개별 데이터 오류가 아니라 <b>버전 산출 과정 자체의 재현성(reproducibility)
+      문제</b>다. 향후에는 버전마다 CSV를 손으로 재작성하는 방식 대신, 단일 master
+      Claim registry에서 core/hold/exclusion을 자동으로 파생시키는 방식으로 전환할
+      필요가 있다 — 이는 다음 데이터 파이프라인 설계에서 반드시 고려해야 할 요구사항으로
+      남겨둔다(버전 번호는 아직 정하지 않았다).
+    </div>
+    <h3>10-6. 후속 과제로 유보된 것</h3>
+    <p>
+      <code>CLM-002</code>(대성학교, 안창호 항목 근거)와 <code>CLM-011</code>(대성학교,
+      다른 안창호 소스)이 같은 사실을 서로 다른 Evidence로 중복 기술하고 있다는 점이
+      지적됐다 — 지금 당장 하나의 Claim으로 합쳐서 정보를 잃기보다는, 두 Evidence를
+      보존한 채 "동일 Claim + 복수 Evidence" 구조로 통합할지는 다음 단계의 provenance
+      정리에서 결정하기로 유보했다.
+    </p>
+    <h3>10-7. 현재 상태 — "완성본"이 아니라 "초안/검증 중간본"</h3>
+    <p>
+      CLM-023이 복원되지 않은 채로는 v9.3을 완성본이라 부를 수 없다. 완료 조건을
+      명시해둔다.
+    </p>
+    <pre><code>v9.3 Final 완료 조건 (체크리스트)
+[ ] 55개 원본 Claim 전체 coverage(39 포함 + 16 exclusion)
+[ ] CLM-023 복원(34 Core에 포함되어야 39=34+5 성립)
+[ ] 39 = Core 34 + Hold 5 수치 확인
+[ ] 4개 수정 Claim(CLM-006/010/012/035)의 수정 결과 확정
+[ ] 16개 exclusion 각각에 exclusion reason 명시
+[ ] claim_id 중복 없음 / item_no 49개 전체 coverage
+[ ] source_id ↔ source_title/url 일치
+[ ] date_value ↔ date_precision 일치
+[ ] subject/object URI 형식(CURIE) 검증
+[ ] controlled vocabulary 검증
+[ ] TTL claim count = CSV claim count</code></pre>
+
+    <h2>11. 버전별 핵심 변화 요약표</h2>
+    <table class="version-table">
+      <thead>
+        <tr><th>버전</th><th>성격</th><th>핵심 변화</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ver2</td><td>초기 검증</td><td>49개 항목 URL 팩트체크, 오산학교·조선물산장려회 확정값 과잉 발견 (v6 확정 근거가 짜깁기였음이 드러남)</td></tr>
+        <tr><td>ver3</td><td>구조 설계</td><td>Claim/Evidence/Source 분리, Provenance Layer 도입, Rule P-01~P-07</td></tr>
+        <tr><td>ver4</td><td>구조 설계</td><td>김좌진 정정(v8이 확인 못한 근거를 추가 발견), 6개 사례 Claim 분해, status vocabulary 4필드화</td></tr>
+        <tr><td>ver5</td><td>설계 승인</td><td>5개 필수수정 반영, Rule G-01~G-08(포함/보류/제외 분리 원칙 확정), 참고문헌 1:1 대칭 재구성(36→32건)</td></tr>
+        <tr><td>v9 초안</td><td>매핑 시작</td><td>43개 행, 6개 UNMAPPED(오판)</td></tr>
+        <tr><td>v9 완성본</td><td>매핑 완결</td><td>원본 49개 마스터리스트 대조, 진짜 누락 3건 복원, 55 Claim(신뢰도 필터링 이전)</td></tr>
+        <tr><td>v9.1</td><td>구조 검증</td><td>버그 2건 수정, 6개 자동검증, TTL 1차 생성(55 Claim 전체, 1155 트리플)</td></tr>
+        <tr><td>v9.2</td><td>포함/제외 분리(최초)</td><td>39 포함 Claim + 16 exclusion, 버그 4건 발견/수정, TTL 재생성(928 트리플)</td></tr>
+        <tr><td>v9.3</td><td>포함 Claim 세분화</td><td>39=34 Core+5 Hold, 유지/수정/보류/제외 4단계, CLM-023 재누락 발견 — <b>초안/검증 중간본</b>(완성본 아님)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>12. 지금까지의 결론</h2>
+    <ul>
+      <li><b>"검증 가능한 것 위주로 두고 확장한다"는 v9의 원래 설계 목표였다</b>(ver5
+        Rule G-01~G-08). v9 완성본의 55 Claim은 이 목표를 적용하기 전 커버리지 확보
+        단계였고, v9.1은 구조적 유효성만 확인했으며, v9.2에서 처음 포함/제외를
+        분리했고, v9.3은 그 포함 집합을 다시 Core/Hold로 세분화하는 방식으로
+        계속 정교해지고 있다 — 방향 전환이 아니라 같은 목표를 향한 점진적 구현이다.</li>
+      <li>매 버전마다 이전 버전에서 고쳤다고 생각한 버그(SRC 재사용 충돌, 비표준
+        precision, 행 누락)가 재발했다. 특히 CLM-023의 3연속 재발은 개별 버그가
+        아니라 <b>수작업 CSV 파이프라인 자체의 재현성 문제</b>로 봐야 한다는 게 이번
+        검토의 결론이다.</li>
+      <li>review_flag(문제 신호)와 판정/claim_status(처리 결과)가 독립적이라는 원칙이
+        v9.3의 실제 판정(같은 relationship_issue를 가진 CLM-OSAN-01은 유지, 나머지
+        5건은 보류)에서 구체적으로 확인됐다.</li>
+      <li>v9는 v8의 "다음 버전"이 아니라 v8을 검증하는 병렬 Provenance 트랙이며,
+        김좌진 사례처럼 두 트랙의 판정이 다를 때는 "레이어가 다르다"고 얼버무리기보다
+        "어느 쪽이 어떤 근거까지 확인했는가"를 정직하게 추적하는 것이 더 정확한
+        설명이다.</li>
+      <li>남은 작업: CLM-023 복원 후 v9.3 완료 조건 체크리스트(§10-7) 전체 통과,
+        exclusion manifest 16건에 대한 근거 보강(evidence recovery), CLM-002/CLM-011의
+        Evidence 중복 정리, relation vocabulary 정규화, SHACL 셰이프 작성, 그리고
+        장기적으로는 master Claim registry 기반 파이프라인으로의 전환.</li>
+    </ul>
+
+  </article>
+
+</div>
+</body>
+</html>
