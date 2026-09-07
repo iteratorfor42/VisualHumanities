@@ -9,37 +9,6 @@
 
 const ONTOLOGY_VERSIONS = [
   {
-    version: "v9_5re",
-    date: "2026-09-01",
-    label: "의미론 재검토 표시 추가 (현재 최신)",
-    changelog:
-      "v9.5 데이터(core 34/hold 5)는 전혀 바꾸지 않음. v9.5 설명서·검증서에 대한 상호 " +
-      "피드백 검토에서, date_status='not_applicable'인 참여 Claim 6건 중 CLM-024('합류" +
-      "하였다')·CLM-027-04('이끌었다')는 동작 동사를 쓰고 있어 다른 4건(지위·성격 서술)과 " +
-      "달리 not_directly_verified가 더 적합할 수 있다는 재검토 의견이 나왔으나, 정책(참여 " +
-      "Claim은 개별 날짜 불요 vs 날짜축은 있으나 미검증) 자체가 아직 확정되지 않아 데이터는 " +
-      "그대로 두고 지도·관계망·상세패널에만 '🔍 의미론 재검토 권고' 표시를 추가함 — " +
-      "core/hold(데이터 상태)와 review(시각화상의 검토 의견)를 섞지 않기 위함. jsdom+실제 " +
-      "vis-network로 재검토 간선 2건이 정확히 표시되는 것을 배포 전 실행 검증함.",
-    file: "versions/v9_5re.html",
-  },
-  {
-    version: "v9_5",
-    date: "2026-08-31",
-    label: "Claim 기반 근거모델",
-    changelog:
-      "v8까지의 단일 Event 스키마에서 한 걸음 더 나아가, 사실 하나하나를 Claim(주장) 단위로 " +
-      "분리하고 각 Claim에 Source(출처)·Evidence(근거)·claim_status·date_status·" +
-      "verification_status·review_flag·change_history를 개별적으로 부여하는 모델로 전환. " +
-      "Claim 39건을 core 34건(근거 확보)과 hold 5건(관계·해석 추가검증 필요)으로 구분해 " +
-      "claim_core.csv/claim_hold.csv로 관리하고, source/evidence 없이 related_to만 있던 " +
-      "16건은 exclusion_manifest.csv로 별도 격리(TTL 미반영). 시각화는 GIS 지도(Leaflet)+ " +
-      "관계망(vis-network) 2탭 구조(v6과 동일한 '기존 스타일')로 제작 — hold Claim은 " +
-      "점선·주황색으로 core와 시각적으로 구분. jsdom+실제 d3/vis-network로 노드 40개· " +
-      "간선 31개(hold 5개 포함)가 정확히 생성되는 것을 배포 전에 실행 검증함.",
-    file: "versions/v9_5.html",
-  },
-  {
     version: "v8_d3style",
     date: "2026-08-28",
     label: "v1 스타일 D3 그래프 재현 (v8 데이터)",
