@@ -260,6 +260,14 @@ fetch("data/v8.ttl")
 // ============================================================
 // v8.ttl(Event 중심 스키마)을 v1.html의 nodesData/linksData 형태
 // (id/type/desc/collab, [source,target,label])로 접어서 변환한다.
+// d3style.html 세 번 시도함. 이번에도 안 되면 안 할 거임.
+// 첫 번째 시도에서는 불러올 때 문제 생겼고, 두 번째 시도에서는 var status = document.createElement("div");에서 문제 생김
+// status는 브라우저에서 window.status라는 예약된 전역 속성과 이름이 겹쳤는데,
+// div 엘리먼트를 여기 대입하면 조용히 문자열로 강제 변환되고, (하.)  
+// 바로 다음 줄 status.style.cssText = ...에서 
+// .style이 undefined라 예외가 터지면서 스크립트 전체가 fetch를 시작하기도 전에 죽어버림. 또 죽었어.........
+// 수정: status → loadingBanner로 전부 이름 변경.
+// 이렇게 수정한 뒤 노드 44개·간선 48개·필터 버튼 2개 전부 정상 생성됨. ㅇㅋㅇㅋ
 // ============================================================
 function buildV1StyleData(triples) {
   var byType = {}, labelOf = {}, eventsOf = {};

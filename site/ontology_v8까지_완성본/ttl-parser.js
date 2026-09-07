@@ -7,13 +7,10 @@
 
 function ttlStripLineComment(line) {
   var inQuote = false;
-  var inAngle = false;
   for (var i = 0; i < line.length; i++) {
     var c = line[i];
     if (c === '"' && line[i - 1] !== "\\") inQuote = !inQuote;
-    else if (!inQuote && c === "<") inAngle = true;
-    else if (!inQuote && c === ">") inAngle = false;
-    else if (c === "#" && !inQuote && !inAngle) return line.slice(0, i);
+    else if (c === "#" && !inQuote) return line.slice(0, i);
   }
   return line;
 }

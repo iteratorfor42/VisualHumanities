@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>독립운동-근대학교 온톨로지 v9.5re — Claim 기반 근거모델 + 의미론 재검토 표시</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  :root {
+    --paper: #F3EDE0; --paper-2: #EAE2D0; --ink: #2B2620; --ink-soft: #5A5348;
+    --hairline: #C9BFA8; --red: #A8342A; --teal: #2C5C56; --navy: #2C3E66;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--paper); color:var(--ink); font-family:'IBM Plex Mono', monospace; }
+
+  header { padding: 20px 28px 14px; border-bottom: 1px solid var(--hairline); }
+  h1 { font-family:'Noto Serif KR', serif; font-weight:700; font-size:21px; margin:0 0 6px; }
+  .subtitle { font-size:12px; color:var(--ink-soft); line-height:1.6; max-width:900px; }
+  .subtitle b { color:var(--ink); }
+
+  .tabs { display:flex; gap:6px; padding: 12px 28px 0; }
+  .tab-btn {
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; padding:7px 16px;
+    background: var(--paper-2); border:1px solid var(--hairline); border-bottom:none;
+    border-radius: 4px 4px 0 0; cursor:pointer; color: var(--ink-soft);
+  }
+  .tab-btn.active { background: #fff; color: var(--ink); font-weight:700; }
+
+  .tab-body {
+    border-top: 1px solid var(--hairline);
+    height: calc(100vh - 168px);
+    display: none;
+  }
+  .tab-body.active { display: grid; grid-template-columns: 1fr 320px; }
+
+  #map { width:100%; height:100%; }
+  #network { width:100%; height:100%; }
+
+  #side {
+    border-left: 1px solid var(--hairline);
+    background: #fff;
+    padding: 18px 16px;
+    overflow-y: auto;
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+  #side h2 { font-family:'Noto Serif KR', serif; font-size:15px; margin:0 0 8px; }
+  #side .badge {
+    display:inline-block; font-size:10px; padding:2px 7px; border-radius:3px;
+    color:#fff; margin-bottom:10px;
+  }
+  #side .kv { margin: 3px 0; }
+  #side .kv b { color: var(--ink-soft); font-weight:500; }
+  #side .rel-item {
+    padding:5px 0; border-bottom:1px solid var(--paper-2); cursor:default;
+  }
+  #side .empty { color: var(--ink-soft); }
+  #side .src { font-size:11px; color: var(--ink-soft); margin-top:14px; padding-top:10px; border-top:1px dashed var(--hairline); }
+
+  .legend {
+    position:absolute; z-index:500; background:#fff; border:1px solid var(--hairline);
+    border-radius:4px; padding:8px 12px; font-size:11px; line-height:1.9; margin:12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .legend .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; }
+  .legend .sq { display:inline-block; width:9px; height:9px; margin-right:6px; }
+
+  /* 관계망 필터/검색 UI (v1.html에서 이식, v8_with_gonghun과 동일 패턴) */
+  .net-controls {
+    position:absolute; top:14px; left:14px; z-index:500;
+    display:flex; flex-wrap:wrap; gap:6px; max-width:calc(100% - 220px);
+  }
+  .net-filter-btn {
+    font-family:'IBM Plex Mono', monospace; font-size:11px; padding:5px 10px;
+    background:#fff; border:1px solid var(--hairline); color:var(--ink-soft);
+    cursor:pointer; border-radius:3px; user-select:none;
+  }
+  .net-filter-btn.active { color:#fff; border-color:transparent; }
+  .net-filter-btn[data-type="Group"].active { background:#2C3E66; }
+  .net-filter-btn[data-type="Person"].active { background:#A8342A; }
+  .net-filter-btn[data-type="Event"].active { background:#B8863B; }
+  .net-filter-btn[data-type="Place"].active { background:#8B857A; }
+  .net-filter-btn[data-type="Document"].active { background:#6B4C8A; }
+  #net-search {
+    position:absolute; top:14px; right:14px; z-index:500;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; padding:6px 10px;
+    border:1px solid var(--hairline); background:#fff; color:var(--ink); width:160px; border-radius:3px;
+  }
+
+  .status { padding: 6px 28px; font-size:11.5px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>독립운동-근대학교 온톨로지 v9.5re — Claim 기반 근거모델</h1>
+  <div class="subtitle">
+    v1~v8의 Event 중심 스키마에서 한 걸음 더 나아가, <b>사실 하나하나를 Claim(주장) 단위로
+    분리</b>하고 각 Claim에 출처(Source)·근거(Evidence)·검증상태·리뷰플래그·변경이력까지
+    개별적으로 붙인 모델입니다. Claim 39건 중 core 34건(신뢰도 확보, 실선)과 hold 5건
+    (관계·해석 추가검증 필요, 점선)을 구분해 표시합니다. <b>v9_5.ttl 원본을 브라우저에서
+    직접 파싱</b>해 그렸습니다 (하드코딩 없음).
+  </div>
+  <div class="subtitle" style="margin-top:8px;">
+    <b>v9.5re 추가 사항</b>: 데이터(core/hold)는 v9.5와 완전히 동일합니다. 다만 v9.5
+    검토 과정에서 date_status="not_applicable" 판정 6건("참여 Claim") 중 2건
+    (CLM-024, CLM-027-04)이 "합류하였다"/"이끌었다" 같은 동작 동사를 쓰고 있어, 다른 4건
+    (지위·성격 서술)과 달리 <code>not_directly_verified</code>가 더 적합할 수 있다는 재검토
+    의견이 있었습니다. 이 판단은 아직 확정되지 않았으므로 데이터의 core/hold 상태는 바꾸지
+    않고, <b>지도·관계망·상세패널에만 "🔍 의미론 재검토 권고" 표시를 추가</b>했습니다 —
+    데이터 상태(core/hold/excluded)와 시각화상의 검토 의견(review)을 섞지 않기 위함입니다.
+  </div>
+  <div class="subtitle" style="margin-top:8px;">
+    원본 데이터:
+    <a href="data/v9_5.ttl" target="_blank">v9_5.ttl</a> ·
+    <a href="data/v9_5_claim_core.csv" target="_blank">claim_core.csv</a> ·
+    <a href="data/v9_5_claim_hold.csv" target="_blank">claim_hold.csv</a> ·
+    <a href="data/v9_5_exclusion_manifest.csv" target="_blank">exclusion_manifest.csv</a>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab-btn active" data-tab="map">🗺 GIS 지도</div>
+  <div class="tab-btn" data-tab="network">🕸 관계망 (Claim 기반)</div>
+</div>
+
+<div class="status" id="status">v9_5.ttl 불러오는 중...</div>
+
+<div class="tab-body active" id="tab-map">
+  <div style="position:relative;">
+    <div id="map"></div>
+  </div>
+  <div id="side">
+    <div class="empty">지도의 마커를 클릭하면 해당 장소와 관련된 조직·사건이 여기에 표시됩니다.</div>
+  </div>
+</div>
+
+<div class="tab-body" id="tab-network">
+  <div style="position:relative;">
+    <div id="network"></div>
+    <div class="net-controls" id="net-filters"></div>
+    <input id="net-search" type="text" placeholder="이름 검색...">
+    <div class="legend" style="top:44px; right:12px;">
+      <span class="sq" style="background:#8C6A3F"></span>core (실선)<br>
+      <span class="sq" style="background:#C9863B"></span>hold (점선)<br>
+      <span class="sq" style="background:#8A5FA8"></span>🔍 의미론 재검토 권고 (2건)
+    </div>
+  </div>
+  <div id="side-net">
+    <div id="side2" style="border:none;"></div>
+  </div>
+</div>
+
+<script src="../ttl-parser.js"></script>
+<script src="../ttl-parser.js"></script>
+<script>
+// ============================================================
+// 1. POI 게이저티어 (좌표 사전)
+//    v9.5 스키마는 좌표를 담지 않는다(claim의 object로 "서울"·"평양"이
+//    등장하는 것은 조선물산장려회_서울/평양 2건뿐). 나머지 조직 소재지는
+//    이전 버전(v6)에서 조사한 참조 테이블을 그대로 재사용한다
+//    (온톨로지 원본 데이터가 아니라 시각화를 위해 별도로 부여한 참조값).
+// ============================================================
+var PLACE_COORDS = {
+  "정주": [39.6094, 125.1944],
+  "평양": [39.0392, 125.7625],
+  "서울": [37.5665, 126.9780],
+  "서간도": [41.7198, 125.9364],   // 통화(通化) 일대
+  "북간도": [42.7669, 129.4179],   // 용정(龍井) 일대
+  "상해": [31.2304, 121.4737],
+};
+
+// 조직(Group) → 소재지. "명시" 표시된 2건은 실제 claim(조직 관계)에서
+// object로 확인된 값이고, 나머지는 v6에서 조사한 참조값을 그대로 이어받음.
+var GROUP_PLACE = {
+  "조선물산장려회_서울": "서울",   // ← claim(CLM-JOSEON-03)에 명시
+  "조선물산장려회_평양": "평양",   // ← claim에 명시
+  "오산학교": "정주",
+  "신민회": "평양",
+  "대성학교": "평양",
+  "청년학우회": "서울",
+  "보성사": "서울",
+  "신흥강습소": "서간도",
+  "신흥무관학교": "서간도",
+  "북로군정서": "북간도",
+  "대한민국임시정부": "상해",
+  "대한민국임시정부_국무원": "상해",
+};
+var EXPLICIT_PLACE_CLAIM = { "조선물산장려회_서울": true, "조선물산장려회_평양": true };
+
+// v9.5 ttl은 개체(ent:)에 rdf:type을 붙이지 않는다(Claim의 주어/목적어로만
+// 등장). 39개 개체 전체를 직접 조사해 분류한 참조 테이블.
+var ENTITY_TYPE = {
+  // 인물
+  "김좌진":"Person","서일":"Person","손병희":"Person","안창호":"Person","양기탁":"Person",
+  "오세창":"Person","유영모":"Person","이동휘":"Person","이승만":"Person","이승훈":"Person",
+  "이시영":"Person","이종일":"Person","이종호":"Person","이회영":"Person","정춘수":"Person",
+  "조만식":"Person","최광옥":"Person","최린":"Person","한용운":"Person","홍범도":"Person",
+  // 조직
+  "대성학교":"Group","대한민국임시정부":"Group","대한민국임시정부_국무원":"Group",
+  "보성사":"Group","북로군정서":"Group","신민회":"Group","신흥강습소":"Group",
+  "신흥무관학교":"Group","오산학교":"Group","조선물산장려회_서울":"Group",
+  "조선물산장려회_평양":"Group","청년학우회":"Group",
+  // 사건
+  "105인사건":"Event","3.1운동":"Event","봉오동전투":"Event","안악사건":"Event",
+  "조선물산장려운동":"Event",
+  // 장소
+  "서울":"Place","평양":"Place",
+  // 문헌
+  "독립선언서":"Document",
+};
+
+var TYPE_LABEL = { Person: "인물", Group: "조직", Event: "사건", Place: "장소", Document: "문헌" };
+var TYPE_COLOR = { Person: "#A8342A", Group: "#2C3E66", Event: "#B8863B", Place: "#8B857A", Document: "#6B4C8A" };
+var DECISION_LABEL = { core: "core (근거 확보)", hold: "hold (관계·해석 추가검증 필요)" };
+
+// ============================================================
+// v9.5re 추가: "의미론 재검토 권고" — core/hold와는 별개의 축이다.
+// v9.5 검토 과정에서, date_status="not_applicable"로 분류된 참여 Claim 6건 중
+// "합류하였다"/"이끌었다" 같은 동작 동사를 쓰는 2건은 다른 4건(지위·성격 서술,
+// 예: "~중심 인물이었다")과 성격이 달라 not_directly_verified가 더 맞을 수 있다는
+// 의견이 있었다. 아직 정책(A: 참여 Claim은 개별 날짜 불요 / B: 날짜축은 있으나
+// 미검증) 중 하나로 확정되지 않았으므로, 데이터(claimDecision)는 건드리지 않고
+// 시각화에만 표시한다.
+// ============================================================
+var SEMANTIC_REVIEW = {
+  "CLM-024": "\"합류하였다\"는 동작 동사 — 다른 참여 Claim(지위·성격 서술)과 달리 " +
+    "not_directly_verified가 더 적합할 수 있음. 정책 A/B 중 미확정.",
+  "CLM-027-04": "\"이끌었다\"도 동작 동사. 사건일(CLM-EVENT-017)이 별도 존재해 " +
+    "CLM-024보다 현재 판정 근거는 강하지만, 정책 자체는 아직 미확정.",
+};
+
+// ============================================================
+// 2. v9_5.ttl 로드 & 파싱 — Claim/Source/Evidence 추출
+// ============================================================
+var triples = [];
+var byType = {};       // localName -> ENTITY_TYPE 값 (분류 참조 테이블 그대로 사용)
+var labelOf = {};
+var claimsOf = {};      // claimId -> {subject, object, relation, text, date, claimStatus, dateStatus,
+                         //             verificationStatus, reviewFlag, decision, sourceId, evidenceId}
+var sourcesOf = {};     // sourceId -> {title, url}
+var evidenceOf = {};    // evidenceId -> {note}
+var dataReady = false;
+
+byType = ENTITY_TYPE; // v9.5는 개체 타입이 ttl에 없으므로 위 참조표를 그대로 사용
+
+fetch("data/v9_5.ttl")
+  .then(function (res) {
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return res.text();
+  })
+  .then(function (text) {
+    triples = parseTurtle(text);
+    index();
+    document.getElementById("status").textContent =
+      "v9_5.ttl 파싱 완료 — 트리플 " + triples.length + "개 · Claim " +
+      Object.keys(claimsOf).length + "개 (core " +
+      Object.values(claimsOf).filter(function (c) { return c.decision === "core"; }).length +
+      " · hold " +
+      Object.values(claimsOf).filter(function (c) { return c.decision === "hold"; }).length + ")";
+    buildMap();
+    // 관계망은 "관계망" 탭을 처음 열 때 만든다 (숨은 탭에서 vis-network 초기화 시
+    // 0×0 크기가 되는 문제를 피하기 위함 — v6에서 확인된 이슈, 동일하게 대응).
+    dataReady = true;
+    var networkTabActive = document.getElementById("tab-network").classList.contains("active");
+    if (networkTabActive && !network) {
+      buildNetwork();
+      network.once("stabilizationIterationsDone", function () { network.fit(); });
+    }
+  })
+  .catch(function (err) {
+    document.getElementById("status").textContent =
+      "⚠ v9_5.ttl을 불러오지 못했습니다 (" + err.message + "). Docker 또는 Render처럼 " +
+      "정적 서버로 열었는지 확인하세요 — file://로 직접 열면 fetch가 차단됩니다.";
+  });
+
+function index() {
+  triples.forEach(function (t) {
+    if (t.p === "label") labelOf[t.s] = t.o.value;
+    if (t.p === "type" && t.o.value === "Claim") claimsOf[t.s] = claimsOf[t.s] || {};
+    if (t.p === "type" && t.o.value === "Source") sourcesOf[t.s] = sourcesOf[t.s] || {};
+    if (t.p === "type" && t.o.value === "Evidence") evidenceOf[t.s] = evidenceOf[t.s] || {};
+  });
+  triples.forEach(function (t) {
+    if (sourcesOf[t.s]) {
+      if (t.p === "sourceTitle") sourcesOf[t.s].title = t.o.value;
+      if (t.p === "sourceUrl") sourcesOf[t.s].url = t.o.value;
+    }
+    if (evidenceOf[t.s]) {
+      if (t.p === "evidenceNote") evidenceOf[t.s].note = t.o.value;
+    }
+    if (!claimsOf[t.s]) return;
+    var c = claimsOf[t.s];
+    if (t.p === "hasSubject") c.subject = t.o.value;
+    if (t.p === "hasObject") c.object = t.o.value;
+    if (t.p === "hasRelation") c.relation = t.o.value;
+    if (t.p === "claimText") c.text = t.o.value;
+    if (t.p === "dateValue") c.date = t.o.value;
+    if (t.p === "hasClaimStatus") c.claimStatus = t.o.value;
+    if (t.p === "hasDateStatus") c.dateStatus = t.o.value;
+    if (t.p === "hasVerificationStatus") c.verificationStatus = t.o.value;
+    if (t.p === "hasReviewFlag") c.reviewFlag = t.o.value;
+    if (t.p === "hasSource") c.sourceId = t.o.value;
+    if (t.p === "hasEvidence") c.evidenceId = t.o.value;
+    if (t.p === "claimDecision") c.decision = t.o.value;
+  });
+}
+
+function label(name) { return labelOf[name] || name; }
+
+function claimSourceHtml(c) {
+  var src = c.sourceId ? sourcesOf[c.sourceId] : null;
+  var evd = c.evidenceId ? evidenceOf[c.evidenceId] : null;
+  var html = "";
+  if (src && src.title) {
+    html += '<br><span style="color:var(--ink-soft);font-size:10.5px;">출처: ' +
+      (src.url ? '<a href="' + src.url + '" target="_blank" rel="noopener">' + src.title + '</a>' : src.title) +
+      "</span>";
+  }
+  if (evd && evd.note) {
+    html += '<br><span style="color:var(--ink-soft);font-size:10.5px;">근거: ' + evd.note + "</span>";
+  }
+  return html;
+}
+
+// ============================================================
+// 3. GIS 지도 (Leaflet)
+// ============================================================
+var map;
+function buildMap() {
+  map = L.map("map", { scrollWheelZoom: true }).setView([37.0, 126.0], 5);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors",
+    maxZoom: 18,
+  }).addTo(map);
+
+  var byPlace = {};
+  Object.keys(GROUP_PLACE).forEach(function (g) {
+    var place = GROUP_PLACE[g];
+    byPlace[place] = byPlace[place] || [];
+    byPlace[place].push(g);
+  });
+
+  Object.keys(byPlace).forEach(function (place) {
+    var coord = PLACE_COORDS[place];
+    if (!coord) return;
+    var groups = byPlace[place];
+    var isExplicit = groups.some(function (g) { return EXPLICIT_PLACE_CLAIM[g]; });
+    var marker = L.circleMarker(coord, {
+      radius: 9,
+      color: isExplicit ? "#A8342A" : "#2C3E66",
+      fillColor: isExplicit ? "#A8342A" : "#2C3E66",
+      fillOpacity: 0.75,
+      weight: 2,
+    }).addTo(map);
+    marker.bindTooltip(place + " (" + groups.length + ")");
+    marker.on("click", function () { showPlaceDetail(place, groups, isExplicit); });
+  });
+
+  var legend = L.control({ position: "topright" });
+  legend.onAdd = function () {
+    var div = L.DomUtil.create("div", "legend");
+    div.innerHTML =
+      '<span class="dot" style="background:#A8342A"></span>Claim에 조직 관계로 명시된 소재지<br>' +
+      '<span class="dot" style="background:#2C3E66"></span>필자 조사 POI (역사적 소재지)';
+    return div;
+  };
+  legend.addTo(map);
+}
+
+function showPlaceDetail(place, groups, isExplicit) {
+  var html = "<h2>" + place + "</h2>";
+  html += '<span class="badge" style="background:' + (isExplicit ? "#A8342A" : "#2C3E66") + '">' +
+    (isExplicit ? "Claim 명시값" : "필자 조사 POI") + "</span>";
+  html += '<div class="kv"><b>소재 조직 (' + groups.length + ')</b></div>';
+  groups.forEach(function (g) {
+    html += '<div class="rel-item">' + label(g) + "</div>";
+  });
+  var related = Object.keys(claimsOf).filter(function (cid) {
+    var c = claimsOf[cid];
+    return groups.indexOf(c.subject) >= 0 || groups.indexOf(c.object) >= 0;
+  });
+  if (related.length) {
+    html += '<div class="kv" style="margin-top:12px;"><b>관련 Claim (' + related.length + ')</b></div>';
+    related.forEach(function (cid) {
+      var c = claimsOf[cid];
+      html += '<div class="rel-item">' + (c.date ? c.date + " · " : "") +
+        (c.relation ? label(c.relation) : "") + " — " +
+        [c.subject, c.object].filter(Boolean).map(label).join(" → ") + "</div>";
+    });
+  }
+  html += '<div class="src">좌표는 온톨로지 원본이 아니라, 이전 버전(v6)에서 조사해 부여한 ' +
+    "참조값을 그대로 이어받은 것입니다 (조선물산장려회_서울/평양 2건만 Claim에 실제 명시).</div>";
+  document.querySelector("#tab-map #side").innerHTML = html;
+}
+
+// ============================================================
+// 4. 관계망 (vis-network) — Claim을 간선으로 표시
+//    core(신뢰도 확보)는 실선, hold(추가검증 필요)는 점선·주황색으로 구분.
+// ============================================================
+var network, netNodes, netEdges;
+function buildNetwork() {
+  var nodeIds = {};
+  var nodes = [];
+  var edges = [];
+
+  function ensureNode(name) {
+    if (nodeIds[name]) return;
+    var type = byType[name] || "Document";
+    nodeIds[name] = true;
+    nodes.push({
+      id: name,
+      label: label(name),
+      color: TYPE_COLOR[type] || "#8B857A",
+      shape: type === "Group" ? "box" : (type === "Person" ? "dot" : (type === "Place" ? "triangle" : "diamond")),
+      font: { color: "#2B2620", size: 12 },
+      entityType: type,
+    });
+  }
+
+  var isolatedSubjects = []; // object가 없는 정의형 Claim(예: "신민회는 ~이다")의 주어
+
+  Object.keys(claimsOf).forEach(function (cid) {
+    var c = claimsOf[cid];
+    if (!c.subject) return;
+    if (c.subject && c.object) {
+      ensureNode(c.subject); ensureNode(c.object);
+      var isHold = c.decision === "hold";
+      var isReview = !!SEMANTIC_REVIEW[cid];
+      edges.push({
+        id: cid,
+        from: c.subject, to: c.object, arrows: "to",
+        label: (isReview ? "🔍 " : "") + (c.relation ? label(c.relation) : ""),
+        font: { size: 9, align: "middle", color: isReview ? "#6B4C8A" : "#2B2620" },
+        color: { color: isHold ? "#C9863B" : (isReview ? "#8A5FA8" : "#8C6A3F") },
+        dashes: isHold,
+        width: isHold ? 1.5 : (isReview ? 2.5 : 2),
+      });
+    } else {
+      ensureNode(c.subject);
+      isolatedSubjects.push(c.subject);
+    }
+  });
+
+  netNodes = new vis.DataSet(nodes);
+  netEdges = new vis.DataSet(edges);
+  var netContainer = document.getElementById("network");
+  netContainer.style.height = document.getElementById("tab-network").clientHeight + "px";
+  network = new vis.Network(
+    netContainer,
+    { nodes: netNodes, edges: netEdges },
+    {
+      nodes: { font: { size: 12 } },
+      edges: { smooth: { type: "dynamic" } },
+      physics: { barnesHut: { gravitationalConstant: -6000, springLength: 130 }, stabilization: true },
+      interaction: { hover: true, tooltipDelay: 120 },
+    }
+  );
+  network.once("stabilizationIterationsDone", function () { network.fit(); });
+
+  network.on("click", function (params) {
+    if (params.nodes.length !== 1) return;
+    showNodeDetail(params.nodes[0]);
+  });
+
+  setupNetworkFilter(nodes, edges);
+}
+
+function showNodeDetail(name) {
+  var type = byType[name] || "?";
+  var html = "<h2>" + label(name) + "</h2>";
+  html += '<span class="badge" style="background:' + (TYPE_COLOR[type] || "#8B857A") + '">' +
+    (TYPE_LABEL[type] || type) + "</span>";
+
+  var related = Object.keys(claimsOf).filter(function (cid) {
+    var c = claimsOf[cid];
+    return c.subject === name || c.object === name;
+  });
+  html += '<div class="kv"><b>관련 Claim (' + related.length + ')</b></div>';
+  related.forEach(function (cid) {
+    var c = claimsOf[cid];
+    var isHold = c.decision === "hold";
+    var reviewNote = SEMANTIC_REVIEW[cid];
+    html += '<div class="rel-item">' +
+      '<span class="badge" style="background:' + (isHold ? "#C9863B" : "#3D6B5C") + ';font-size:9px;margin-bottom:4px;">' +
+      (DECISION_LABEL[c.decision] || c.decision) + "</span>" +
+      (reviewNote ? ' <span class="badge" style="background:#8A5FA8;font-size:9px;margin-bottom:4px;">🔍 의미론 재검토 권고</span>' : "") +
+      "<br>" +
+      (c.date ? c.date + " · " : "") + (c.relation ? label(c.relation) : "") + " — " +
+      [c.subject, c.object].filter(Boolean).map(label).join(" → ") +
+      "<br><span style=\"color:var(--ink-soft);font-size:10.5px;\">" + (c.text || "") + "</span>" +
+      "<br><span style=\"color:var(--ink-soft);font-size:10px;\">검증: " + (c.verificationStatus || "-") +
+      " · 날짜상태: " + (c.dateStatus || "-") +
+      (c.reviewFlag && c.reviewFlag !== "none" ? " · 리뷰: " + c.reviewFlag : "") + "</span>" +
+      (reviewNote ? "<br><span style=\"color:#6B4C8A;font-size:10.5px;\">🔍 " + reviewNote + "</span>" : "") +
+      claimSourceHtml(c) +
+      "</div>";
+  });
+  document.getElementById("side2").innerHTML = html;
+}
+
+// v1.html에서 이식한 유형 필터 버튼 + 이름 검색 (v8_with_gonghun과 동일 패턴)
+function setupNetworkFilter(nodes, edges) {
+  var filterBar = document.getElementById("net-filters");
+  if (!filterBar) return;
+  var types = { Person: "인물", Group: "조직", Event: "사건", Place: "장소", Document: "문헌" };
+  var filterState = new Set(Object.keys(types));
+  filterBar.innerHTML = "";
+  Object.keys(types).forEach(function (type) {
+    var btn = document.createElement("div");
+    btn.className = "net-filter-btn active";
+    btn.dataset.type = type;
+    btn.textContent = types[type];
+    btn.onclick = function () {
+      if (filterState.has(type)) { filterState.delete(type); btn.classList.remove("active"); }
+      else { filterState.add(type); btn.classList.add("active"); }
+      applyNetFilter(document.getElementById("net-search").value);
+    };
+    filterBar.appendChild(btn);
+  });
+  function applyNetFilter(query) {
+    var q = (query || "").trim();
+    var visibleIds = {};
+    nodes.forEach(function (n) {
+      var visible = filterState.has(n.entityType) && (!q || n.label.indexOf(q) >= 0);
+      if (visible) visibleIds[n.id] = true;
+      netNodes.update({ id: n.id, hidden: !visible });
+    });
+    edges.forEach(function (e) {
+      netEdges.update({ id: e.id, hidden: !(visibleIds[e.from] && visibleIds[e.to]) });
+    });
+  }
+  var searchInput = document.getElementById("net-search");
+  if (searchInput) searchInput.addEventListener("input", function (e) { applyNetFilter(e.target.value); });
+}
+
+// ============================================================
+// 5. 탭 전환
+// ============================================================
+document.querySelectorAll(".tab-btn").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    document.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
+    document.querySelectorAll(".tab-body").forEach(function (b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+    if (btn.dataset.tab === "map" && map) setTimeout(function () { map.invalidateSize(); }, 50);
+    if (btn.dataset.tab === "network") {
+      if (!dataReady) return;
+      if (!network) {
+        setTimeout(function () {
+          buildNetwork();
+          network.once("stabilizationIterationsDone", function () { network.fit(); });
+        }, 50);
+      } else {
+        setTimeout(function () {
+          network.setSize("100%", "100%");
+          network.redraw();
+          network.fit();
+        }, 50);
+      }
+    }
+  });
+});
+</script>
+<script src="../versions-data.js"></script>
+<script src="../version-nav.js"></script>
+</body>
+</html>
