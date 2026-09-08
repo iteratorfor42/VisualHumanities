@@ -7,12 +7,23 @@
 
 const ONTOLOGY_NOTES = [
   {
-    url: "ontology-v9.1~v9.3-trial-and-error.html",
-    title: "[내용 확인 필요] 온톨로지 v9.1~v9.3 시행착오",
-    date: "2026-09-XX",
+    url: "ontology-v9.1~v9.5-trial-and-error.html",
+    title: "온톨로지 v9 계열 전체 정리: v9.1 → v9.5 (+v9.5re)",
+    date: "2026-08-29 작성 · 2026-09-08 v9.4~v9.5 및 v9.5re 갱신",
     summary:
-      "⚠ 자리표시자 — 다.",
-    tags: ["온톨로지", "v9"],
+      "v8 TTL 본체를 검증하기 위해 별도로 시작한 병렬 Provenance 트랙(ver2~ver5 방법론 " +
+      "설계 → v9.1~v9.5 실제 구현). Claim/Evidence/Source 분리, '49개 항목 매핑'과 " +
+      "'Claim 단위 신뢰도 확정'을 별개 축으로 두는 원칙(Rule G-01~G-08)을 먼저 세운 뒤, " +
+      "v9.1 구조검증 → v9.2 포함/제외 최초 분리 → v9.3 Core/Hold/Exclusion 3분할(이 과정에서 " +
+      "CLM-023 재발을 개별 버그가 아니라 수작업 CSV 파이프라인의 재현성 문제로 격상) → " +
+      "v9.4 Claim 문장·subject/object URI·relation 의미 정합 6건 수정 → v9.5 date_status " +
+      "완전 정합화(처음 세운 규칙이 스스로의 경고를 어기는 자기모순임을 재검토에서 발견해 " +
+      "폐기하고 'Claim의 시간적 의미' 기준으로 재수립)까지 진행. v9.5re에서는 데이터는 그대로 " +
+      "둔 채 review 표시축(SEMANTIC_REVIEW, CLM-024·CLM-027-04 2건)만 얹은 시각화 오버레이를 " +
+      "별도 파서로 독립 재파싱해 987 트리플까지 완전히 일치시키며 이 프로젝트에서 처음으로 " +
+      "이중 교차검증을 달성했고, 그 과정에서 찾아낸 ttl-parser.js의 '<IRI> 안 # 오인식' 버그를 " +
+      "공용 파일 차원에서 수정했다.",
+    tags: ["온톨로지", "provenance", "TTL", "버전이력", "v9"],
   },
   {
     url: "ontology-v1~v8-trial-and-error.html",
