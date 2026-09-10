@@ -637,8 +637,27 @@ document.querySelectorAll(".tab-btn").forEach(function (btn) {
 //       실제로는 mpva.go.kr 공식 문서에 nameKo 파라미터가 명시돼 있었음
 //       → 19,059명 전체를 페이지 단위로 훑는 대신, 인물별로 직접 질의 가능
 // 이번 버전은 두 가지를 모두 고쳐 인물 20명에 대해 각각 1회씩(총 20회) 질의한다.
+//
+// [배포 후 추가 수정] "Failed to fetch"로 전원 실패하는 문제 확인:
+//   공훈전자사료관 API는 HTTP만 제공한다(HTTPS로 접속하면 API가 아닌 404 페이지가 뜸,
+//   실제로 https://e-gonghun.mpva.go.kr/... 을 확인해 검증함). 그런데 이 사이트는
+//   Render에서 HTTPS로 서빙되므로, HTTPS 페이지에서 HTTP로 나가는 요청을 브라우저가
+//   "혼합 콘텐츠(mixed content)"로 차단한다 — fetch()가 서버에 닿기도 전에 즉시
+//   TypeError("Failed to fetch")를 던지는 이유가 이것이다. 코드 버그가 아니라
+//   프로토콜(HTTP vs HTTPS) 문제라, 직접 호출만으로는 해결이 안 된다.
+//   → 직접 호출을 1차 시도로 남겨두되(로컬 Docker처럼 HTTP로 서빙되는 환경에서는
+//     그대로 성공한다), 실패하면 HTTPS로 감싸주는 공개 프록시로 순차 폴백한다.
+//     (공개 프록시는 무료·무보증 서비스라 이 환경에서 사전 실행 검증은 하지 못했다 —
+//     실패 시 어떤 경로에서 막혔는지 그대로 화면에 남긴다.)
 // ============================================================
 var GONGHUN_BASE = "http://e-gonghun.mpva.go.kr/opnAPI/contribuMeritList.do";
+
+// 1차: 직접 호출. 2차 이후: HTTPS 프록시로 감싸서 혼합 콘텐츠 차단을 우회.
+var GONGHUN_PROXIES = [
+  function (url) { return url; },
+  function (url) { return "https://api.allorigins.win/raw?url=" + encodeURIComponent(url); },
+  function (url) { return "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(url); },
+];
 
 // v9.5 ttl의 Person 개체 20명 (ENTITY_TYPE에서 편찬자 placeholder :iteratorfor42 제외)
 var GONGHUN_PERSONS = [
@@ -664,19 +683,47 @@ function parseGonghunXML(xmlText) {
   return { items: items, totalCount: totalCountEl ? parseInt(totalCountEl.textContent, 10) : null };
 }
 
+// GONGHUN_PROXIES를 순서대로 시도하고, 전부 실패하면 각 경로별 실패 사유를 모아
+// 하나의 에러로 던진다(마지막에 "어디서 왜 막혔는지" 그대로 보여주기 위함).
+function fetchWithProxyFallback(targetUrl) {
+  var attemptErrors = [];
+  var i = 0;
+  function tryNext() {
+    if (i >= GONGHUN_PROXIES.length) {
+      var msg = "전체 " + GONGHUN_PROXIES.length + "개 경로 모두 실패: " + attemptErrors.join(" | ");
+      return Promise.reject(new Error(msg));
+    }
+    var wrap = GONGHUN_PROXIES[i];
+    var isDirect = i === 0;
+    i++;
+    return fetch(wrap(targetUrl))
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.text();
+      })
+      .then(function (text) {
+        if (text.indexOf("ROOT") === -1 && text.indexOf("ITEM") === -1) {
+          throw new Error("예상된 XML 구조가 아님(프록시가 다른 형식으로 감쌌을 가능성)");
+        }
+        return { text: text, viaProxy: isDirect ? "직접 호출" : "프록시 " + i };
+      })
+      .catch(function (err) {
+        attemptErrors.push((isDirect ? "직접 호출" : "프록시" + i) + ": " + err.message);
+        return tryNext();
+      });
+  }
+  return tryNext();
+}
+
 function fetchGonghunForName(name) {
   var url = GONGHUN_BASE + "?nPageIndex=1&nCountPerPage=50&nameKo=" + encodeURIComponent(name);
-  return fetch(url)
-    .then(function (res) {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.text();
-    })
-    .then(function (text) {
-      var parsed = parseGonghunXML(text);
+  return fetchWithProxyFallback(url)
+    .then(function (result) {
+      var parsed = parseGonghunXML(result.text);
       // 서버가 nameKo로 실제 필터링을 하든 안 하든, 클라이언트에서 다시 한 번
       // NAME_KO가 정확히 일치하는 항목만 추려서 오탐을 막는다.
       var exact = parsed.items.filter(function (it) { return it.NAME_KO === name; });
-      return { name: name, candidates: exact, rawCount: parsed.items.length, totalCount: parsed.totalCount };
+      return { name: name, candidates: exact, rawCount: parsed.items.length, totalCount: parsed.totalCount, viaProxy: result.viaProxy };
     });
 }
 
@@ -714,6 +761,12 @@ function renderGonghunResult(results) {
   var multi = results.filter(function (r) { return r.candidates && r.candidates.length > 1; });
   var unmatched = results.filter(function (r) { return r.candidates && r.candidates.length === 0; });
   var errored = results.filter(function (r) { return r.error; });
+
+  var viaCount = {};
+  results.forEach(function (r) { if (r.viaProxy) viaCount[r.viaProxy] = (viaCount[r.viaProxy] || 0) + 1; });
+  var viaNote = Object.keys(viaCount).length
+    ? " (경로: " + Object.keys(viaCount).map(function (k) { return k + " " + viaCount[k] + "건"; }).join(", ") + ")"
+    : "";
 
   document.getElementById("gonghun-summary").innerHTML =
     '<div class="gonghun-summary">' +
