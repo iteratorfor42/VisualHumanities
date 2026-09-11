@@ -10,7 +10,7 @@
 const ONTOLOGY_VERSIONS = [
   {
     version: "v10",
-    date: "2026-09-02",
+    date: "2026-09-02~09-11",
     label: "공훈전자사료관 API 매칭 버그 수정 (현재 최신)",
     changelog:
       "v9.5re(Claim 근거모델 + 의미론 재검토 표시) 데이터·로직은 그대로 두고, 세 번째 탭으로 " +
