@@ -5,6 +5,9 @@ gonghun_match.py — 공훈전자사료관 공식 오픈API를 로컬(내 컴퓨
 v9.5 인물 20명을 조회하고, 결과를 site/ontology/versions/data/gonghun_snapshot.json으로
 저장하는 스크립트.
 
+9월 13일까지 계속 보완 작업을 지속했으나, 구조적으로 api 호출이 불가능하다고 판단하여 더 이상 이 작업을 속행하지 않게 되었다.
+대신
+
 [v10 최종 수정] "nameKo=이름"으로 단건 질의하던 방식을 폐기했다.
   실제로 API를 호출해 확인한 결과, nameKo 파라미터는 공식 문서(mpva.go.kr)에는
   나와 있지만 서버가 실제로는 무시한다 — nameKo 값을 뭘 넣어도 TOTAL_COUNT=19059,
