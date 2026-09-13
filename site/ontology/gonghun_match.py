@@ -6,7 +6,15 @@ v9.5 인물 20명을 조회하고, 결과를 site/ontology/versions/data/gonghun
 저장하는 스크립트.
 
 9월 13일까지 계속 보완 작업을 지속했으나, 구조적으로 api 호출이 불가능하다고 판단하여 더 이상 이 작업을 속행하지 않게 되었다.
-대신
+관련 터미널 기록은 다음과 같다>
+
+[139/382] 페이지 처리 완료 — 누적 스캔 6950건, 지금까지 매칭된 인물 1/20명
+
+중단됨: 페이지 140 호출 3회 모두 실패: reference to invalid character number: line 266, column 159
+현재까지 결과를 스냅샷으로 저장하고, 체크포인트를 남깁니다.
+
+저장 완료: site/ontology/versions/data/gonghun_snapshot.json
+
 
 [v10 최종 수정] "nameKo=이름"으로 단건 질의하던 방식을 폐기했다.
   실제로 API를 호출해 확인한 결과, nameKo 파라미터는 공식 문서(mpva.go.kr)에는
