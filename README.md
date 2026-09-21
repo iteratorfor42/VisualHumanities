@@ -1,5 +1,26 @@
 # DH 교육용 위키 대문 — 로컬 재구성판
 
+[🌐 실제 웹사이트 미리보기(Render 배포 주소)](https://visualhumanities-39wz.onrender.com/)
+
+---
+
+## 화면 소개 및 구성 내용
+
+2014년부터 이어져 온 한국학대학원 인문정보학 수업과 세미나, 학술답사 기록을 연도별로 정리한 목록입니다.  
+2014년부터 2025년까지의 목록 링크는 모두 원본 사이트로 연결됩니다.
+
+제 학습용 기록은 아래 링크나 별도 마크다운 파일을 통해 확인하실 수 있습니다:
+
+* 📝 **지원자 학습 내역 보러가기** (https://visualhumanities-39wz.onrender.com/my-studies.html)
+* ✍️ **제가 독학한 여름학교 실습 글 보러가기** (https://visualhumanities-39wz.onrender.com/my-posts.html)
+* 🕸️ **[온톨로지 프로젝트 보러가기] (https://visualhumanities-39wz.onrender.com/ontology/versions.html)
+
+
+[📖 온톨로지 프로젝트 소개 readme.md 보기](./ontology_readme.md)
+
+---
+
+# DH 교육용 위키 대문 — 로컬 재구성판 소개 
 [dh.aks.ac.kr의 "대문" 페이지](https://dh.aks.ac.kr/Edu/wiki/index.php/%EB%8C%80%EB%AC%B8)를 참고해
 같은 구조(연도별 수업·세미나·답사 링크 목록)를 정적 웹페이지로 재구성했습니다.
 MediaWiki 설치 없이 **순수 HTML/CSS/JS**로만 만들어서 
