@@ -13,7 +13,7 @@
 
 * 📝 **지원자 학습 내역 보러가기** (https://visualhumanities-39wz.onrender.com/my-studies.html)
 * ✍️ **제가 독학한 여름학교 실습 글 보러가기** (https://visualhumanities-39wz.onrender.com/my-posts.html)
-* 🕸️ **[온톨로지 프로젝트 보러가기] (https://visualhumanities-39wz.onrender.com/ontology/versions.html)
+* 🕸️ **[온톨로지 프로젝트 보러가기]** (https://visualhumanities-39wz.onrender.com/ontology/versions.html)
 
 
 [📖 온톨로지 프로젝트 소개 readme.md 보기](./ontology_readme.md)
