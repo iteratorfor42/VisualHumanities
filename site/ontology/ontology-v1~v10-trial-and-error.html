@@ -1,288 +1,590 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>온톨로지 프로젝트 전체 이력: v1 → v10 (통합본)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../style.css" />
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>온톨로지 프로젝트 전체 이력</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
 </head>
 <body>
-<div class="post-page">
-
-  <a class="post-back" href="notes.html">&larr; 관련 링크와 시행착오 목록으로</a>
-
-  <header class="post-header">
-    <p class="post-kicker">온톨로지 프로젝트 · 구조 노트</p>
-    <h1>온톨로지 프로젝트 전체 이력: v1 → v10 (통합본)</h1>
-    <div class="post-meta">
-      <span>본체(v1~v8) · Provenance 트랙(ver2~ver5, v9.1~v9.5) · 시각화 트랙(v6~v10, dh-webpage)을 하나로 병합한 최종 이력</span>
-    </div>
-    <div class="post-tags">
-      <span>#온톨로지</span>
-      <span>#TTL</span>
-      <span>#provenance</span>
-      <span>#버전이력</span>
-      <span>#v1-v10</span>
-    </div>
-  </header>
-
-  <article class="prose">
-
-    <h2>I. 전체 개관 (간결)</h2>
-    <p>
-      일제강점기 독립운동-근대학교 온톨로지는 두 갈래로 발전했다.
-    </p>
-    <ul>
-      <li><b>본체 (v1~v8)</b> — 이항관계(v1) → 사건유형별 클래스(v2) →
-        단일 Event 스키마 정착(v3) → 편찬 메타데이터·도메인 확장(v4~v5)
-        → ontology 저장소의 검증 보고서를 반영한 사실 검증(v6~v7) → 불확실성 자체의
-        모델링(<code>hasValidationStatus</code>, 신흥강습소 실체분리, v8).</li>
-      <li><b>Provenance 트랙 (ver2~ver5, v9.1~v9.5)</b> — v8 인스턴스가
-        실제로 근거를 갖췄는지 확인하기 위해 별도로 시작한 Claim 중심
-        병렬 데이터셋. 49개 원본 항목 → 55개 Claim으로 분해 → 34 Core +
-        5 Hold(TTL 반영, 987 트리플) + 16 Exclusion(CSV만 보관).</li>
-      <li><b>시각화 (v6~v10, dh-webpage 저장소)</b> — 본체·Provenance
-        트랙 데이터를 브라우저에서 읽어 그리는 뷰어들.
-        <code>v9_5re.html</code>에서 데이터는 그대로 두고 의미론 재검토
-        표시축(<code>SEMANTIC_REVIEW</code>)만 추가했고,
-        <code>v10.html</code>은 여기에 국가보훈부 공훈전자사료관 API
-        연동을 시도했으나 <b>HTTP-only API·가용성 불안정·서버 XML 명세
-        위반 등으로 아직 실사용 가능한 상태가 아니다</b> — 현재도 진행
-        중인 미해결 과제.</li>
-    </ul>
-    <p>
-      세 갈래 모두 "김바로, 『제도-인사 온톨로지 설계』"의 사건모델
-      (<code>:Event</code> 단일 스키마)을 공통 뿌리로 삼지만,
-      Provenance 트랙은 그 모델이 표현하지 못하던 "관계 자체의
-      확실성"을 담기 위해 완전히 다른 스키마(Claim/Evidence/Source
-      분리)로 갈라져 나온 것이며, <b>v8의 "다음 버전"이 아니라 병렬
-      검증 트랙</b>이다.
-
-    </p>
-
-    <h2>II. 상세 이력 — 본체(v1~v8)</h2>
-
-    <h3>1. 전체 개요 — 세 국면</h3>
-    <ul>
-      <li><b>스키마 전환기 (v1~v3)</b> — 데이터를 어떤 구조로 담을지
-        결정. 이항관계 → 사건유형별 클래스 → 원 논문의 단일 Event
-        스키마.</li>
-      <li><b>정합성·범위 확장기 (v4~v5)</b> — 편찬 정보(누가·언제)
-        정리, 중복·충돌 개체 해소, 도메인을 "구한말 관공립학교"에서
-        "독립운동-근대학교 네트워크"로 확장.</li>
-      <li><b>사실 검증·불확실성 모델링기 (v6~v8)</b> — 실제 역사적
-        사실을 재검색해 확정하거나, 확정 못 하는 상태 자체를
-        구조화.</li>
-    </ul>
-
-    <h3>2. v1 → v2 — 이항관계에서 사건유형별 클래스로</h3>
-    <p>
-      v1은 <code>["이승훈", "오산학교", "설립"]</code> 배열을 그대로
-      <code>forceLink</code>에 꽂는 D3.js 그래프였다. v2에서
-      OWL/Turtle로 전환하며 <code>FoundingEvent</code>·
-      <code>RoleEvent</code>·<code>AppointmentEvent</code>처럼
-      사건유형별 클래스를 만들었다.
-    </p>
-
-    <h3>3. v2 → v3 — Event 모델을 기본 틀로 채택</h3>
-    <p>
-      김바로 박사논문의 Event 중심 설계를 기본 모델로 채택해 단일
-      <code>:Event</code> 클래스로 통합. 47개체·627 트리플, Protégé
-      정상 파싱 확인. <code>locatedIn</code>류 6개 관계는 Event로
-      바꾸지 않고 조직의 정적 상태로 남기는 것은 원 논문이 아니라
-      프로젝트가 임의로 정한 해석이다.
-    </p>
-
-    <h3>4. v3 → v4 — 편찬 메타데이터와 정합성 정리</h3>
-    <p>
-      <code>hasCompiler</code>/<code>hascompiledTime</code> 미기입
-      65건 보강, <code>:백오인사건</code> Group/Event 이중 타입 해소,
-      중복 개체(<code>:이승훈설립오산학교_01</code>) 제거.
-    </p>
-
-    <h3>5. v4 → v5 — 편찬자 실체화, 도메인 확장</h3>
-    <p>
-      <code>hasCompiler</code> placeholder를 <code>:iteratorfor42</code>로
-      치환(68회). 다만 v5 자신은 이 단계에서 다음 문제를 방치했다:
-      오산학교-대성학교 <code>succeedByPersonTo</code>가 근거
-      (hasBibo) 없이 서사만으로 단정돼 있었고, 안명근체포 Event가
-      <code>hasEventType :임명</code>으로 잘못 분류된 채 방치됐으며
-      (<code>:체포</code> Term 자체가 아직 없었음), 역사적 사건 6개
-      전부가 <code>hasEestimation</code> 없이 "1월 1일" sentinel로
-      남아 있었다.
-    </p>
-
-    <h3>6. v5 → v6 — 3회차 검토안 반영(v6_3으로 검증보고서 세 차례 작성)</h3>
-    <p>
-      <b>필수 수정 4건</b>: 안명근체포 유형(<code>:체포</code>)·시간
-      (1910-12-01) 정정, 오산-대성 승계관계 삭제, 오산학교 개교일
-      1907-12-24 확정(다출처 일치 근거, 단 이 확신은 훗날 v9 ver2에서
-      재반박됨 — §III 참조), 안명근체포→안악사건→백오인사건 2단계
-      확대구조 신설. <b>추가 검증 날짜 5건</b>: 삼일운동(1919-03-01)·
-      봉오동전투·청산리전투·조선물산장려회(1920-08-23) 확정, 연도만
-      아는 설립 Event 일괄 추정 플래그 부여. 이 시점까지도 소속/참여
-      Event 12+9건은 언급조차 없이 공란이었다(v6 changelog에 미기재).
-    </p>
-
-    <h3>7. v6 → v7 — 날짜 자동상속 금지 원칙의 최초 대규모 적용</h3>
-    <p>
-      신민회/임시정부 소속 12건에 Year 추정 부여, 3·1운동 참여 9건 중
-      6건 확정·3건(정춘수·박희도·조만식) 예외 처리. 설립→공동설립
-      (<code>:공동설립</code> Term 신설) 구분. 이종일의 "경영"이
-      보성학교 전체가 아니라 부속 인쇄소 보성사였음을 코멘트로 처음
-      인지했으나(v7), 트리플 자체는 아직 <code>:보성학교</code>로
-      남아 있어 "코멘트가 데이터를 정정하는" 결함이 존재했다.
-      (이런 문제가 계속 발생하다 보니 v9가 등장하게 된 거다.)
-    </p>
-
-    <h3>8. v7 → v8 — 불확실성 자체의 모델링</h3>
-    <p>
-      임시정부 소속 4건 개별 재검증: 이동휘 1919-09±2개월(재검색으로
-      범위 조정), 이승만 1919-09-11 확정, <b>이동녕·이시영은 간접인용
-      상태로 미재확인 표시</b>(사용자가 제공한 한국민족문화대백과사전
-      인용을 채택했으나 원문 URL을 직접 재확인하지 못했음을 정직하게
-      남김). 이종일-보성사 구조 분리(<code>:보성사</code> Group 신설,
-      v7의 결함 해소), <code>hasValidationStatus</code> 신설
-      (김좌진-신민회를 "검증보류"로 격리 — 원 논문에 없던 속성을
-      즉석에서 추가한 것), 신흥강습소/신흥무관학교 실체 분리(개칭
-      이벤트 존재 자체의 불확실성 모델링).
-    </p>
-    <div class="note-callout">
-      <b>v8이 P1(다음 라운드 우선순위)로 명시적으로 이월한 것</b>: 홍범도
-      전투참여 Month 단위 보강, 북로군정서 김좌진/서일 역할
-      비대칭(총재 vs 사령관) 반영, 천도교 소속 3건(손병희·오세창·최린)
-      재검색, 안명근-안악사건 "참여" 관계와 기존 체포/확대 이벤트 체인
-      간 의미 중복 정리. 이 중 안명근-안악사건 문제는 §III의 "사후
-      발견"에서 보듯 v9.4까지 이어지며 형태를 바꿔 재등장한다 — v8이
-      "P1"로 미뤄둔 이 항목이 실제로는 다음 트랙(Provenance)에서도
-      완전히 해소되지 못한 채 이어졌다는 뜻이고, 애초에 이래서 병렬 트랙이라고 말하는 거다.
-    </div>
-
-    <h2>III. Provenance 트랙 상세 (ver2 ~ v9.5)</h2>
-    <p>v8을 검증하는 별도 트랙. <b>v8의 다음 버전이 아니다.</b></p>
-    <ul>
-      <li><b>ver2~ver5(방법론 설계)</b> — URL 팩트체크(ver2) →
-        Claim/Evidence/Source 분리(ver3) → 김좌진 정정·Claim 분해
-        (ver4) → 설계 승인, Rule G-01~G-08 확정(ver5). ver2 단계에서
-        「이승훈」 항목 원문을 직접 열어보니 "11월 24일"로 되어 있어,
-        v6이 "복수 출처 일치"로 확정했던 "12월 24일"의 근거 자체가 두
-        계열 출처를 짜깁기한 것이었음이 드러남.</li>
-      <li><b>v9 초안~완성본</b> — 49개 항목 → 43개 행(오판 6개
-        UNMAPPED) → 원본 마스터리스트 대조로 진짜 누락 3건(신흥무관학교·
-        대한독립군·양기탁) 복원 → 55개 Claim 완성(커버리지 확보, 아직
-        신뢰도 필터링 전).</li>
-      <li><b>v9.1</b> — 구조 검증. CLM-023(SRC 오배정)·CLM-010(비표준
-        precision) 수정, TTL 1155 트리플.</li>
-      <li><b>v9.2</b> — 39개 포함(당시 "High-confidence"로 잘못 명명) +
-        16 exclusion 최초 분리. 재검증 중 CLM-006 컬럼 밀림·CLM-023
-        재발·CLM-010 재발·안악사건(item 15) 완전 누락 발견·수정.
-        TTL 928 트리플.</li>
-      <li><b>v9.3</b> — 39개를 34 Core + 5 Hold로 재분류, 4단계 판정
-        (유지/수정/보류/제외) 확정. CLM-023이 또 재누락된 것을 "개별
-        버그가 아니라 파이프라인 재현성 문제"로 격상. TTL 969 트리플.</li>
-      <li><b>v9.4</b> — Claim 문장·URI·relation 의미 정합성 6건 수정
-        (CLM-014 subject 오류, CLM-003 방향 불일치 등).
-        <code>not_applicable</code> vocab 신설. TTL 972 트리플.</li>
-      <li><b>v9.5</b> — date_status 완전 정합화(빈 값 0건). 1차 제안
-        규칙("date_value 없음→전부 not_applicable")이 자기모순임을
-        재검토에서 발견해 폐기, "Claim의 시간적 의미" 기준으로 재수립
-        (not_applicable 9건/not_directly_verified 6건). TTL
-        <b>987 트리플</b>, Core 34 + Hold 5 + Exclusion 16 = 55.</li>
-      <li><b>사후 발견(3자 비교분석에서)</b> — CLM-014가
-        "안악사건→105인사건" 인과관계를 이미 담고 있으나
-        <code>relation=related_to</code>라는 범용 값이라 단순연관과
-        구분 못 하고, "안명근체포→안악사건" 전반부는 v9.4에서
-        "안명근" 엔티티 자체가 39건 중 하나도 안 남게 되며 유실됐음이
-        뒤늦게 규명됨 — 모델의 한계가 아니라 relation 어휘 미비 +
-        데이터 이관 유실이 겹친 문제.</li>
-    </ul>
-
-    <h2>IV. 시각화 트랙 상세 (v6 ~ v10, dh-webpage)</h2>
-    <ul>
-      <li><code>v6.html</code> — TTL을 fetch로 읽어 GIS+관계망 2탭으로
-        렌더링. <code>ttl-parser.js</code>로 Event를 두 개의 간선
-        (<code>hasPreObject→hasObject</code>, <code>hasObject→hasPostObject</code>)
-        으로 "접어" 표시.</li>
-      <li><code>v6_with_gonghun.html</code> — 관계망 탭에 v1 스타일
-        필터·검색 UI 이식 + 공훈전자사료관 연동 최초 시도(당시 필드명
-        버그로 0명 매칭 — 이 버그는 이후 <code>v8_with_gonghun.html</code>
-        에도 그대로 계승됐다가 v10에서야 발견·수정됨).</li>
-      <li><code>v8_d3style.html</code>/<code>v8_with_gonghun.html</code> —
-        v1의 D3 코드 자산을 v8 데이터로 재현. 이 과정에서 버그 3건
-        (숨은 탭 초기화, CSS grid 높이, <code>versions-data.js</code>
-        스키마 사고) 발견·수정.</li>
-      <li><code>v9_5.html</code> — Provenance 트랙 최초 뷰어.
-        <code>claimDecision</code>(core 실선/hold 점선)으로 신뢰도
-        구분.</li>
-      <li><code>v9_5re.html</code> — 데이터는 <code>v9_5.html</code>과
-        완전히 동일, <code>SEMANTIC_REVIEW</code> 참조표(CLM-024·
-        CLM-027-04 2건)로 "의미론 재검토 권고" 표시축만 추가. diff
-        기준으로도 데이터 fetch·파싱 로직은 0줄 변경 확인.</li>
-      <li><code>v10.html</code> + <code>gonghun_match.py</code> —
-        공훈전자사료관 오픈API 연동 탭 추가. 필드명 오류(<code>성명</code>→
-        <code>NAME_KO</code>) 수정 → HTTP-only API와 HTTPS 배포 간
-        mixed content 차단(구조적, 미해결) → 공식 문서상
-        <code>nameKo</code> 파라미터가 실제로는 서버에서 무시됨을 실측
-        확인 → 브라우저 호출을 포기하고 <code>gonghun_match.py</code>
-        (로컬 실행 스크립트)로 전체 순회(약 382페이지) 방식 전환 →
-        순회 중 서버 XML 자체의 명세 위반으로 파싱 재중단(139/382페이지
-        지점)까지, 실패 원인이 바뀔 때마다 갱신 기록. <b>현재도
-        미해결.</b></li>
-    </ul>
-
-    <h2>V. 결론</h2>
-    <p>
-      세 트랙(본체/Provenance/시각화) 모두 같은 데이터를 다루지만
-      목적이 다르다 — 본체는 "사건을 어떻게 표현할까", Provenance는
-      "그 표현이 실제로 검증됐는가", 시각화는 "그걸 어떻게 보여줄까"에
-      답한다. 매 단계마다 "고쳤다고 생각한 문제가 재발하는" 패턴
-      (오산학교 개교일, CLM-023 3연속 재발, 공훈 API 시행착오)이
-      반복됐고, 이는 개별 실수가 아니라 <b>검증 없이 결정만 내리고
-      실제 파일에는 반영하지 않는 작업 방식 자체의 위험</b>을 의미한다.
-      이런 점 때문에 v9 검증 트랙이 나온 거다.
-    </p>
-
-    <h2>버전별 핵심 수치 요약표</h2>
-    <table class="version-table">
-      <thead>
-        <tr><th>버전</th><th>트랙</th><th>핵심 수치</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>v3</td><td>본체</td><td>47개체, 627 트리플</td></tr>
-        <tr><td>v9.1</td><td>Provenance</td><td>55 Claim(미분리), TTL 1155 트리플</td></tr>
-        <tr><td>v9.2</td><td>Provenance</td><td>39 포함 + 16 exclusion, TTL 928 트리플</td></tr>
-        <tr><td>v9.3</td><td>Provenance</td><td>34 Core + 5 Hold + 16 Exclusion, TTL 969 트리플</td></tr>
-        <tr><td>v9.4</td><td>Provenance</td><td>동일 구조, 의미정합 6건 수정, TTL 972 트리플</td></tr>
-        <tr><td>v9.5</td><td>Provenance</td><td>동일 구조, date_status 완전정합, TTL 987 트리플</td></tr>
-        <tr><td>v10</td><td>시각화</td><td>공훈 API 연동 미해결(진행 중)</td></tr>
-      </tbody>
-    </table>
-
-    <div class="note-callout">
-      <b><h2>부록 : 버전별 핵심 변화 요약표</h2>
-    <table class="version-table">
-      <thead>
-        <tr><th>버전</th><th>성격</th><th>핵심 변화</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>v1</td><td>스키마 전환</td><td>이항관계 직접 표현 (D3.js, 배열 3항)</td></tr>
-        <tr><td>v2</td><td>스키마 전환</td><td>OWL/TTL 전환, 사건유형별 별도 클래스</td></tr>
-        <tr><td>v3</td><td>스키마 전환</td><td>단일 :Event 스키마를 기본 모델로 채택, 47개체/75관계, 627 트리플</td></tr>
-        <tr><td>v4</td><td>정합성 보강</td><td>hasCompiler/hascompiledTime 전체 추가, 이중타입·중복개체 해소</td></tr>
-        <tr><td>v5</td><td>정합성·범위 확장</td><td>hasCompiler를 실제 편찬자로, 도메인을 독립운동 네트워크로 확장</td></tr>
-        <tr><td>v6</td><td>사실 검증</td><td>필수 수정 4건(오산학교개교일 포함), 날짜 확정 5건 — 단 오산학교 근거는 후에 v9에서 재검토됨</td></tr>
-        <tr><td>v7</td><td>사실 검증</td><td>날짜 자동상속 금지 원칙 최초 대규모 적용(소속 12건, 3·1운동 6+3), 설립→공동설립 구분</td></tr>
-        <tr><td>v8</td><td>불확실성 모델링</td><td>임시정부 소속 4건 재검증, 이종일-보성사 분리, hasValidationStatus 신설(김좌진), 신흥강습소 실체분리+개칭 존재자체의 불확실성</td></tr>
-        <tr><td>v8</td><td>검증 트랙 </td><td>검증용 틑랙</td></tr>
-      </tbody>
-    </table>
-
-    </div>
-
-  </article>
-
-</div>
+<header id="title-block-header">
+<h1 class="title">온톨로지 프로젝트 전체 이력</h1>
+</header>
+<h1 id="온톨로지-프로젝트-전체-이력-v1-v10-통합-최종본">온톨로지
+프로젝트 전체 이력 (v1 → v10, 통합 최종본)</h1>
+<h2 id="i.-전체-개관">I. 전체 개관</h2>
+<p>일제강점기 독립운동-근대학교 온톨로지는 두 데이터 트랙과 하나의
+시각화 트랙으로 발전했다.</p>
+<ul>
+<li><strong>본체 (v1~v8)</strong>: Prof. 김현 &amp; Prof. 김바로 style
+계승. 이항관계(v1) → 사건유형별 클래스(v2) → 단일 Event 스키마 정착(v3)
+→ 편찬 메타데이터·도메인 확장(v4~v5) → 사실 검증(v6~v7) → 불확실성
+자체의 모델링(<code>hasValidationStatus</code>, 신흥강습소 실체분리,
+v8).</li>
+<li><strong>Provenance 트랙 (ver2~ver5, v9.1~v9.5)</strong>: v8
+인스턴스가 실제로 근거를 갖췄는지 재검증하기 위해 별도로 시작한 Claim
+중심 병렬 데이터셋. 49개 원본 항목 → 55개 Claim으로 분해 → 34 Core + 5
+Hold(TTL 반영, 987 트리플) + 16 Exclusion(CSV만 보관).</li>
+<li><strong>시각화 (v6~v10, dh-webpage 저장소)</strong>: 본체·Provenance
+트랙 데이터를 브라우저에서 읽어 그리는 뷰어들.
+<code>v9_5re.html</code>에서 데이터는 그대로 두고 의미론 재검토
+표시축(<code>SEMANTIC_REVIEW</code>)만 추가했다. <code>v10.html</code>은
+여기에 국가보훈부 공훈전자사료관 API 연동을 시도했으나 <strong>HTTP-only
+API·가용성 불안정·서버 XML 명세 위반 등으로 아직 실사용 가능한 상태가
+아니다</strong>. 현재도 진행 중인 미해결 과제다.</li>
+</ul>
+<p>세 트랙은 김바로, 『제도-인사 온톨로지 설계』의
+사건모델(<code>:Event</code> 단일 스키마)을 공통 뿌리로 삼는다. 다만
+Provenance 트랙은 그 모델이 표현하지 못하던 <strong>관계 자체의
+확실성</strong>을 담기 위해 Claim/Evidence/Source를 분리한 별도 스키마로
+갈라져 나온 것이며, v8의 다음 버전이 아니라 병렬 재검증 트랙이다.</p>
+<hr />
+<h2 id="ii.-상세-이력-본체v1v8">II. 상세 이력 — 본체(v1~v8)</h2>
+<h3 id="전체-개요-세-국면">1. 전체 개요 — 세 국면</h3>
+<ul>
+<li><strong>스키마 전환기 (v1~v3)</strong>: 데이터를 어떤 구조로 담을지
+결정. 이항관계 → 사건유형별 클래스 → 원 논문의 단일 Event 스키마.</li>
+<li><strong>정합성·범위 확장기 (v4~v5)</strong>: 편찬 정보(누가·언제)
+정리, 중복·충돌 개체 해소, 도메인을 “구한말 관공립학교”에서
+“독립운동-근대학교 네트워크”로 확장.</li>
+<li><strong>사실 검증·불확실성 모델링기 (v6~v8)</strong>: 실제 역사적
+사실을 재검색해 확정하거나, 확정하지 못한 상태 자체를 구조화.</li>
+</ul>
+<h3 id="v1-이항관계">2. v1 — 이항관계</h3>
+<p>솔직하게 밝히면, 60일 이내에 작업을 끝낼 수 있도록 클로드와
+챗지피티를 이용해 이항관계가 나오는 인물과 사건을 먼저 조사했다. 나머지
+작업의 논리 전개는 필자가 수행했고, 시각화 등 부가 작업에는 클로드와
+챗지피티를 활용했다. 특히 재검증 과정에서 CSV와 보고서 수치 분석(정합성
+분석)은 클로드를 이용했다.</p>
+<h3 id="v1-v2-이항관계에서-사건유형별-클래스로">3. v1 → v2 —
+이항관계에서 사건유형별 클래스로</h3>
+<p>v1은 <code>["이승훈", "오산학교", "설립"]</code> 배열을 그대로
+<code>forceLink</code>에 넣는 D3.js 그래프였다. v2에서 OWL/Turtle로
+전환하며
+<code>FoundingEvent</code>·<code>RoleEvent</code>·<code>AppointmentEvent</code>처럼
+사건유형별 클래스를 만들었다.</p>
+<h3 id="v2-v3-event-모델을-기본-틀로-채택">4. v2 → v3 — Event 모델을
+기본 틀로 채택</h3>
+<p>김바로 박사논문의 Event 중심 설계를 기본 모델로 채택해 단일
+<code>:Event</code> 클래스로 통합했다. 47개체·627 트리플이며, Protégé
+정상 파싱을 확인했다.</p>
+<p><code>locatedIn</code>류 6개 관계는 Event로 바꾸지 않고 조직의 정적
+상태로 남기는 것은 원 논문이 아니라 프로젝트가 임의로 정한 해석이다.</p>
+<h3 id="v3-v4-편찬-메타데이터와-정합성-정리">5. v3 → v4 — 편찬
+메타데이터와 정합성 정리</h3>
+<p><code>hasCompiler</code>/<code>hascompiledTime</code> 미기입 65건을
+보강하고, <code>:백오인사건</code>의 Group/Event 이중 타입을 해소했으며,
+중복 개체(<code>:이승훈설립오산학교_01</code>)를 제거했다.</p>
+<h3 id="v4-v5-편찬자-실체화-도메인-확장">6. v4 → v5 — 편찬자 실체화,
+도메인 확장</h3>
+<p><code>hasCompiler</code> placeholder를 <code>:iteratorfor42</code>로
+치환(68회)했다. 다만 v5는 다음 문제를 방치했다.</p>
+<ul>
+<li>오산학교-대성학교 <code>succeedByPersonTo</code>가
+근거(<code>hasBibo</code>) 없이 서사만으로 단정돼 있었다.</li>
+<li>안명근체포 Event가 <code>hasEventType :임명</code>으로 잘못 분류된
+채 남아 있었다. 당시 <code>:체포</code> Term 자체가 없었다.</li>
+<li>역사적 사건 6개 전부가 <code>hasEestimation</code> 없이 “1월 1일”
+sentinel로 남아 있었다.</li>
+</ul>
+<h3 id="v5-v6-3회차-검토안-반영">7. v5 → v6 — 3회차 검토안 반영</h3>
+<p><strong>필수 수정 4건</strong>: 안명근체포
+유형(<code>:체포</code>)·시간(1910-12-01) 정정, 오산-대성 승계관계 삭제,
+오산학교 개교일 1907-12-24 확정(다출처 일치 근거. 단, 이 확신은 훗날 v9
+ver2에서 재반박됨 — §III 참조), 안명근체포→안악사건→백오인사건 2단계
+확대구조 신설.</p>
+<p><strong>추가 검증 날짜 5건</strong>:
+삼일운동(1919-03-01)·봉오동전투·청산리전투·조선물산장려회(1920-08-23)를
+확정하고, 연도만 아는 설립 Event에는 일괄 추정 플래그를 부여했다. 이
+시점까지도 소속/참여 Event 12+9건은 언급 없이 공란이었다(v6 changelog에
+미기재).</p>
+<h3 id="v6-v7-날짜-자동상속-금지-원칙의-최초-대규모-적용">8. v6 → v7 —
+날짜 자동상속 금지 원칙의 최초 대규모 적용</h3>
+<p>신민회/임시정부 소속 12건에 Year 추정을 부여하고, 3·1운동 참여 9건 중
+6건을 확정하고 3건(정춘수·박희도·조만식)은 예외 처리했다. 설립과
+공동설립을 구분하기 위해 <code>:공동설립</code> Term을 신설했다.</p>
+<p>이종일의 “경영”이 보성학교 전체가 아니라 부속 인쇄소 보성사였음을
+코멘트로 처음 인지했으나(v7), 트리플 자체는 아직
+<code>:보성학교</code>로 남아 있어 “코멘트가 데이터를 정정하는” 결함이
+존재했다.</p>
+<h3 id="v7-v8-불확실성-자체의-모델링">9. v7 → v8 — 불확실성 자체의
+모델링</h3>
+<p>임시정부 소속 4건을 개별 재검증했다.</p>
+<ul>
+<li>이승만: 1919-09-11 확정.</li>
+<li>이동휘: 1919-09±2개월로 범위 조정.</li>
+<li>이동녕·이시영: 간접인용 상태로 미재확인 표시. 사용자가 제공한
+한국민족문화대백과사전 인용을 채택했으나 원문 URL을 직접 재확인하지
+못했음을 명시했다.</li>
+</ul>
+<p>이종일-보성사 구조를 분리하기 위해 <code>:보성사</code> Group을
+신설해 v7의 결함을 해소했다. 또한 <code>hasValidationStatus</code>를
+신설해 김좌진-신민회를 “검증보류”로 격리했다. 이는 원 논문에 없던 속성을
+프로젝트에서 추가한 것이다. 신흥강습소/신흥무관학교도 실체를 분리해 개칭
+이벤트 존재 자체의 불확실성을 모델링했다.</p>
+<p><strong>v8이 P1(다음 라운드 우선순위)로 명시적으로 이월한
+항목</strong></p>
+<ol type="1">
+<li>홍범도 전투참여의 Month 단위 날짜 보강.</li>
+<li>북로군정서 김좌진/서일 역할 비대칭(총재 vs 사령관) 반영.</li>
+<li>천도교 소속 3건(손병희·오세창·최린) 재검색.</li>
+<li>안명근-안악사건 “참여” 관계와 기존 체포/확대 이벤트 체인 간 의미
+중복 정리.</li>
+</ol>
+<p>안명근-안악사건 문제는 §III의 사후 발견에서 보듯 v9.4까지 이어지며
+형태를 바꿔 재등장한다. 즉 v8에서 P1로 이월한 항목이 Provenance
+트랙에서도 완전히 해소되지 않은 채 이관됐다.</p>
+<hr />
+<h2 id="iii.-provenance-트랙-상세-ver2ver5-v9.1v9.5">III. Provenance
+트랙 상세 (ver2~ver5, v9.1~v9.5)</h2>
+<p>Provenance 트랙은 v8을 검증하는 별도 트랙이며, <strong>v8의 다음
+버전이 아니다.</strong></p>
+<h3 id="ver2ver5-방법론-설계">1. ver2~ver5 — 방법론 설계</h3>
+<p>URL 팩트체크(ver2) → Claim/Evidence/Source 분리(ver3) → 김좌진
+정정·Claim 분해(ver4) → 설계 승인 및 Rule G-01~G-08 확정(ver5)의 순서로
+진행했다.</p>
+<p>ver2 단계에서 「이승훈」 항목 원문을 직접 열어보니 “11월 24일”로 되어
+있었다. 이에 따라 v6이 “복수 출처 일치”로 확정했던 “12월 24일”의 근거
+자체가 두 계열 출처를 짜깁기한 것이었음이 드러났다.</p>
+<h3 id="v9-초안완성본">2. v9 초안~완성본</h3>
+<p>49개 항목을 43개 행으로 매핑했으나, 오판 6개가 UNMAPPED로 남았다.
+원본 마스터리스트와 대조해 진짜 누락
+3건(신흥무관학교·대한독립군·양기탁)을 복원하고 46개 매핑 항목을
+확보했다. 이후 다수 항목을 §4의 6개 표준 패턴에 따라 복수 Claim으로
+분해했다(예: 대성학교 1항목→CLM-002/011 2건, 오산학교
+1항목→CLM-OSAN-01/02 2건). 최종적으로 커버리지를 확보한 55개 Claim을
+완성했으며, 이 단계는 아직 신뢰도 필터링 전이었다.</p>
+<h3 id="v9.1">3. v9.1</h3>
+<p>구조 검증 단계에서 CLM-023(SRC 오배정)과 CLM-010(비표준 precision)을
+수정했다. TTL은 1155 트리플이었다.</p>
+<h3 id="v9.2">4. v9.2</h3>
+<p>39개 포함(당시 “High-confidence”로 잘못 명명)과 16개 exclusion을 최초
+분리했다. 재검증 과정에서 CLM-006 컬럼 밀림, CLM-023 재발, CLM-010 재발,
+안악사건(item 15) 완전 누락을 발견·수정했다. TTL은 928 트리플이었다.</p>
+<h3 id="v9.3">5. v9.3</h3>
+<p>39개를 34 Core + 5 Hold로 재분류하고, 4단계
+판정(유지/수정/보류/제외)을 확정했다. TTL은 969 트리플이었다.</p>
+<p><strong>[정정]</strong> 이전 요약본에는 v9.3에서도 CLM-023이 “또
+재누락”되어 이를 “개별 버그가 아니라 파이프라인 재현성 문제”로
+격상했다는 서술이 있었다. 그러나 CLM-023 자신의 change_history(v9.3
+항목: “유지 — 근거·표현 모두 이상 없음, claim_core.csv 유지”)에는 세
+번째 재발이 기록되어 있지 않다. 따라서 v9.3 재발 여부는 v9.3 원본 파일을
+직접 대조하기 전까지 확정하지 않는다. change_history로 확인되는 것은
+v9.1→v9.2 사이의 재발 1회(최소 2개 버전에 걸친 재발)이며, “개별 버그가
+아니라 파이프라인 재현성 문제”라는 평가는 이 재발 사례에 근거한
+해석이다.</p>
+<h3 id="v9.4">6. v9.4</h3>
+<p>Claim 문장·URI·relation 의미 정합성 6건을 수정했다(CLM-014 subject
+오류, CLM-003 방향 불일치 등). <code>not_applicable</code> vocab를
+신설했다. TTL은 972 트리플이었다.</p>
+<h3 id="v9.5">7. v9.5</h3>
+<p><code>date_status</code>를 완전히 정합화해 빈 값 0건을 달성했다. 1차
+제안 규칙(“date_value 없음→전부 not_applicable”)이 자기모순임을
+재검토에서 발견해 폐기하고, “Claim의 시간적 의미”를 기준으로 규칙을
+재수립했다(not_applicable 9건/not_directly_verified 6건).</p>
+<p>TTL은 <strong>987 트리플</strong>이며, Core 34 + Hold 5 + Exclusion
+16 = 55다.</p>
+<h3 id="사후-발견-의미론-재검토와-과잉확신-정정">8. 사후 발견 — 의미론
+재검토와 과잉확신 정정</h3>
+<p>3자 비교분석에서 core+hold 39건 안에
+<code>CLM-014</code>(<code>:안악사건 --related_to--&gt; :105인사건</code>)가
+존재함을 확인했다. 다만 <code>relation=related_to</code>는
+인과관계·단순연관·사건 확대를 구분하지 않는 범용 값이므로, 이
+Claim만으로 “안악사건→105인사건”이 어떤 종류의 관계인지는 특정되지
+않는다. “인과관계를 이미 담고 있으나 구분하지 못한다”는 이전 표현은 한
+문장 안에서 서로 모순되는 주장이라 정정한다.</p>
+<p>또한 “안명근체포→안악사건” 전반부에 해당하는, 안명근 개인을
+subject·object로 갖는 Claim은 현재 core+hold 39건 어디에도 없다.
+<code>CLM-014</code>의 change_history에는 “v9.4: subject_uri를
+:안명근(인물)에서 :안악사건(사건)으로 정정”이라는 기록이 있어 변경이
+v9.4 시점에 일어났다는 점은 확인된다. 그러나 change_history의 자기
+서술만으로 “인물-사건 연결이 유실됐다”고 단정할 수는 없다. 3자비교분석
+§6-3도 곧바로 유실됐다고 단정해서는 안 되며, 확정하려면 버전별 파일
+대조가 필요하다고 유보한다.</p>
+<p>따라서 현재 상태는 다음과 같이 정리된다.</p>
+<ol type="1">
+<li>v8이 예감한 “의미 중복”은 relation 어휘 미비 문제와 인물 엔티티 부재
+문제라는 두 갈래로 세분화됐다.</li>
+<li>인물 엔티티 부재의 원인이 v9.4에서의 의도적 정정인지, 의도치 않은
+유실인지는 change_history상 전자로 기록되어 있을 뿐 독립적인 버전 대조로
+확정되지 않았다.</li>
+</ol>
+<hr />
+<h2 id="iv.-시각화-트랙-상세-v6v10-dh-webpage">IV. 시각화 트랙 상세
+(v6~v10, dh-webpage)</h2>
+<h3 id="v6.html">1. v6.html</h3>
+<p>TTL을 fetch로 읽어 GIS+관계망 2탭으로 렌더링했다.
+<code>ttl-parser.js</code>로 Event를 두 개의
+간선(<code>hasPreObject→hasObject</code>,
+<code>hasObject→hasPostObject</code>)으로 “접어” 표시했다.</p>
+<h3 id="v6_with_gonghun.html">2. v6_with_gonghun.html</h3>
+<p>관계망 탭에 v1 스타일 필터·검색 UI를 이식하고, 공훈전자사료관 연동을
+최초 시도했다. 당시 필드명 버그로 0명 매칭이 발생했다. 이 버그는 이후
+<code>v8_with_gonghun.html</code>에도 그대로 계승됐다가 v10에서야
+발견·수정됐다.</p>
+<h3 id="v8_d3style.html-v8_with_gonghun.html">3. v8_d3style.html /
+v8_with_gonghun.html</h3>
+<p>v1의 D3 코드 자산을 v8 데이터로 재현했다. 이 과정에서 버그 3건(숨은
+탭 초기화, CSS grid 높이, <code>versions-data.js</code> 스키마 사고)을
+발견·수정했다.</p>
+<p><strong>[해결] v8 트리플 수 불일치(982 vs 985)</strong></p>
+<p><code>v8_with_gonghun.html</code>의 화면 표시 트리플 수(982개)가
+<code>v8.ttl</code> 원문을 rdflib로 직접 파싱한 결과(985개)와 3건 차이
+나던 문제를 조사했다. <code>ttl-parser.js</code>와 <code>v8.ttl</code>을
+Node.js로 나란히 실행해 재현을 시도한 결과, 현재 코드·데이터 조합에서는
+985개로 rdflib과 type별 구성까지 완전히 일치했다.</p>
+<ul>
+<li>Ontology 1</li>
+<li>Class 5</li>
+<li>ObjectProperty 15</li>
+<li>DatatypeProperty 14</li>
+<li>Term 18</li>
+<li>Group 14</li>
+<li>Person 31</li>
+<li>Event 74</li>
+</ul>
+<p>총합만 우연히 같은 것이 아니라 구성 요소 단위로 검증했다. 따라서 현재
+파서에는 트리플을 누락시키는 버그가 없다. changelog에 남아 있던 “982”는
+과거 어느 시점(더 오래된 <code>ttl-parser.js</code> 또는
+<code>v8.ttl</code> 버전)에 실제로 기록됐던 값이 이후 코드·데이터가
+갱신되면서도 텍스트만 그대로 남은 것으로 추정된다. 정확히 언제 무엇이
+바뀌어 985가 됐는지는 git 이력을 봐야 확정할 수 있지만, 현재 상태가
+985로 맞다는 점은 재현 검증으로 확인됐다.</p>
+<p>같은 조사에서 인물 수 30(UI 배열 <code>ONTOLOGY_PERSONS</code>)과
+31(rdflib의 <code>rdf:type :Person</code> 카운트)의 차이도 해소됐다.
+편찬자 메타 개체 <code>:iteratorfor42</code>가
+<code>rdf:type :Person</code>으로 선언되어 rdflib 카운트에는 포함되지만,
+역사적 인물만 보여주는 UI 배열에는 의도적으로 제외되어 있었다. 따라서
+이는 버그가 아니다.</p>
+<h3 id="v9_5.html">4. v9_5.html</h3>
+<p>Provenance 트랙의 최초 뷰어다. <code>claimDecision</code>(core
+실선/hold 점선)으로 신뢰도 구분을 표시했다.</p>
+<h3 id="v9_5re.html">5. v9_5re.html</h3>
+<p>데이터는 <code>v9_5.html</code>과 완전히 동일하다.
+<code>SEMANTIC_REVIEW</code> 참조표(CLM-024·CLM-027-04 2건)로 “의미론
+재검토 권고” 표시축만 추가했다. diff 기준으로도 데이터 fetch·파싱 로직은
+0줄 변경으로 확인됐다.</p>
+<h3 id="v10.html-gonghun_match.py">6. v10.html + gonghun_match.py</h3>
+<p>공훈전자사료관 오픈API 연동 탭을 추가했다. 필드명
+오류(<code>성명</code>→<code>NAME_KO</code>)를 수정했으나, HTTP-only
+API와 HTTPS 배포 간 mixed content 차단이라는 구조적 문제가 남았다. 공식
+문서상 <code>nameKo</code> 파라미터가 실제로는 서버에서 무시됨을 실측
+확인했고, 브라우저 호출을 포기하고 <code>gonghun_match.py</code>(로컬
+실행 스크립트)로 전체 순회(약 382페이지) 방식으로 전환했다. 그러나 순회
+중 서버 XML 자체의 명세 위반으로 139/382페이지 지점에서 파싱이
+재중단됐다. 실패 원인이 바뀔 때마다 갱신 기록을 남겼으며, <strong>현재도
+미해결</strong>이다.</p>
+<hr />
+<h2 id="v.-결론">V. 결론</h2>
+<p>세 트랙(본체/Provenance/시각화)은 같은 프로젝트를 다루지만 목적이
+다르다. 본체는 “사건을 어떻게 표현할까”, Provenance는 “그 표현이 실제로
+검증됐는가”, 시각화는 “그걸 어떻게 보여줄까”에 답한다.</p>
+<p>매 단계마다 “고쳤다고 생각한 문제가 재발하는” 패턴(오산학교 개교일,
+CLM-023 재발, 공훈 API 시행착오)이 반복됐다. 이는 개별 실수뿐 아니라
+<strong>검증 없이 결정만 내리고 실제 파일에는 반영하지 않는 작업 방식의
+위험</strong>을 보여주는 교훈이다. 이 교훈은 이 문서 자신에게도 예외가
+아니다. §III·§IV의 [정정]/[조사중] 및 해결 기록 자체가 그 사례다.</p>
+<hr />
+<h2 id="vi.-버전별-핵심-수치-요약표">VI. 버전별 핵심 수치 요약표</h2>
+<table style="width:97%;">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 32%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">버전</th>
+<th style="text-align: left;">트랙</th>
+<th style="text-align: left;">핵심 수치·핵심 변화</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">v1</td>
+<td style="text-align: left;">본체</td>
+<td style="text-align: left;">이항관계 D3.js 그래프(스키마 이전
+단계)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">v2</td>
+<td style="text-align: left;">본체</td>
+<td style="text-align: left;">OWL/Turtle 전환, 사건유형별 별도
+클래스</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">v3</td>
+<td style="text-align: left;">본체</td>
+<td style="text-align: left;">단일 <code>:Event</code> 스키마 정착,
+47개체, 627 트리플</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">v4</td>
+<td style="text-align: left;">본체</td>
+<td style="text-align: left;"><code>hasCompiler</code> 등 편찬
+메타데이터 65건 보강, 중복 개체 제거</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">v5</td>
+<td style="text-align: left;">본체</td>
+<td style="text-align: left;">편찬자 실체화(68회 치환), 도메인 확장 —
+승계관계·체포유형 오류 방치</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">v6</td>
+<td style="text-align: left;">본체</td>
+<td style="text-align: left;">필수 수정 4건+날짜 확정 5건 — 오산학교
+확정근거는 훗날 재반박됨</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">v7</td>
+<td style="text-align: left;">본체</td>
+<td style="text-align: left;">날짜 자동상속 금지 원칙 최초 대규모
+적용(소속 12건, 3·1운동 9건)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">v8</td>
+<td style="text-align: left;">본체</td>
+<td style="text-align: left;"><code>hasValidationStatus</code> 신설,
+신흥강습소 실체분리, P1 4건 이월. rdflib 직접 파싱 시 985 트리플</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ver2~ver5</td>
+<td style="text-align: left;">Provenance(방법론)</td>
+<td style="text-align: left;">Claim/Evidence/Source 분리, Rule G-01~G-08
+확정</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">v9.1</td>
+<td style="text-align: left;">Provenance</td>
+<td style="text-align: left;">55 Claim(미분리), TTL 1155 트리플</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">v9.2</td>
+<td style="text-align: left;">Provenance</td>
+<td style="text-align: left;">39 포함 + 16 exclusion, TTL 928
+트리플</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">v9.3</td>
+<td style="text-align: left;">Provenance</td>
+<td style="text-align: left;">34 Core + 5 Hold + 16 Exclusion, TTL 969
+트리플</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">v9.4</td>
+<td style="text-align: left;">Provenance</td>
+<td style="text-align: left;">동일 구조, 의미정합 6건 수정, TTL 972
+트리플</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">v9.5</td>
+<td style="text-align: left;">Provenance</td>
+<td style="text-align: left;">동일 구조, date_status 완전정합, TTL 987
+트리플</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">v9.5re</td>
+<td style="text-align: left;">시각화</td>
+<td style="text-align: left;">데이터 동일(987 트리플),
+<code>SEMANTIC_REVIEW</code> 표시축만 추가</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">v10</td>
+<td style="text-align: left;">시각화</td>
+<td style="text-align: left;">공훈 API 연동 미해결(진행 중)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="vii.-정합성-분석-메모-병합-및-교차검증-기록">VII. 정합성 분석
+메모 — 병합 및 교차검증 기록</h2>
+<p>기존 <code>verification_report_v1-v8.md</code>(상세본)와
+<code>verification_report_v1-v10.md</code>(간결본)를 병합하기 전에
+겹치는 사실관계를 대조했다.</p>
+<ul>
+<li>두 문서가 공통으로 다루는 v1~v8 구간(8단계, 스키마 전환기/정합성
+보강기/사실검증기 구분)은 서술 상세도만 다를 뿐 수치·순서 불일치가
+없었다.</li>
+<li>간결본이 요약하는 v9 계열 최종 수치(34 Core + 5 Hold + 16 Exclusion
+= 55, TTL 987 트리플)는 실제 산출물(<code>v9.5_claim_core.csv</code>
+등)과 대조해 정확함을 확인했다.</li>
+<li>간결본의 v10 서술(“공훈전자사료관 연동 미해결”)은 순수
+추가분이었다.</li>
+<li>병합 과정에서 §IV에 <code>v6_with_gonghun.html</code>이 누락됐던
+것을 발견해 추가했다.</li>
+<li>이후 교차검증에서 §III의 CLM-023 재발 횟수 서술과 사후 발견 문단의
+과잉확신 두 곳을 추가로 정정했다.</li>
+<li>§IV의 v8 트리플 수 불일치(982 vs 985)는 실제
+<code>ttl-parser.js</code>·<code>v8.ttl</code>을 Node.js로 재실행해
+해결했다. 현재 코드·데이터 조합에서는 985로 rdflib과 일치하며, 인물 수
+30 vs 31 차이도 편찬자 메타 개체 포함 여부에 따른 정의상 차이로
+확인됐다.</li>
+</ul>
+<p>이 정합성 메모는 문서 간 대조와 명시된 재현 검증을 기록한 것이며,
+여기 제시된 서술만으로 모든 원본 TTL·CSV·HTML의 내용을 새롭게 독립
+검증했다는 뜻은 아니다.</p>
 </body>
 </html>
