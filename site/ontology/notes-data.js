@@ -39,17 +39,6 @@ const ONTOLOGY_NOTES = [
     tags: ["온톨로지", "공훈전자사료관", "API", "CORS", "XML파싱", "시행착오"],
   },
   {
-    url: "ontology-v1~v8-trial-and-error.html", 
-    title: "온톨로지 버전 전체 정리: v1 → v8",
-    date: "2026-08-30[이 내용 포함하여 21일 이전 작성 기존 이력은 전부 폐기했고, 기존 이력 중 이 내용만 '흔적'으로 남김]",
-    summary:
-      "v1~v8을 스키마 전환기(v1~v3)·정합성 보강기(v4~v5)·사실 검증 및 불확실성 모델링기 " +
-      "(v6~v8) 세 국면으로 정리. 각 버전에서 실제로 무엇을 왜 바꿨는지(안명근체포 시간 정정, " +
-      "오산학교 개교일 다출처 재검증, 사건 시점 자동상속 금지 원칙, hasValidationStatus 신설, " +
-      "신흥강습소 실체 분리 등)를 근거와 함께 전체 기록.",
-    tags: ["온톨로지", "TTL", "버전이력", "provenance"],
-  },
-  {
     url: "ontology-v1-vs-v6-trial-and-error.html",
     title: "온톨로지 시각화 버전 비교: v1 vs v6 (및 v8)",
     date: "2026-08-27 작성 · 2026-08-28 갱신 · 2026-08-31 v8_d3style.html 재생성",
