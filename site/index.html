@@ -10,21 +10,29 @@
 <link rel="stylesheet" href="post.css" />
 
 <style>
-  /* 이 페이지 전용: 머리말의 바로가기 링크 3개를 가운데 정렬된 버튼 행으로 */
+  /* 이 페이지 전용 설정 (공통 스타일은 post.css) */
+
+  /* 머리말을 조금 더 넓게 써서, 소개 문장이 원문의 줄 구분 그대로 나오게 함 */
+  .masthead-inner { max-width: 1000px; }
+  .lede,
+  .lede-note { max-width: none; }
+
+  /* 바로가기 링크 3개: 가운데 정렬된 버튼, 넓은 화면에서는 한 줄 */
   .masthead-links {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap;               /* 화면이 좁을 때만 줄바꿈 */
     justify-content: center;
-    gap: 10px 12px;
+    gap: 10px;
     margin: 26px 0 0;
     padding: 0;
     list-style: none;
   }
   .masthead-links a {
     display: inline-block;
-    padding: 9px 18px;
-    font-size: 0.92rem;
+    padding: 8px 14px;
+    font-size: 0.85rem;
     font-weight: 600;
+    white-space: nowrap;           /* 버튼 글자가 중간에 줄바꿈되지 않게 */
     color: var(--ink, #2B2118);
     text-decoration: none;
     background: var(--paper-card, #F7F2E5);
@@ -36,6 +44,10 @@
     color: var(--teal, #2C4A46);
     border-color: var(--teal-soft, #3E655F);
   }
+
+  @media (max-width: 720px) {
+    .masthead-links a { white-space: normal; }
+  }
 </style>
 </head>
 <body>
@@ -46,8 +58,8 @@
       <h1>석사 지원자 iteratorfor42 입시 포트폴리오</h1>
 
       <p class="lede">
-        DH 교육용 위키 틀을 가져온, 석사 지원자 iteratorfor42 입시 포트폴리오용 웹페이지입니다.
-        본문 목록은 2014년부터 이어져 온 한국학대학원 인문정보학 수업과 세미나, 학술답사 기록을 연도별로 담고 있으며,
+        DH 교육용 위키 틀을 가져온, 석사 지원자 iteratorfor42 입시 포트폴리오용 웹페이지입니다.<br>
+        본문 목록은 2014년부터 이어져 온 한국학대학원 인문정보학 수업과 세미나, 학술답사 기록을 연도별로 담고 있으며,<br>
         2014년부터 2025년까지의 목록 링크는 모두 원본 사이트로 연결됩니다.
       </p>
       <p class="lede-note">
