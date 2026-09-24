@@ -3,25 +3,62 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DH 교육용 위키 — 대문</title>
+<title>석사 지원자 입시 포트폴리오용 웹페이지</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="post.css" />
+
+<style>
+  /* 이 페이지 전용: 머리말의 바로가기 링크 3개를 가운데 정렬된 버튼 행으로 */
+  .masthead-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 12px;
+    margin: 26px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .masthead-links a {
+    display: inline-block;
+    padding: 9px 18px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--ink, #2B2118);
+    text-decoration: none;
+    background: var(--paper-card, #F7F2E5);
+    border: 1px solid var(--rule, #C9BEA2);
+    border-radius: 999px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .masthead-links a:hover {
+    color: var(--teal, #2C4A46);
+    border-color: var(--teal-soft, #3E655F);
+  }
+</style>
 </head>
 <body>
 
   <header class="masthead">
     <div class="masthead-inner">
       <p class="eyebrow">인문정보학교실 · 디지털인문학연구소 아카이브</p>
-      <h1>석사 지원자 iteratorfor42 입시 포트폴리오 </h1>
-      <p class="lede">DH 교육용 위키 틀을 가져온,석사 지원자 iteratorfor42 입시 포트폴리오용 웹페이지입니다. </h1>
-      <p class="lede">본문 목록은 2014년부터 이어져 온 한국학대학원 인문정보학 수업과 세미나, 학술답사 기록을 연도별로 담고 있으며,</p>
-      <p class="lede">2014년부터 2025년까지의 목록 링크는 모두 원본 사이트로 연결됩니다.</p>
-      <p class="lede">제 학습용 기록은 '디지털인문학 학습 내역', '여름학교 실습 글'과  &amp; '온톨로지 프로젝트'를 클릭하여 확인하실 수 있습니다.</p>
+      <h1>석사 지원자 iteratorfor42 입시 포트폴리오</h1>
 
-      <p style="margin-top:10px;"><a href="my-studies.html" style="font-weight:600;">📝 지원자 학습 내역 보러가기 &rarr;</a></p>
-      <p style="margin-top:10px;"><a href="my-posts.html" style="font-weight:600;">✍️ 제가 독학한 여름학교 실습 글 보러가기 &rarr;</a></p>
-      <p style="margin-top:18px;"><a href="ontology/versions.html" style="font-weight:600;">🕸️ 온톨로지 프로젝트 보러가기 &rarr;</a></p>
+      <p class="lede">
+        DH 교육용 위키 틀을 가져온, 석사 지원자 iteratorfor42 입시 포트폴리오용 웹페이지입니다.
+        본문 목록은 2014년부터 이어져 온 한국학대학원 인문정보학 수업과 세미나, 학술답사 기록을 연도별로 담고 있으며,
+        2014년부터 2025년까지의 목록 링크는 모두 원본 사이트로 연결됩니다.
+      </p>
+      <p class="lede-note">
+        제 학습용 기록은 아래 '지원자 학습 내역', '여름학교 실습 글', '온톨로지 프로젝트'를 클릭하여 확인하실 수 있습니다.
+      </p>
+
+      <ul class="masthead-links">
+        <li><a href="my-studies.html">📝 지원자 학습 내역 보러가기 &rarr;</a></li>
+        <li><a href="my-posts.html">✍️ 제가 독학한 여름학교 실습 글 보러가기 &rarr;</a></li>
+        <li><a href="ontology/versions.html">🕸️ 온톨로지 프로젝트 보러가기 &rarr;</a></li>
+      </ul>
     </div>
   </header>
 
