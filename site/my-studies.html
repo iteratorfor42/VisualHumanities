@@ -7,18 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="post.css" />
 
 <style>
-  /* my-posts.html과 동일한 이유로 .post-page 폭/중앙정렬을 여기서도 보정 */
-  .post-page {
-    max-width: 880px;
-    margin: 0 auto 60px;
-    padding: 0 20px;
-  }
-  .post-back {
-    display: inline-block;
-    margin-bottom: 24px;
-  }
+  /* 이 페이지 전용 스타일 (공통 레이아웃은 post.css가 담당) */
 
   /* ---- 학습 기록 카드 하나(entry) ---- */
   .study-entry {
@@ -27,6 +19,8 @@
     border-radius: 6px;
     padding: 22px 24px 26px;
     margin-bottom: 28px;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
   }
 
   .study-entry-date {
@@ -39,67 +33,76 @@
   .study-entry h2 {
     margin: 0 0 16px;
     font-family: var(--font-display);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     line-height: 1.4;
   }
 
-  /* 이미지는 여러 장 넣을 수 있도록 grid로 구성 (1장만 넣어도 자연스럽게 보임) */
+  /* 이미지: 카드 폭에 맞춰 통일. 여러 장이면 격자로 자동 배치 */
   .study-entry-images {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 10px;
-    margin: 0 0 16px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin: 0 0 18px;
   }
-
-  .study-entry-images figure {
-    margin: 0;
-  }
-
+  .study-entry-images figure { margin: 0; }
+  .study-entry-images a { display: block; }
   .study-entry-images img {
     display: block;
     width: 100%;
     height: auto;
+    background: #fff;
     border-radius: 4px;
     border: 1px solid var(--rule);
   }
-
   .study-entry-images figcaption {
-    margin-top: 6px;
+    margin-top: 8px;
     font-size: 0.8rem;
+    line-height: 1.6;
     color: var(--ink-soft);
     text-align: center;
   }
 
+  /* 세로로 긴 사진(책 페이지)은 너무 커지지 않게 폭 제한 후 가운데 배치 */
+  .study-entry-images figure.portrait {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* 본문 메모 */
   .study-entry-thought {
     font-size: 0.98rem;
-    line-height: 1.8;
+    line-height: 1.85;
   }
+  .study-entry-thought p { margin: 0 0 12px; }
+  .study-entry-thought p:last-child { margin-bottom: 0; }
 
-  .study-entry-thought p {
-    margin: 0 0 12px;
+  /* 과정 목록 */
+  .course-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
   }
-  .study-entry-thought p:last-child {
-    margin-bottom: 0;
-  }
-
-  .study-entry-tags {
-    margin-top: 16px;
-  }
-
-  /* 새 항목을 추가할 위치를 표시하는 안내 카드 */
-  .study-entry-placeholder {
-    border: 1.5px dashed var(--rule);
-    border-radius: 6px;
-    padding: 22px 24px;
-    color: var(--ink-soft);
-    font-size: 0.92rem;
-    line-height: 1.7;
-    background: transparent;
-  }
-  .study-entry-placeholder code {
+  .course-list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 10px;
+    padding: 9px 12px;
     background: var(--paper);
-    padding: 1px 5px;
+    border: 1px solid var(--rule);
     border-radius: 3px;
+    font-size: 0.94rem;
+    line-height: 1.6;
+  }
+  .course-list .org {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 600px) {
+    .study-entry { padding: 18px 16px 22px; }
   }
 </style>
 </head>
@@ -110,21 +113,20 @@
       <p class="eyebrow">지원자 학습 기록</p>
       <h1>지원자 학습 내역</h1>
       <p class="lede">
-        자기소개서와 연구계획서에 담은 내용을 개인식별정보를 모두 제거 후 이 페이지를 통해 공개합니다.
-        자격증 경우 일부 웹에 공개가 되어 있기에
-        자기소개서에서 언급한 도서와 책 페이지의 캡처, 제가 나온 인터뷰 기사(*개인식별정보 모두 제거 완료*)만 올립니다.
-        신문은 원문을 갖고 있으며, AI를 이용해 한국어로 번역했습니다.
-
+        자기소개서와 연구계획서에 담은 내용을 개인식별정보를 모두 제거한 뒤 이 페이지를 통해 공개합니다.
+        자기소개서에서 언급한 도서와 책 페이지의 캡처, 이수증(일부 웹에 공개된 자격증 포함)을 올립니다.
+        제가 나온 인터뷰 기사는 원문을 갖고 있으며, AI를 이용해 한국어로 번역했습니다.
       </p>
     </div>
   </header>
 
   <div class="post-page">
-    <a class="post-back" href="index.html">&larr; 🏠 대문(아카이브)으로 돌아가기<</a>
-    <p style="margin: 4px 0 24px; display:flex; gap:18px; flex-wrap:wrap;">
-      <a href="my-posts.html" style="font-weight:600; color: var(--ink, #2b2620); text-decoration: none;">✍️ 여름학교 실습 글 보러가기 &rarr;</a>
-      <a href="ontology/versions.html" style="font-weight:600; color: var(--ink, #2b2620); text-decoration: none;">🕸️ 온톨로지 프로젝트 보러가기 &rarr;</a>
-    </p>
+
+      <p style="margin-top:10px;"><a href="index.html" style="font-weight:600;">🏠 대문(아카이브)으로 돌아가기 &rarr;</a></p>
+      <p style="margin-top:10px;"><a href="my-posts.html" style="font-weight:600;">✍️ 여름학교 실습 글 보러가기&rarr;</a></p>
+      <p style="margin-top:18px;"><a href="ontology/versions.html" style="font-weight:600;">🕸️ 온톨로지 프로젝트 보러가기 &rarr;</a></p>
+
+
 
     <div id="study-entries">
 
@@ -132,84 +134,92 @@
         ============================================================
         새 학습 기록을 추가하는 방법
         ============================================================
-        1) 아래 <div class="study-entry">...</div> 블록 하나를 통째로 복사한다.
+        1) 아래 <article class="study-entry">...</article> 블록 하나를 통째로 복사한다.
         2) 맨 위(가장 최근 기록이 위로 오도록)에 붙여넣는다.
-        3) 다음 부분만 내용에 맞게 고친다.
-           - study-entry-date : 날짜/한 줄 태그
-           - <h2> : 제목
-           - <img src="..."> : 이미지 경로 (예: images/2026-08-20-note1.jpg)
-             * 이미지 파일은 이 폴더 기준 images/ 폴더에 넣고 경로를 맞추면 됩니다.
-             * 이미지가 여러 장이면 <figure> 블록을 그만큼 복사해서 나열하면 됩니다.
-             * 이미지가 없는 기록이면 .study-entry-images 블록 전체를 지워도 됩니다.
-           - figcaption : 이미지 설명 (없으면 지워도 됨)
-           - .study-entry-thought 안의 <p> : 그때 든 생각, 메모
+        3) 날짜(study-entry-date), 제목(<h2>), 이미지 경로(<img src="images/파일명">),
+           캡션(figcaption), 메모(<p>)만 고친다.
+           - 이미지 파일은 이 파일과 같은 폴더의 images/ 폴더에 넣는다.
+           - 세로로 긴 사진이면 <figure class="portrait">, 가로로 넓은 이미지면 <figure>.
+           - 이미지가 없는 기록이면 .study-entry-images 블록 전체를 지워도 된다.
         ============================================================
       -->
 
-      <!-- 예시 항목 1: 이미지 + 생각 -->
+      <!-- ① 온톨로지 · 지식그래프 이수 내역 -->
+      <article class="study-entry">
+        <p class="study-entry-date">이수 내역 · 2023 ~ 2026</p>
+        <h2>온톨로지·지식그래프 관련 이수 4건</h2>
+
+        <div class="study-entry-images">
+          <figure>
+            <a href="images/Ontology_Certificate.png" target="_blank" rel="noopener">
+              <img src="images/Ontology_Certificate.png"
+                   alt="Neo4j GraphAcademy 2건, OPEN Knowledge Graphs 과정, Palantir Foundry Aware 이수증 모음"
+                   loading="lazy" />
+            </a>
+            <figcaption>온톨로지 관련 이수증 4건 (클릭하면 원본 크기로 열립니다)</figcaption>
+          </figure>
+        </div>
+
+        <div class="study-entry-thought">
+          <ul class="course-list">
+            <li>Neo4j &amp; Generative AI Certification <span class="org">Neo4j GraphAcademy</span></li>
+            <li>Knowledge Graphs - Foundations and Applications <span class="org">OPEN</span></li>
+            <li>Cypher Fundamentals <span class="org">Neo4j GraphAcademy</span></li>
+            <li>PALANTIR FOUNDRY AWARE <span class="org">Palantir</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- ② K-MOOC 이수 내역 -->
+      <article class="study-entry">
+        <p class="study-entry-date">K-MOOC 이수증 · 2026.09.21 출력</p>
+        <h2>K-MOOC 이수 8과정</h2>
+
+        <div class="study-entry-images">
+          <figure>
+            <a href="images/K-MOOC_Certificate.png" target="_blank" rel="noopener">
+              <img src="images/K-MOOC_Certificate.png"
+                   alt="K-MOOC 이수증 8장 모음 (성명은 제거함)"
+                   loading="lazy" />
+            </a>
+            <figcaption>K-MOOC 이수증 8장 (성명 제거, 클릭하면 원본 크기로 열립니다)</figcaption>
+          </figure>
+        </div>
+
+        <div class="study-entry-thought">
+          <ul class="course-list">
+            <li>딥러닝 기반 자연어처리</li>
+            <li>Python을 사용한 NLP 기초과정</li>
+            <li>인공지능의 기초</li>
+            <li>데이터 분석 기초</li>
+            <li>한국의 근대 문법가들</li>
+            <li>비전공자를 위한 AI 딥러닝</li>
+            <li>인공지능과 캐글분석</li>
+            <li>디지털 인문학 개론</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- ③ 자기소개서에서 언급한 도서 -->
       <article class="study-entry">
         <p class="study-entry-date">2026.09 작성</p>
-        <h2>제목</h2>
+        <h2>자기소개서에서 언급한 도서</h2>
 
         <div class="study-entry-images">
-          <figure>
-            <img src="images/example-1.jpg" alt="이미지 설명 (예: 강의 슬라이드 캡처)" />
-            <figcaption>캡처 본문</figcaption>
+          <figure class="portrait">
+            <a href="images/20260818_165042.jpg" target="_blank" rel="noopener">
+              <img src="images/20260818_165042.jpg"
+                   alt="『디지털 인문학 입문』 396쪽, 1주차 교육과정 표[이거 사진 크기 줄여야 함]"
+                   loading="lazy" />
+            </a>
+            <figcaption>『디지털 인문학 입문』 396쪽 — 1주차(5일×9시간=45시간) 교육과정 표+@</figcaption>
           </figure>
         </div>
 
         <div class="study-entry-thought">
-          <p>
-            자기소개서에 언급한 도서 내용 캡처.
-          </p>
-
+          <p>자기소개서에 언급한 도서 내용 캡처.</p>
         </div>
       </article>
-
-      <!-- 예시 항목 2: 이미지 여러 장 -->
-      <article class="study-entry">
-        <p class="study-entry-date">2026-08-~ · 예시 태그</p>
-        <h2>이미지가 여러 장일 때 예시</h2>
-
-        <div class="study-entry-images">
-          <figure>
-            <img src="images/example-2a.jpg" alt="이미지 설명 1" />
-            <figcaption>1. K-MOOC 이수증 목록</figcaption>
-          </figure>
-          <figure>
-            <P>1. K-MOOC 이수증 목록 : 
-              딥러닝 기반 자연어처리   Python을 사용한 NLP 기초과정   인공지능의 기초   데이터 분석 기초   한국의 근대 문법가들   비전공자를 위한 AI 딥러닝   인공지능과 캐글분석   디지털 인문학 개론   </P>
-            <img src="images/example-2b.jpg" alt="이미지 설명 2" />
-            <figcaption>2. 온톨로지 (과정명 & 시행사)</figcaption>
-          </figure>
-             <P>
-과정명: Neo4j & Generative AI Certification / 시행사: Neo4j GraphAcademy   과정명: Knowledge Graphs - Foundations and Applications / 시행사: OPEN   과정명: Cypher Fundamentals / 시행사: Neo4j GraphAcademy   과정명: PALANTIR FOUNDRY AWARE / 시행사: Palantir 
-</P>
-        </div>
-
-        <div class="study-entry-thought">
-          <p>이미지가 여러 장이면 위처럼 figure 블록을 나란히 추가하면 자동으로 격자로 배치됨.</p>
-        </div>
-      </article>
-
-      <!-- 예시 항목 3: 이미지 없이 생각만 -->
-      <article class="study-entry">
-        <p class="study-entry-date">2026-08-18 · 예시 태그</p>
-        <h2>이미지 없이 메모만 남길 때 예시</h2>
-
-        <div class="study-entry-thought">
-          <p>
-            사진을 붙이기 애매한 날은 이렇게 .study-entry-images 블록을 통째로
-            빼고 생각만 적어도 됨.
-          </p>
-        </div>
-      </article>
-
-      <!--  새 항목을 채워나가면 됩니다. -->
-      <div class="study-entry-placeholder">
-        👆 위 세 항목은 형식을 보여주기 위한 예시이며, 실제 기록을 채우기 시작하면
-        이 안내 블록과 예시 항목(<code>study-entry</code> 3개)은 지우기. 
-      </div>
 
     </div>
   </div>
