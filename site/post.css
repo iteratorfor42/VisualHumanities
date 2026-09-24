@@ -4,6 +4,17 @@
    - style.css 없이도 동작하도록 var()에 기본값 넣음
    - 글·이미지·카드의 최대 가로 길이는 --post-w 하나로 조절
    적용 페이지: posts/*.html (글), my-posts.html, ontology/versions.html
+   (26.09.24 커밋만 세 번 했고 이 css 세 번 고쳤는데, 적용 페이지 늘어남에 따라 수정한 것.
+   1번 단계인  posts/*.html와 2번 단계  my-posts.html 경우 포스트 적용해도 문제 없었는데,
+   3번 단계 경우 레이아웃 바뀔 수 있음.
+   3번에서 달라진 부분>
+   -글 폭은 다른 페이지와 같은 820px이고 화면 중앙에 놓임.
+   -표는 본문 폭 안에서 줄바꿈되고, 좁은 화면에서는 표 안에서만 가로로 스크롤됨.
+   -원문의 Enter 줄바꿈은 그대로 살렸지만,
+    참고문헌의 URL 두 개는 글자는 그대로 두고 클릭되는 링크로 만들었음.
+   - ontology-readme.md 흐름도 코드 블록은 고정폭 글꼴로 나옴.
+     한글과 영문 폭이 달라 │, ▼ 정렬이 어긋날 수 있음.
+
    ========================================================= */
 
 /* ---------- 머리말(masthead): 가운데 정렬 ---------- */
@@ -234,4 +245,67 @@
   .post-page { padding: 28px 16px 72px; }
   .prose { line-height: 1.8; }
   .prose h2 { font-size: 1.25rem; }
+}
+
+
+/* =========================================================
+   md → html 변환 글용 추가 규칙 (h1 / 표 / 순서 목록 / 구분선 / 코드 글꼴)
+   ========================================================= */
+.prose h1 {
+  margin: 2.6em 0 0.9em;
+  padding-bottom: 10px;
+  font-family: var(--font-display, "Noto Serif KR", serif);
+  font-size: 1.7rem;
+  line-height: 1.35;
+  word-break: keep-all;
+  border-bottom: 2px solid var(--ink, #2B2118);
+}
+.prose > h1:first-child { margin-top: 0; }
+
+.prose hr {
+  margin: 2.6em 0;
+  border: 0;
+  border-top: 1px dashed var(--rule, #C9BEA2);
+}
+
+.prose ol {
+  margin: 0 0 1.4em;
+  padding-left: 1.4em;
+}
+.prose li > p { margin: 0 0 0.6em; }
+
+/* 표: 본문 폭 안에서 줄바꿈되고, 좁은 화면에서는 표 안에서만 가로 스크롤 */
+.table-wrap {
+  margin: 1.4em 0 1.8em;
+  overflow-x: auto;
+}
+.prose table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+  line-height: 1.7;
+}
+.prose th,
+.prose td {
+  padding: 9px 10px;
+  text-align: left;
+  vertical-align: top;
+  border: 1px solid var(--rule, #C9BEA2);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.prose th {
+  font-weight: 700;
+  color: var(--teal, #2C4A46);
+  background: var(--paper-card, #F7F2E5);
+}
+.prose tbody tr:nth-child(even) td {
+  background: rgba(247, 242, 229, 0.55);
+}
+
+/* 코드 블록(흐름도 등) 고정폭 글꼴 */
+.prose pre,
+.prose pre code {
+  font-family: "D2Coding", ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
 }

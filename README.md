@@ -1,4 +1,5 @@
-# DH 교육용 위키 대문 — 로컬 재구성판
+# DH 교육용 위키 대문 — 로컬 재구성판 
+## 석사 지원자 iteratorfor42 입시 포트폴리오
 
 [🌐 실제 웹사이트 미리보기(Render 배포 주소)](https://visualhumanities-39wz.onrender.com/)
 
@@ -17,6 +18,7 @@
 
 
 [📖 온톨로지 프로젝트 소개 readme.md 보기](./ontology_readme.md)
+(참고> 위 readme는 웹사이트에도 html로 공개했습니다.)
 
 ---
 
