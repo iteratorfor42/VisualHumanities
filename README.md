@@ -18,7 +18,7 @@
 
 
 [📖 온톨로지 프로젝트 소개 readme.md 보기](./ontology_readme.md)
-(참고> 위 readme는 웹사이트에도 html로 공개했습니다.)
+>(참고> 위 readme는 웹사이트에도 html로 공개했습니다.)
 
 ---
 
