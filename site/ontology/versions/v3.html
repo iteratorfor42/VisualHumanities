@@ -36,6 +36,27 @@
   .tk-pname { color: #7A4A9E; }
   .tk-punct { color: #B8AD93; }
   .tk-error { color: var(--red); }
+
+  .version-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px 0 20px;
+    padding: 9px 16px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--ink, #2B2118);
+    text-decoration: none;
+    background: var(--paper-card, #F7F2E5);
+    border: 1px solid var(--rule, #C9BEA2);
+    border-radius: 999px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .version-link:hover {
+    color: var(--teal, #2C4A46);
+    border-color: var(--teal-soft, #3E655F);
+  }
+</style>
 </style>
 </head>
 <body>
@@ -49,10 +70,9 @@
     독립운동-근대학교 도메인의 핵심 패턴 4종(설립, 임명/역할변화, 사건확대, 조직승계)을 재현했습니다.<br>
      v2 대비 출처·추정 근거를 전면 보강했습니다 (전체 소스 태깅).<br>
     <b>버전에 대한 자세한 설명은 Indep_mvt_ontology 저장소를 통해</b><br>
-    김바로 교수님 박사논문과 3.ttl 관계 및 이후 버전과의 비교 분석은 아래 링크를 통해 확인하실 수 있습니다.
+    <b>김바로 교수님 박사논문과 3.ttl 관계 및 이후 버전과의 비교 분석은 아래 링크를 통해 확인하실 수 있습니다.</b>
   </div>
-  <p><a href="../ontology-v3-v8-v9.5-comparison.html">📝 비교 분석 글 보러 가기</a></p>
-  <div id="version-list"></div>
+  <p><a class="version-link" href="../ontology-v3-v8-v9.5-comparison.html">📝 비교 분석 글 보러 가기 &rarr;</a></p>  <div id="version-list"></div>
 </header>
 
 <main>
