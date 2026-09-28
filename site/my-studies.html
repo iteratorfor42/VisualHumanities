@@ -100,8 +100,8 @@
     font-size: 0.8rem;
     color: var(--ink-soft);
   }
-  
-    /* ---- 바로가기 버튼 (index.html의 버튼과 같은 모양) ---- */
+
+  /* ---- 바로가기 버튼 (index.html의 버튼과 같은 모양) ---- */
   .page-links {
     display: flex;
     flex-wrap: wrap;               /* 화면이 좁을 때만 줄바꿈 */
@@ -129,6 +129,46 @@
     border-color: var(--teal-soft, #3E655F);
   }
 
+  /* ---- 목차 ---- */
+  .toc {
+    margin: 0 0 32px;
+    padding: 18px 22px;
+    background: var(--paper-card, #F7F2E5);
+    border: 1px solid var(--rule, #C9BEA2);
+    border-radius: 6px;
+  }
+  .toc-title {
+    margin: 0 0 10px;
+    font-family: var(--font-display, "Noto Serif KR", serif);
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .toc ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 6px;
+  }
+  .toc a {
+    color: var(--ink, #2B2118);
+    text-decoration: none;
+    word-break: keep-all;
+  }
+  .toc a:hover {
+    color: var(--teal, #2C4A46);
+    text-decoration: underline;
+  }
+  .toc-sub {
+    padding-left: 1.4em;
+    font-size: 0.9rem;
+  }
+  .toc-sub a { color: var(--ink-soft, #6B5D49); }
+
+  /* 목차로 이동했을 때 제목이 화면 맨 위에 붙지 않게 여백 */
+  .study-entry,
+  .study-entry h4 { scroll-margin-top: 24px; }
+
   @media (max-width: 600px) {
     .study-entry { padding: 18px 16px 22px; }
     .page-links a { white-space: normal; }
@@ -145,18 +185,32 @@
         자기소개서와 연구계획서에 담은 내용을 <b>개인식별정보를 모두 제거</b>한 뒤 <br>
         이 페이지를 통해 공개합니다.<br>
         자기소개서에서 언급한 도서와 책 페이지의 캡처, 이수증을 올립니다.<br>
-
       </p>
     </div>
   </header>
 
-    <div class="post-page">
+  <div class="post-page">
 
     <ul class="page-links">
       <li><a href="index.html">🏠 대문(아카이브)으로 돌아가기</a></li>
       <li><a href="my-posts.html">✍️ 여름학교 실습 글 보러가기</a></li>
       <li><a href="ontology/versions.html">🕸️ 온톨로지 프로젝트 보러가기</a></li>
     </ul>
+
+    <!-- 목차: 항목을 추가하면 아래 li 한 줄과, 이동할 카드/제목의 id를 함께 맞춰 주세요 -->
+    <nav class="toc" aria-label="목차">
+      <p class="toc-title">목차</p>
+      <ul>
+        <li><a href="#study-ontology">온톨로지·지식그래프 관련 이수 4건</a></li>
+        <li><a href="#study-kmooc">K-MOOC 이수 8과정</a></li>
+        <li><a href="#study-books">자기소개서와 v6.html에서 언급한 도서 원본</a></li>
+        <li class="toc-sub"><a href="#study-books-1">1&gt; 『디지털로 읽고 데이터로 쓰다』 127쪽</a></li>
+        <li class="toc-sub"><a href="#study-books-2">2&gt; 『디지털 인문학 입문』 397쪽</a></li>
+        <!-- 학업계획 카드를 채운 뒤 아래 줄의 주석을 풀면 목차에 나타납니다.
+        <li><a href="#study-plan">학업계획 관련 추가 설명</a></li>
+        -->
+      </ul>
+    </nav>
 
     <div id="study-entries">
 
@@ -171,11 +225,12 @@
            - 이미지 파일은 이 파일과 같은 폴더의 images/ 폴더에 넣는다.
            - 세로로 긴 사진이면 <figure class="portrait">, 가로로 넓은 이미지면 <figure>.
            - 이미지가 없는 기록이면 .study-entry-images 블록 전체를 지워도 된다.
+           - 목차에 넣으려면 카드에 id를 달고(예: id="study-xxx"), 위 목차에 li를 추가한다.
         ============================================================
       -->
 
       <!-- ① 온톨로지 · 지식그래프 이수 내역 -->
-      <article class="study-entry">
+      <article class="study-entry" id="study-ontology">
         <p class="study-entry-date">이수 내역 2026.09 출력</p>
         <h2>온톨로지·지식그래프 관련 이수 4건</h2>
 
@@ -201,8 +256,8 @@
       </article>
 
       <!-- ② K-MOOC 이수 내역 -->
-      <article class="study-entry">
-        <p class="study-entry-date">K-MOOC 이수증 · 2026.09.21 출력 </p>
+      <article class="study-entry" id="study-kmooc">
+        <p class="study-entry-date">K-MOOC 이수증 · 2026.09.21 출력</p>
         <h2>K-MOOC 이수 8과정</h2>
 
         <div class="study-entry-images">
@@ -213,8 +268,8 @@
                    loading="lazy" />
             </a>
             <figcaption>K-MOOC 이수증 8장 (성명 제거, 클릭하면 원본 크기로 열립니다.) <br>
-              참고> 모든 과목이 성적 요소를 담고 있는 게 아니기에, 전체 간소화하여 출력했고, 성적은 원하시면 공개할 수 있습니다.<br>
-                   현재 송상헌 교수님의 인공지능 시대의 언어학 입문을 듣고 있으며, 영어만 기본으로 할 뿐 일본어와 한자는 실력이 부족하여 공부해야 합니다.</figcaption>
+              참고&gt; 모든 과목이 성적 요소를 담고 있는 게 아니기에, 전체 간소화하여 출력했고, 성적은 원하시면 공개할 수 있습니다.<br>
+              현재 송상헌 교수님의 인공지능 시대의 언어학 입문을 듣고 있으며, 영어만 기본으로 할 뿐 일본어와 한자는 실력이 부족하여 공부해야 합니다.</figcaption>
           </figure>
         </div>
 
@@ -232,12 +287,12 @@
         </div>
       </article>
 
-        <!-- ③ 자기소개서·관련 글에서 언급한 도서 원본 -->
-      <article class="study-entry">
+      <!-- ③ 자기소개서·관련 글에서 언급한 도서 원본 -->
+      <article class="study-entry" id="study-books">
         <p class="study-entry-date">2026.09 작성</p>
         <h2>자기소개서와 v6.html에서 언급한 도서 원본</h2>
- 
-        <h4>1> 자기소개서에서 언급한 도서 — 『디지털로 읽고 데이터로 쓰다』 127쪽</h4>
+
+        <h4 id="study-books-1">1&gt; 자기소개서에서 언급한 도서 — 『디지털로 읽고 데이터로 쓰다』 127쪽</h4>
         <div class="study-entry-images">
           <figure class="portrait">
             <a href="images/reading-digitally-writing-data-p127.jpg" target="_blank" rel="noopener">
@@ -251,10 +306,10 @@
         <div class="study-entry-thought">
           <p>자기소개서에 언급한 도서 내용 원본.</p>
         </div>
- 
+
         <hr>
- 
-        <h4>2> v6.html에서 언급한 도서 — 『디지털 인문학 입문』 397쪽</h4>
+
+        <h4 id="study-books-2">2&gt; v6.html에서 언급한 도서 — 『디지털 인문학 입문』 397쪽</h4>
         <div class="study-entry-images">
           <figure class="portrait">
             <a href="images/digital-humanities-intro-p397.jpg" target="_blank" rel="noopener">
@@ -269,21 +324,23 @@
           <p>v6.html에서 언급한 도서 내용 원본.</p>
         </div>
       </article>
-       
-      
-  <article class="study-entry">
+
+      <!-- ④ 학업계획 관련 추가 설명 (내용을 채운 뒤 위 목차의 주석을 풀어 주세요) -->
+      <article class="study-entry" id="study-plan">
         <p class="study-entry-date">2026.09 작성</p>
         <h2>학업계획 관련 추가 설명</h2>
- 
-        여기 채워야 함.
+
+        <div class="study-entry-thought">
+          <p>여기 채워야 함.</p>
         </div>
       </article>
-  </div>
- 
+
+    </div><!-- /#study-entries -->
+  </div><!-- /.post-page -->
+
   <footer class="colophon">
     <p>이 페이지는 학습 과정에서 남긴 이미지와 개인적인 메모를 정리한 기록입니다.</p>
   </footer>
- 
+
 </body>
 </html>
- 
