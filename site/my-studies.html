@@ -100,9 +100,38 @@
     font-size: 0.8rem;
     color: var(--ink-soft);
   }
+  
+    /* ---- 바로가기 버튼 (index.html의 버튼과 같은 모양) ---- */
+  .page-links {
+    display: flex;
+    flex-wrap: wrap;               /* 화면이 좁을 때만 줄바꿈 */
+    justify-content: center;
+    gap: 10px;
+    margin: 0 0 32px;
+    padding: 0;
+    list-style: none;
+  }
+  .page-links a {
+    display: inline-block;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;           /* 버튼 글자가 중간에 줄바꿈되지 않게 */
+    color: var(--ink, #2B2118);
+    text-decoration: none;
+    background: var(--paper-card, #F7F2E5);
+    border: 1px solid var(--rule, #C9BEA2);
+    border-radius: 999px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .page-links a:hover {
+    color: var(--teal, #2C4A46);
+    border-color: var(--teal-soft, #3E655F);
+  }
 
   @media (max-width: 600px) {
     .study-entry { padding: 18px 16px 22px; }
+    .page-links a { white-space: normal; }
   }
 </style>
 </head>
@@ -121,13 +150,13 @@
     </div>
   </header>
 
-  <div class="post-page">
+    <div class="post-page">
 
-      <p style="margin-top:10px;"><a href="index.html" style="font-weight:600;">🏠 대문(아카이브)으로 돌아가기 &rarr;</a></p>
-      <p style="margin-top:10px;"><a href="my-posts.html" style="font-weight:600;">✍️ 여름학교 실습 글 보러가기&rarr;</a></p>
-      <p style="margin-top:18px;"><a href="ontology/versions.html" style="font-weight:600;">🕸️ 온톨로지 프로젝트 보러가기 &rarr;</a></p>
-
-
+    <ul class="page-links">
+      <li><a href="index.html">🏠 대문(아카이브)으로 돌아가기 &rarr;</a></li>
+      <li><a href="my-posts.html">✍️ 여름학교 실습 글 보러가기 &rarr;</a></li>
+      <li><a href="ontology/versions.html">🕸️ 온톨로지 프로젝트 보러가기 &rarr;</a></li>
+    </ul>
 
     <div id="study-entries">
 

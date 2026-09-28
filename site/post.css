@@ -311,21 +311,30 @@
 }
 
 /* 버튼형 링크 */
+/* 이 링크는 post.css 사용 페이지만 씀  */
 a.btn-link {
   display: inline-block;
-  padding: 10px 18px;
-  font-size: 0.9rem;
+  padding: 8px 14px;
+  font-size: 0.85rem;
   font-weight: 600;
   line-height: 1.6;
   color: var(--ink, #2B2118);
   text-decoration: none;
   background: var(--paper-card, #F7F2E5);
   border: 1px solid var(--rule, #C9BEA2);
-  border-radius: 10px;
+  border-radius: 999px;            /* index.html의 버튼과 같은 알약 모양 */
   word-break: keep-all;
   transition: border-color 0.15s, color 0.15s;
 }
 a.btn-link:hover {
   color: var(--teal, #2C4A46);
   border-color: var(--teal-soft, #3E655F);
+}
+
+/* 버튼 여러 개를 한 줄로 묶는 행 (좁은 화면에서만 줄바꿈)*/
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 1.6em;
 }
