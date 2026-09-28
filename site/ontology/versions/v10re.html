@@ -419,6 +419,26 @@
     .block-head{ flex-wrap: wrap; }
     .block-head .sub{ margin-left: 0; text-align:left; }
   }
+
+  /* ---------- 보고서 바로가기 버튼 ---------- */
+  a.report-link{
+    display: inline-block;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13.5px;
+    line-height: 1.6;
+    padding: 9px 16px;
+    color: var(--ink);
+    text-decoration: none;
+    background: var(--white);
+    border: 1px solid var(--ink);
+    border-radius: 2px;
+    word-break: keep-all;
+    transition: all 0.15s ease;
+  }
+  a.report-link:hover{
+    background: var(--ink);
+    color: var(--paper);
+  }
 </style>
 </head>
 <body>
@@ -444,7 +464,9 @@
     <code>changeHistory</code>는 바뀌지 않는다 — 아래 버튼들은 전부 "권고"를 남기는
     것이지 "실행"하는 것이 아니다.
   </div>
-<p><a class="btn-link" href="../ontology-v10re.html">📝 관련 보고서 [자동검사와 인간 검증의 결합: 웹 에이전트형 지식그래프 검증 기초 설계] 보러가기 &rarr;</a></p>
+<p style="margin: 0 0 24px;">
+  <a class="report-link" href="../ontology-v10re.html">📝 관련 보고서 [자동검사와 인간 검증의 결합: 웹 에이전트형 지식그래프 검증 기초 설계] 보러가기 &rarr;</a>
+</p>
 
   <!-- ============ 1. 탐지 계층 ============ -->
   <section class="block">
