@@ -349,7 +349,9 @@ a.btn-link:hover {
   color: var(--ink-soft, #6B5D49);
 }
 
-  /* ---------- git 바로가기 버튼 (git-link 최종 공통 스타일)[세 번째 시도] ---------- */
+
+/* ---------- git 바로가기 버튼 (git-link 최종 공통 스타일)[세 번째 시도] ---------- */
+/* 사용법: <div class="git-link-box"><a class="git-link" href="...">...</a></div> */
 .git-link-box {
   width: 100% !important;
   max-width: 520px !important;
@@ -361,22 +363,22 @@ a.btn-link:hover {
   align-items: center !important;
   justify-content: center !important;
   gap: 8px !important;
-  
+
   width: 100% !important;
   box-sizing: border-box !important;
-  
+
   font-family: var(--font-display, 'Noto Serif KR', serif) !important;
   font-size: 13.5px !important;
   font-weight: 500 !important;
   line-height: 1.5 !important;
   padding: 14px 20px !important;
-  
+
   background-color: #1b365d !important; /* 평소 파란색 배경 */
   color: #ffffff !important;
   text-decoration: none !important;
   border: 1px solid #1b365d !important;
   border-radius: 2px !important;
-  
+
   word-break: keep-all !important;
   transition: background-color 0.15s ease, border-color 0.15s ease !important;
 }
@@ -392,4 +394,14 @@ a.btn-link:hover {
   background-color: #000000 !important;
   border-color: #000000 !important;
   color: #ffffff !important;
+}
+
+/* 제목 아래 줄에 붙는 부제 (작은 글씨, 한 줄 아래)[ontology-v10re.html 제목 때문에 추가함] */
+.prose h1 .title-sub {
+  display: block;               /* 다음 줄로 내려가게 함 */
+  margin-top: 8px;
+  font-size: 0.62em;            /* 제목 글자 크기(1.7rem)의 약 62% */
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink-soft, #6B5D49);
 }
