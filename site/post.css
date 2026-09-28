@@ -338,3 +338,13 @@ a.btn-link:hover {
   gap: 10px;
   margin: 0 0 1.6em;
 }
+
+/* 제목 아래 줄에 붙는 부제 (작은 글씨, 한 줄 아래)[ontology-v10re.html 제목 때문에 추가함] */
+.prose h1 .title-sub {
+  display: block;               /* 다음 줄로 내려가게 함 */
+  margin-top: 8px;
+  font-size: 0.62em;            /* 제목 글자 크기(1.7rem)의 약 62% */
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink-soft, #6B5D49);
+}
