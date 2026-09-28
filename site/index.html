@@ -10,17 +10,15 @@
 <link rel="stylesheet" href="post.css" />
 
 <style>
-  /* 이 페이지 전용 설정 (공통 스타일은 post.css) */
-
-  /* 머리말을 조금 더 넓게 써서, 소개 문장이 원문의 줄 구분 그대로 나오게 함 */
+  /* 이 페이지 전용 설정 */
   .masthead-inner { max-width: 1000px; }
   .lede,
   .lede-note { max-width: none; }
 
-  /* 바로가기 링크 3개: 가운데 정렬된 버튼, 넓은 화면에서는 한 줄 */
+  /* 바로가기 링크 3개 설정 */
   .masthead-links {
     display: flex;
-    flex-wrap: wrap;               /* 화면이 좁을 때만 줄바꿈 */
+    flex-wrap: wrap;            
     justify-content: center;
     gap: 10px;
     margin: 26px 0 0;
@@ -32,7 +30,7 @@
     padding: 8px 14px;
     font-size: 0.85rem;
     font-weight: 600;
-    white-space: nowrap;           /* 버튼 글자가 중간에 줄바꿈되지 않게 */
+    white-space: nowrap;          
     color: var(--ink, #2B2118);
     text-decoration: none;
     background: var(--paper-card, #F7F2E5);
@@ -43,6 +41,51 @@
   .masthead-links a:hover {
     color: var(--teal, #2C4A46);
     border-color: var(--teal-soft, #3E655F);
+  }
+
+  /* ---------- git 바로가기 버튼 (git-link 전용 최종) ---------- */
+  .git-link-box {
+    width: 100% !important;
+    max-width: 520px !important;
+    margin: 0 auto 24px auto !important;
+  }
+
+  .git-link-box a.git-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    
+    width: 100% !important;
+    box-sizing: border-box !important;
+    
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    line-height: 1.5 !important;
+    padding: 14px 20px !important;
+    
+    background-color: #1b365d !important; /* 평소 파란색 배경 */
+    color: #ffffff !important;
+    text-decoration: none !important;
+    border: 1px solid #1b365d !important;
+    border-radius: 2px !important;
+    
+    word-break: keep-all !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease !important;
+  }
+
+  /* 내부 텍스트 및 이모지 하얀색 강제 고정 */
+  .git-link-box a.git-link span {
+    color: #ffffff !important;
+  }
+
+  /* 마우스 올렸을 때: 배경은 검은색, 글자는 하얀색 유지 */
+  .git-link-box a.git-link:hover,
+  .git-link-box a.git-link:hover span {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
   }
 
   @media (max-width: 720px) {
@@ -60,9 +103,12 @@
       <p class="lede">
         DH 교육용 위키 틀을 가져온, 석사 지원자 iteratorfor42 입시 포트폴리오용 웹페이지입니다.<br>
         (구글 아이디 iteratorfor42는 입시 준비 과정에서 26.08.11 새로 생성했고, git 또한 같은 날 만들었습니다.)<br>
-        
-      <p style="margin: 0 0 24px;">
-      <a class="report-link" href="https://github.com/iteratorfor42">🐙 지원자 git 저장소 보러가기</a></p>
+ 
+        <div class="git-link-box">
+        <a class="git-link" href="https://github.com/iteratorfor42" target="_blank" rel="noopener noreferrer">
+          <span>🐙</span> 지원자 git 저장소 보러 가기
+        </a>
+       </div>
 
         본문 목록은 2014년부터 이어져 온 한국학대학원 인문정보학 수업과 세미나, 학술답사 기록을 연도별로 담고 있으며,<br>
         2014년부터 2025년까지의 목록 링크는 모두 원본 사이트로 연결됩니다.
