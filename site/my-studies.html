@@ -101,6 +101,43 @@
     color: var(--ink-soft);
   }
 
+
+  /* 카드 안 소제목·구분선 */
+  .study-entry h4 {
+    margin: 20px 0 10px;
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    line-height: 1.5;
+    color: var(--brass, #8C6A3F);
+  }
+  .study-entry h4:first-of-type { margin-top: 0; }
+  .study-entry hr {
+    margin: 26px 0;
+    border: 0;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* 번호가 붙는 설명 목록 (학업계획 추가 설명) */
+  .plan-list {
+    margin: 0;
+    padding-left: 1.5em;
+    display: grid;
+    gap: 14px;
+  }
+  .plan-list li { padding-left: 4px; }
+  .plan-list li > strong { display: inline-block; margin-bottom: 6px; }
+
+  /* 카드 안 인용 상자 (직접 쓴 글을 그대로 옮길 때) */
+  .study-entry blockquote {
+    margin: 10px 0 4px;
+    padding: 6px 0 2px 16px;
+    font-size: 0.94rem;
+    color: var(--ink-soft);
+    border-left: 3px solid var(--teal-soft, #3E655F);
+  }
+  .study-entry blockquote p { margin: 0 0 10px; }
+  .study-entry blockquote p:last-child { margin-bottom: 0; }
+
   /* ---- 바로가기 버튼 (index.html의 버튼과 같은 모양) ---- */
   .page-links {
     display: flex;
@@ -197,16 +234,18 @@
       <li><a href="ontology/versions.html">🕸️ 온톨로지 프로젝트 보러가기</a></li>
     </ul>
 
-    <!-- 목차 -->
+    <!-- 목차: 항목을 추가하면 아래 li 한 줄과, 이동할 카드/제목의 id를 함께 맞춰 주세요 -->
     <nav class="toc" aria-label="목차">
-      <p class="toc-title">목차: 목차를 누르면 해당 내역으로 이동하실 수 있습니다.</p>
+      <p class="toc-title">목차</p>
       <ul>
         <li><a href="#study-ontology">온톨로지·지식그래프 관련 이수 4건</a></li>
         <li><a href="#study-kmooc">K-MOOC 이수 8과정</a></li>
         <li><a href="#study-books">자기소개서와 v6.html에서 언급한 도서 원본</a></li>
         <li class="toc-sub"><a href="#study-books-1">1&gt; 『디지털로 읽고 데이터로 쓰다』 127쪽</a></li>
         <li class="toc-sub"><a href="#study-books-2">2&gt; 『디지털 인문학 입문』 397쪽</a></li>
-        <li><a href="#study-plan">학업계획 관련 추가 설명</a></li>
+        <li><a href="#study-plan">학업계획 관련 자세한 설명</a></li>
+        <li class="toc-sub"><a href="#study-plan-1">부트캠프 최종입과(합격) 문자</a></li>
+        <li class="toc-sub"><a href="#study-plan-2">추가 설명</a></li>
       </ul>
     </nav>
 
@@ -267,7 +306,7 @@
             </a>
             <figcaption>K-MOOC 이수증 8장 (성명 제거, 클릭하면 원본 크기로 열립니다.) <br>
               참고&gt; 모든 과목이 성적 요소를 담고 있는 게 아니기에, 전체 간소화하여 출력했고, 성적은 원하시면 공개할 수 있습니다.<br>
-              현재 송상헌 교수님의 인공지능 시대의 언어학 입문을 듣고 있으며,<br> 영어만 기본으로 할 뿐 일본어와 한자는 실력이 부족하여 공부해야 합니다.</figcaption>
+              현재 송상헌 교수님의 인공지능 시대의 언어학 입문을 듣고 있으며, 영어만 기본으로 할 뿐 일본어와 한자는 실력이 부족하여 공부해야 합니다.</figcaption>
           </figure>
         </div>
 
@@ -323,13 +362,80 @@
         </div>
       </article>
 
-      <!-- ④ 학업계획 관련 추가 설명 -->
+      <!-- ④ 학업계획 관련 자세한 설명 -->
       <article class="study-entry" id="study-plan">
         <p class="study-entry-date">2026.09 작성</p>
-        <h2>학업계획 관련 추가 설명</h2>
+        <h2>학업계획 관련 자세한 설명</h2>
 
+        <h4 id="study-plan-1">부트캠프 최종입과(합격) 문자</h4>
+        <div class="study-entry-images">
+          <figure class="portrait">
+            <a href="images/bootcamp_message.jpg" target="_blank" rel="noopener">
+              <img src="images/bootcamp_message.jpg"
+                   alt="부트캠프 최종입과(합격) 문자"
+                   loading="lazy" />
+            </a>
+            <figcaption>부트캠프 최종입과(합격) 문자</figcaption>
+          </figure>
+        </div>
+
+        <hr>
+
+        <h4 id="study-plan-2">추가 설명</h4>
         <div class="study-entry-thought">
-          <p>여기 채워야 함.</p>
+          <ol class="plan-list">
+            <li>웹 에이전트 기초 작업 :
+              <a href="ontology/ontology-v10re.html">관련 페이지 보러가기</a></li>
+
+            <li>김바로 교수님 2026년 연구계획과 그동안의 온톨로지 접근을 비교 분석 :
+              <a href="ontology/ontology-v3-v8-v9.5-comparison.html">관련 페이지 보러가기</a></li>
+
+            <li>현존하는 사학 데이터 플랫폼을 거의 다 조사 =&gt; 관련 증거는 면접 기회가 생긴다면, 당일 증명 가능</li>
+
+            <li>파이프라인으로 접근 : 1번의 링크가 도출된 과정으로 증명 가능</li>
+
+            <li>온톨로지는 AI에이전트 사고로 접근하는 게 아닐 시 직접 검증이 어렵다는 내용 :
+              <a href="ontology/ontology-v10re.html">관련 페이지 보러가기</a></li>
+
+            <li><strong>DS와 ontology에서의 검증 비교</strong>
+              <blockquote>
+                <p>데이터 사이언스 작업에서는 기초 코드를 AI로 작성하더라도, 핵심 데이터는 제가 직접 작성하고 결과도 직접 검증한 뒤 필요하면 수정하는 순환 구조를 유지할 수 있었습니다. 이 구조에서 AI는 도구였고, 도구가 내놓은 결과를 판단하는 주체는 저였습니다. 역할 분담이 비교적 분명했습니다.</p>
+                <p>온톨로지 작업에서는 이 구조를 그대로 적용하기 어렵습니다. 온톨로지의 데이터는 그래프 형태로 서로를 참조하며 얽혀 있어서, "이 부분은 제가 쓰고 검증한다"는 식으로 작업을 깔끔하게 나눌 수 없습니다. 특히 전체 구조의 일관성을 확인하려면 AI의 도움을 받아 파서나 검증 스크립트를 작성하고 실행하는 일이 반복됩니다.</p>
+                <p>그 결과 제가 지키려는 두 가지가 충돌합니다. "검증은 반드시 내 사고를 거쳐야 한다"는 원칙이, "트리플이 늘어날수록 전체 구조를 검증하려면 AI의 도움이 불가피하다"는 현실 앞에서 흔들립니다.</p>
+              </blockquote>
+            </li>
+
+            <li><strong>현재의 역량</strong>
+              <p>아직 석사 과정에 진학하기 위한 기본기를 다지는 단계에 머물러 있으며,
+                특출하다고 내세울 만한 전문 영역을 지니고 있지 않습니다.
+                위에도 적은 것처럼 어학은 영어만 보통 수준으로 할 수 있으며,
+                추가로 필요한 일본어나 한자, 그리고 근대 한국어 토큰화 등의 어학&amp;기술적 요소는 보완이 많이 필요합니다.
+                웹 에이전트 구축 등도 기초적인 실습을 진행해 보았으나,
+                현재 제 기술 수준은 대형 시스템의 본체 설계보다는
+                전문가들의 연구를 뒷받침하는 서브 검증 및 보조 역할에 적합하다고 생각합니다.</p>
+            </li>
+          </ol>
+
+          <hr>
+
+          <h4 id="study-plan-3">여담</h4>
+          <p>1. 석사 지원자가 갖춰야 할 기본 소양이 어느 정도인지 잘 몰라서, 기본이라고 생각하는 영역을 최대한 폭넓게 공부해 왔습니다. <br>
+                석사 과정에서는 전문 분야를 하나 정해 그 분야를 가능한 한 집중적으로 공부하고 연구하고 싶습니다.</p>
+          <p>2. 온톨로지 작업(SPARQL, Cypher)을 하는 동안에는 SQL을 함께 다루기 어려울 것 같습니다. <br>
+                비슷해 보이는 질의 언어도 문법이 조금씩 달라서, 여러 개를 동시에 쓰면 저는 헷갈리더군요.<br>
+                (저만 그럴 수도 있는데, java와 javascript 정도의 일치성을 보이는 게 아닌 이상 기본 언어도 가끔 헷갈립니다.)</p>
+          <p>3. 저도 지 연구님처럼 절에 관심이 있고, 어릴 적부터 절(엄밀하게 말하면 옛 장소 혹은 역사적 공간)을 좋아해서 여러 번 찾아다녔습니다.<br>
+                그래서 관련 연구를 도울 일이 있다면, 하고 싶습니다.</p>
+          <p>4. 그동안 DS 공부를 많이 했고, NLP에 관심이 많습니다. 실습 내역을 공개할 수 없어서 이번 입시에는 뺐지만, 관련 연구계획서도 지니고 있습니다.<br>
+                면접 기회가 생긴다면, 당일에 관련하여 말씀드리고자 합니다.</p>
+          <P>5. 온톨로지 검증 Mockup 경우 정말 기초 단계라고 생각해 주셨으면 합니다. <br>
+                비유가 적절한지는 모르겠지만, 저는 프로젝트 하면서 '스타크래프트' 게임을 만드는 게 아니라 '유즈맵' 하나 겨우 만드는 느낌을 받았습니다.<br>
+                그래도 그동안 뭘 공부하든 대체로 기본에 충실하고자 했고,<br>
+                사고 흐름도 최대한 그대로 서술하였기에 적어도 읽을 가치는 좀 있는 글을 썼다고 믿습니다.</p>
+          <p>6. 제 현재 위치를 냉정하게 파악하고 있는 만큼,<br>
+                석사 과정 동안 지도 교수님의 세심한 지도와 연구 방향에 맞추어 최선을 다하겠습니다.<br>
+                읽어주셔서 감사합니다.</p>
+
         </div>
       </article>
 
