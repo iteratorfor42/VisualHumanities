@@ -8,10 +8,22 @@
 // 자동으로 갱신하므로, 새 버전을 추가해도 기존 v1~v4 파일은 손댈 필요가 없다.
 
 const ONTOLOGY_VERSIONS = [
+
+  {
+  version: "검증 MOCKUP",
+  date: "2026-09-14~28",
+  label: "Claim 관계·중복 검토 workflow 설계",
+  changelog:
+    "v9.5 Claim을 활용해 Rule A(관계 차이)·Rule B(중복 후보) 기반 탐지와 " +
+    "사건 동일성·출처 양립성·Claim 병합에 대한 인간 검토 흐름을 설계. " +
+    "판정은 권고로만 기록하며 실제 CSV/TTL 변경·SPARQL 실행·영구 저장은 미구현.",
+  file: "versions/v10re.html",
+},
+
   {
     version: "v10",
-    date: "2026-09-02~09-11",
-    label: "공훈전자사료관 API 매칭 버그 수정 (현재 최신)",
+    date: "2026-09-02~09-14, 26-09-24",
+    label: "공훈전자사료관 API 매칭 버그 수정 (시각화 최종본)",
     changelog:
       "*참고* 이 페이지의 changelog는 26.09.24 다시 확인 후 일부 재작성함. " +
       "v9.5re(Claim 근거모델 + 의미론 재검토 표시) 데이터·로직은 그대로 두고," +
