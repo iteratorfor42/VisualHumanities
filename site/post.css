@@ -15,6 +15,7 @@
    - ontology-readme.md 흐름도 코드 블록은 고정폭 글꼴로 나옴.
      한글과 영문 폭이 달라 │, ▼ 정렬이 어긋날 수 있음.
    - git-log button 추가 [26.09.29]
+   - index git-tree 규칙 추가 [26.09.29]
    ========================================================= */
 
 /* ---------- 머리말(masthead): 가운데 정렬 ---------- */
@@ -404,4 +405,12 @@ a.btn-link:hover {
   font-weight: 500;
   line-height: 1.5;
   color: var(--ink-soft, #6B5D49);
+}
+
+/* ---- git 트리 등 고정폭 다이어그램 전용 ---- */
+.prose pre.repo-tree {
+  font-size: 0.82rem;
+  line-height: 1.7;
+  overflow-x: auto;         /* 좁은 화면에서 트리가 잘리지 않고 가로 스크롤 */
+  white-space: pre;         /* 들여쓰기와 줄바꿈을 원문 그대로 유지 */
 }
