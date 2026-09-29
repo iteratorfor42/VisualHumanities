@@ -103,6 +103,7 @@
 실제 배치 실행, CSV/TTL 갱신, 영구 감사 로그, 외부 사료 검색, LLM 기반 의미 판단 등은 구현 범위에 포함되어 있지 않다.</p>
 <hr />
 <h2>5. Rule A: 서로 다른 관계 유형을 가진 Claim의 탐지</h2>
+<p><B>예시가 너무 단순할 수도 있는데, 제 스스로 설명할 수 있고, 구현할 수 있는 수준으로 접근했습니다.</B></p>
 <p>Rule A는 동일한 item 안에서 서로 다른 relation을 가진 Claim을 찾아내는 구조이다.</p>
 <p>개념적으로 다음과 같은 조건을 표현한다.</p>
 <pre><code class="language-sparql">SELECT ?item ?c1 ?r1 ?c2 ?r2 WHERE {
